@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "next": "^15.1.5"
+  }
+}
