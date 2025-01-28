@@ -23,7 +23,7 @@ export default function Home() {
         </div>
         
         <div className="mt-8 text-sm text-gray-400">
-          Expected Launch: Q2 2024
+          Expected Launch: Q2 2025
         </div>
       </div>
     </main>
