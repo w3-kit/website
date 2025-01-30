@@ -1,4 +1,3 @@
-// Add at the top of the file, after the imports
 export const codeString = `import React, { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 

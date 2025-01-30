@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { BridgeWidget } from "./component";
+import { ConnectWalletButton } from "./component";
 import { Code, Eye } from "lucide-react";
 import { codeString, codeUsage } from "./untils";
 import { CodeBlock } from "@/components/docs/codeBlock";
@@ -53,7 +53,7 @@ export default function BridgeComponent() {
 
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
-              <BridgeWidget />
+              <ConnectWalletButton />
             ) : (
               <CodeBlock code={codeString} id="component" />
             )}

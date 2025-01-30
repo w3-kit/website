@@ -1,4 +1,3 @@
-
 interface DocPage {
   title: string;
   href: string;
@@ -7,33 +6,24 @@ interface DocPage {
 
 const pages: DocPage[] = [
   // Components (in alphabetical order)
-  {
-    title: "Button",
-    href: "/docs/components/button",
-    section: "components"
-  },
+
   {
     title: "Bridge",
     href: "/docs/components/bridge",
-    section: "components"
+    section: "components",
   },
   {
-    title: "Input",
-    href: "/docs/components/input",
-    section: "components"
-  },
-  {
-    title: "Card",
-    href: "/docs/components/card",
-    section: "components"
+    title: "Connect Wallet",
+    href: "/docs/components/connect-wallet",
+    section: "components",
   },
 ];
 
 export const docsConfig = { pages };
 
 export function getPageNavigation(currentPath: string) {
-  const currentIndex = pages.findIndex(page => page.href === currentPath);
-  
+  const currentIndex = pages.findIndex((page) => page.href === currentPath);
+
   if (currentIndex === -1) return { prev: undefined, next: undefined };
 
   return {
@@ -43,5 +33,5 @@ export function getPageNavigation(currentPath: string) {
 }
 
 export function getComponentList() {
-  return pages.filter(page => page.section === "components");
-} 
+  return pages.filter((page) => page.section === "components");
+}
