@@ -92,14 +92,14 @@ export default function BridgeComponent() {
 
             <div className="mt-4">
               {installTab === "cli" ? (
-                <CodeBlock code="npx w3-kit@latest add bridge" id="cli" />
+                <CodeBlock code="npx w3-kit@latest add connect-wallet" id="cli" />
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       1. Install the package using npm:
                     </p>
-                    <CodeBlock code="npm install @w3-kit/bridge" id="npm" />
+                    <CodeBlock code="npm install @w3-kit/connect-wallet" id="npm" />
                   </div>
 
                   <div className="space-y-2">
@@ -107,7 +107,7 @@ export default function BridgeComponent() {
                       2. Import the component:
                     </p>
                     <CodeBlock
-                      code='import { BridgeWidget } from "@w3-kit/bridge";'
+                      code='import { ConnectWalletButton } from "@w3-kit/connect-wallet";'
                       id="import"
                     />
                   </div>
@@ -119,7 +119,7 @@ export default function BridgeComponent() {
                     <CodeBlock
                       code={`export default function Page() {
   return (
-    <BridgeWidget />
+    <ConnectWalletButton />
   );
 }`}
                       id="usage-example"
@@ -137,7 +137,7 @@ export default function BridgeComponent() {
             Usage
           </h2>
           <CodeBlock
-            code='import { BridgeWidget } from "@/components/bridge";'
+            code='import { ConnectWalletButton } from "@/components/connect-wallet";'
             id="usage-import"
           />
           <CodeBlock code={codeUsage} id="usage-full" />
