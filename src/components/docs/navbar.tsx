@@ -1,40 +1,22 @@
 "use client"
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { Search, Github, Moon, Sun } from 'lucide-react'
+import { useThemeContext } from '@/providers/ThemeProvider'
 
 export function Navbar() {
-  const [theme, setTheme] = React.useState<'light' | 'dark'>('light')
+  const { theme, toggleTheme, mounted } = useThemeContext()
 
-  useEffect(() => {
-    // Check if theme is stored in localStorage
-    const storedTheme = localStorage.getItem('theme')
-    
-    // Check system preference if no stored theme
-    if (!storedTheme) {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      setTheme(systemTheme)
-      updateTheme(systemTheme)
-    } else {
-      setTheme(storedTheme as 'light' | 'dark')
-      updateTheme(storedTheme as 'light' | 'dark')
-    }
-  }, [])
-
-  const updateTheme = (newTheme: 'light' | 'dark') => {
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-    localStorage.setItem('theme', newTheme)
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return null
   }
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    updateTheme(newTheme)
+  const handleThemeToggle = () => {
+    console.log('Current theme before toggle:', theme)
+    toggleTheme()
+    console.log('Theme toggled')
   }
 
   return (
@@ -71,7 +53,7 @@ export function Navbar() {
             <span className="sr-only">GitHub</span>
           </a>
           <button
-            onClick={toggleTheme}
+            onClick={handleThemeToggle}
             className="inline-flex items-center justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
             {theme === 'light' ? (

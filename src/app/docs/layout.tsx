@@ -16,7 +16,7 @@ export default function DocsLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen max-w-7xl mx-auto bg-white dark:bg-gray-950">
       <Navbar />
       
       {/* Mobile Menu Button */}
