@@ -42,6 +42,11 @@ const pages: DocPage[] = [
     href: "/docs/components/nft-card",
     section: "components",
   },
+  {
+    title: "Price Ticker",
+    href: "/docs/components/price-ticker",
+    section: "components",
+  },
 ];
 
 export const docsConfig = { pages };
