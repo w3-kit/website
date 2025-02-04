@@ -27,6 +27,11 @@ const pages: DocPage[] = [
     href: "/docs/components/gas-calculator",
     section: "components",
   },
+  {
+    title: "Multisignature Wallets",
+    href: "/docs/components/multisig-wallet",
+    section: "components",
+  },
 ];
 
 export const docsConfig = { pages };
