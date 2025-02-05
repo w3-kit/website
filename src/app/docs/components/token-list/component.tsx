@@ -26,11 +26,16 @@ export const TokenList: React.FC<TokenListProps> = ({
   }, [sortField]);
 
   const tokenList = useMemo(() => {
-    return tokens.map(symbol => ({
-      ...TOKEN_CONFIGS[symbol],
-      balance: '0', // This would be fetched from the wallet
-      price: 0, // This would be fetched from an API
-    }));
+    return tokens.map(token => {
+      if (typeof token === 'string') {
+        return {
+          ...TOKEN_CONFIGS[token],
+          balance: '0', // This would be fetched from the wallet
+          price: 0, // This would be fetched from an API
+        };
+      }
+      return token; // If it's already a Token object, return as is
+    });
   }, [tokens]);
 
   const filteredAndSortedTokens = useMemo(() => {
@@ -56,7 +61,7 @@ export const TokenList: React.FC<TokenListProps> = ({
           comparison = a.symbol.localeCompare(b.symbol);
           break;
         case 'balance':
-          comparison = Number(a.balance || 0) - Number(b.balance || 0);
+          comparison = Number(b.balance || 0);
           break;
         case 'value':
           comparison = (Number(a.balance || 0) * (a.price || 0)) - 

@@ -13,11 +13,12 @@ export interface Token {
 }
 
 export interface TokenListProps {
-  tokens: TokenSymbol[];
+  tokens: TokenSymbol[] | Token[];  // Allow both symbol array or token array
   onTokenSelect?: (token: Token) => void;
   className?: string;
   showBalances?: boolean;
   showPrices?: boolean;
+  showValue?: boolean;
   variant?: 'table' | 'grid';
 }
 

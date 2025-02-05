@@ -17,7 +17,10 @@ export default function TokenCardPage() {
     value: 2850.75,
     price: 1900.50,
     change24h: 2.5,
-    logoURI: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp",
+    logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040",
+    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    decimals: 18,
+    chainId: 1
   };
 
   return (
@@ -66,10 +69,7 @@ export default function TokenCardPage() {
               <div className="p-4 bg-gray-50 dark:bg-gray-900">
                 <TokenCard
                   token={mockToken}
-                  onTokenSelect={(token) => console.log("Selected:", token)}
                   showPrice={true}
-                  showChange={true}
-                  showValue={true}
                 />
               </div>
             ) : (

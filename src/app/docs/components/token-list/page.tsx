@@ -4,31 +4,69 @@ import React, { useState } from "react";
 import { TokenList } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
+import { TOKEN_CONFIGS, TokenSymbol } from '../../../../config/tokens';
 
 export default function TokenListPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
 
-  // Mock data for preview
+  // Mock data using TOKEN_CONFIGS
   const mockTokens = [
     {
-      symbol: "ETH",
-      name: "Ethereum",
-      balance: "1.5",
-      value: 2850.75,
+      ...TOKEN_CONFIGS.ETH,
+      balance: "1.5", // 1.5 ETH
       price: 1900.50,
-      change24h: 2.5,
-      logoURI: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp",
+      value: 2850.75,
+    },
+
+    {
+      ...TOKEN_CONFIGS.BTC,
+      balance: "0.05", // 0.05 BTC
+      price: 35000,
+      value: 1750,
     },
     {
-      symbol: "USDC",
-      name: "USD Coin",
-      balance: "1000",
+      ...TOKEN_CONFIGS.USDC,
+      balance: "1000", // 1000 USDC
+      price: 1,
       value: 1000,
-      price: 1.00,
-      change24h: 0.01,
-      logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
     },
+    {
+      ...TOKEN_CONFIGS.USDT,
+      balance: "500", // 500 USDT
+      price: 1,
+      value: 500,
+    },
+    {
+      ...TOKEN_CONFIGS.SOL,
+      balance: "25", // 25 SOL
+      price: 125.75,
+      value: 3143.75,
+    },
+    {
+      ...TOKEN_CONFIGS.MATIC,
+      balance: "1000", // 1000 MATIC
+      price: 0.85,
+      value: 850,
+    },
+    {
+      ...TOKEN_CONFIGS.LINK,
+      balance: "100", // 100 LINK
+      price: 15.20,
+      value: 1520,
+    },
+    {
+      ...TOKEN_CONFIGS.DOT,
+      balance: "150", // 150 DOT
+      price: 7.50,
+      value: 1125,
+    },
+    {
+      ...TOKEN_CONFIGS.AVAX,
+      balance: "50", // 50 AVAX
+      price: 35.80,
+      value: 1790,
+    }
   ];
 
   return (
@@ -76,30 +114,13 @@ export default function TokenListPage() {
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
                 <TokenList
-                tokens={[
-                  "ETH",
-                  "BTC",
-                  "USDT",
-                  "USDC",
-                  "BNB",
-                  "XRP",
-                  "USDD",
-                  "ADA",
-                  "DOGE",
-                  "MATIC",
-                  "DAI",
-                  "DOT",
-                  "SHIB",
-                  "TRX",
-                  "SOL",
-                  "AVAX",
-                  "UNI",
-                  "LINK",
-                  "FPI",
-                ]}
-                onTokenSelect={(token) => console.log("Selected:", token)}
-                variant="table"
-              />
+                  tokens={mockTokens}
+                  onTokenSelect={(token) => console.log("Selected:", token)}
+                  variant="table"
+                  showPrices={true}
+                  showValue={true}
+                  showBalances={true}
+                />
             ) : (
               <CodeBlock
                 code={`import { TokenList } from "@w3-kit/token-list";
