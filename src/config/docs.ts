@@ -57,7 +57,13 @@ const pages: DocPage[] = [
     href: "/docs/components/token-card",
     section: "components",
   },
+  {
+    title: "Token Swap",
+    href: "/docs/components/token-swap",
+    section: "components",
+  },
 ];
+
 
 export const docsConfig = { pages };
 

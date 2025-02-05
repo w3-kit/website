@@ -3,6 +3,7 @@ import { TokenListProps, SortField, SortDirection } from './types';
 import { formatBalance, formatCurrency } from './utils';
 import { TokenCard } from '../token-card/component';
 import { TOKEN_CONFIGS } from '../../../../config/tokens';
+import { Check } from "lucide-react";
 
 export const TokenList: React.FC<TokenListProps> = ({
   tokens,
@@ -10,7 +11,8 @@ export const TokenList: React.FC<TokenListProps> = ({
   className = '',
   showBalances = true,
   showPrices = true,
-  variant = 'table'
+  variant = 'table',
+  selectedToken
 }) => {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<SortField>('name');
@@ -78,16 +80,26 @@ export const TokenList: React.FC<TokenListProps> = ({
     switch (variant) {
       case 'grid':
         return (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-4">
             {filteredAndSortedTokens.map((token) => (
-              <TokenCard
+              <div
                 key={`${token.chainId}-${token.address}`}
-                token={token}
-                variant="default"
-                onClick={onTokenSelect}
-                showBalance={showBalances}
-                showPrice={showPrices}
-              />
+                onClick={() => onTokenSelect?.(token)}
+                className="relative cursor-pointer group"
+              >
+                <TokenCard
+                  token={token}
+                  variant="default"
+                  showBalance={showBalances}
+                  showPrice={showPrices}
+                />
+                {selectedToken === token.symbol && (
+                  <div className="absolute inset-0 rounded-lg border-2 border-blue-500 bg-blue-500/10 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-blue-500" />
+                  </div>
+                )}
+                <div className="absolute inset-0 rounded-lg border-2 border-transparent group-hover:border-blue-500/50 transition-colors" />
+              </div>
             ))}
           </div>
         );
@@ -155,7 +167,8 @@ export const TokenList: React.FC<TokenListProps> = ({
                       <tr 
                         key={`${token.chainId}-${token.address}`}
                         onClick={() => onTokenSelect?.(token)}
-                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        className={`hover:bg-gray-50 cursor-pointer transition-colors
+                          ${selectedToken === token.symbol ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                       >
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2 sm:gap-3">

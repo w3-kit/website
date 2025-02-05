@@ -20,6 +20,7 @@ export interface TokenListProps {
   showPrices?: boolean;
   showValue?: boolean;
   variant?: 'table' | 'grid';
+  selectedToken?: TokenSymbol;
 }
 
 export type SortField = 'name' | 'balance' | 'value' | 'symbol';
