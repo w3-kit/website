@@ -62,6 +62,11 @@ const pages: DocPage[] = [
     href: "/docs/components/token-swap",
     section: "components",
   },
+  {
+    title: "Transaction History",
+    href: "/docs/components/transaction-history",
+    section: "components",
+  },
 ];
 
 
