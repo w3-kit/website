@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { TokenListProps, SortField, SortDirection } from './types';
 import { formatBalance, formatCurrency } from './utils';
-import { TokenCard } from './TokenCard';
+import { TokenCard } from '../token-card/component';
 import { TOKEN_CONFIGS } from '../../../../config/tokens';
 
 export const TokenList: React.FC<TokenListProps> = ({

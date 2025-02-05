@@ -47,6 +47,16 @@ const pages: DocPage[] = [
     href: "/docs/components/price-ticker",
     section: "components",
   },
+  {
+    title: "Token List",
+    href: "/docs/components/token-list",
+    section: "components",
+  }, 
+  {
+    title: "Token Card",
+    href: "/docs/components/token-card",
+    section: "components",
+  },
 ];
 
 export const docsConfig = { pages };
