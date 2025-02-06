@@ -19,7 +19,7 @@ export interface TokenListProps {
   showBalances?: boolean;
   showPrices?: boolean;
   showValue?: boolean;
-  variant?: 'table' | 'grid';
+  variant?: 'table' | 'grid' | 'list';
   selectedToken?: TokenSymbol;
 }
 

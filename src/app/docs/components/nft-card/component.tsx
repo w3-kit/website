@@ -26,12 +26,12 @@ export const NFTCard: React.FC<NFTCardProps> = ({
   if (variant === 'expanded') {
     return (
       <div 
-        className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ${className}`}
+        className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ${className}`}
         onClick={() => onNFTClick?.(nft)}
       >
         <div className="relative aspect-square">
           {!isImageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+            <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 animate-pulse" />
           )}
           {!imageError ? (
             <Image
@@ -47,8 +47,8 @@ export const NFTCard: React.FC<NFTCardProps> = ({
               }`}
             />
           ) : (
-            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-400">Failed to load image</span>
+            <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+              <span className="text-gray-400 dark:text-gray-500">Failed to load image</span>
             </div>
           )}
         </div>
@@ -56,37 +56,37 @@ export const NFTCard: React.FC<NFTCardProps> = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-xl font-bold text-gray-900">{nft.name}</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{nft.name}</h3>
               {nft.collection && (
-                <p className="text-sm text-gray-500">{nft.collection}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{nft.collection}</p>
               )}
             </div>
-            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">
+            <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-600 dark:text-gray-300">
               #{nft.tokenId}
             </span>
           </div>
 
           {nft.description && (
-            <p className="text-gray-600 mb-4 line-clamp-2">{nft.description}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{nft.description}</p>
           )}
 
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Chain</span>
-              <span className="font-medium">{getChainName(nft.chainId)}</span>
+              <span className="text-gray-500 dark:text-gray-400">Chain</span>
+              <span className="font-medium text-gray-900 dark:text-white">{getChainName(nft.chainId)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Owner</span>
+              <span className="text-gray-500 dark:text-gray-400">Owner</span>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handleOwnerClick}
-                  className="font-medium text-blue-600 hover:text-blue-800"
+                  className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                 >
                   {formatAddress(nft.owner)}
                 </button>
                 <button
                   onClick={handleExplorerClick}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -97,12 +97,12 @@ export const NFTCard: React.FC<NFTCardProps> = ({
           </div>
 
           {nft.attributes && nft.attributes.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {nft.attributes.map((attr, index) => (
-                  <div key={index} className="bg-gray-50 p-2 rounded-lg">
-                    <p className="text-xs text-gray-500">{attr.trait_type}</p>
-                    <p className="text-sm font-medium text-gray-900">{attr.value}</p>
+                  <div key={index} className="bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{attr.trait_type}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{attr.value}</p>
                   </div>
                 ))}
               </div>
@@ -115,12 +115,12 @@ export const NFTCard: React.FC<NFTCardProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-lg shadow hover:shadow-md transition-shadow ${className}`}
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow ${className}`}
       onClick={() => onNFTClick?.(nft)}
     >
       <div className="relative aspect-square">
         {!isImageLoaded && !imageError && (
-          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+          <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 animate-pulse" />
         )}
         {!imageError ? (
           <Image
@@ -136,22 +136,22 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             }`}
           />
         ) : (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-t-lg">
-            <span className="text-gray-400">Failed to load image</span>
+          <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center rounded-t-lg">
+            <span className="text-gray-400 dark:text-gray-500">Failed to load image</span>
           </div>
         )}
       </div>
 
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1">{nft.name}</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{nft.name}</h3>
         <div className="flex items-center justify-between">
           <button
             onClick={handleOwnerClick}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
           >
             {formatAddress(nft.owner)}
           </button>
-          <span className="text-sm text-gray-500">#{nft.tokenId}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">#{nft.tokenId}</span>
         </div>
       </div>
     </div>
