@@ -8,20 +8,19 @@ import { TOKEN_CONFIGS, TokenSymbol } from '../../../../config/tokens';
 
 export default function TokenListPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
+  const [selectedVariant, setSelectedVariant] = useState<'grid' | 'list' | 'table'>('table');
 
   // Mock data using TOKEN_CONFIGS
   const mockTokens = [
     {
       ...TOKEN_CONFIGS.ETH,
-      balance: "1.5", // 1.5 ETH
+      balance: "1.5",
       price: 1900.50,
       value: 2850.75,
     },
-
     {
       ...TOKEN_CONFIGS.BTC,
-      balance: "0.05", // 0.05 BTC
+      balance: "0.05",
       price: 35000,
       value: 1750,
     },
@@ -77,161 +76,85 @@ export default function TokenListPage() {
             Token List
           </h1>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-            A customizable component for displaying token balances and prices with real-time updates
-            and sorting capabilities.
+            A customizable component for displaying token balances and prices with multiple layout options.
           </p>
+        </div>
+
+        {/* Variant Selector */}
+        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
+          {(['grid', 'list', 'table'] as const).map((variant) => (
+            <button
+              key={variant}
+              onClick={() => setSelectedVariant(variant)}
+              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                selectedVariant === variant
+                  ? "border-b-2 border-blue-500 text-blue-500"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              }`}
+            >
+              {variant.charAt(0).toUpperCase() + variant.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Preview/Code Section */}
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between overflow-x-auto">
-            <div className="flex items-center space-x-2 min-w-full sm:min-w-0">
-              <button
-                onClick={() => setActiveTab("preview")}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
-                  activeTab === "preview"
-                    ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                Preview
-              </button>
-              <button
-                onClick={() => setActiveTab("code")}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
-                  activeTab === "code"
-                    ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-              >
-                <Code className="mr-2 h-4 w-4" />
-                Code
-              </button>
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setActiveTab("preview")}
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
+                activeTab === "preview"
+                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              }`}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Preview
+            </button>
+            <button
+              onClick={() => setActiveTab("code")}
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
+                activeTab === "code"
+                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              }`}
+            >
+              <Code className="mr-2 h-4 w-4" />
+              Code
+            </button>
           </div>
 
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
-                <TokenList
-                  tokens={mockTokens}
-                  onTokenSelect={(token) => console.log("Selected:", token)}
-                  variant="table"
-                  showPrices={true}
-                  showValue={true}
-                  showBalances={true}
-                />
+              <TokenList
+                tokens={mockTokens}
+                onTokenSelect={(token) => console.log("Selected:", token)}
+                variant={selectedVariant}
+                showPrices={true}
+                showValue={true}
+                showBalances={true}
+              />
             ) : (
               <CodeBlock
-                code={`import { TokenList } from "@w3-kit/token-list";
+                code={`import { TokenList } from "@/components/token-list";
 
-const tokens = [
-  {
-    symbol: "ETH",
-    name: "Ethereum",
-    balance: "1.5",
-    value: 2850.75,
-    price: 1900.50,
-    change24h: 2.5,
-    logoURI: "https://ethereum.org/eth-logo.png"
-  }
-];
+const tokens = ${JSON.stringify(mockTokens.slice(0, 1), null, 2)};
 
 export default function Page() {
   return (
     <TokenList
       tokens={tokens}
-      onTokenClick={(token) => console.log("Token clicked:", token)}
-      showPrice={true}
-      showChange={true}
+      variant="${selectedVariant}"
+      onTokenSelect={(token) => console.log("Selected:", token)}
+      showPrices={true}
       showValue={true}
+      showBalances={true}
     />
   );
 }`}
                 id="component"
               />
             )}
-          </div>
-        </div>
-
-        {/* Installation Section */}
-        <div className="space-y-4 mt-8 sm:mt-12">
-          <h2 className="text-xl sm:text-2xl font-semibold border-b border-gray-200 dark:border-gray-800 pb-2 text-gray-900 dark:text-white">
-            Installation
-          </h2>
-
-          <div className="space-y-4">
-            <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
-              <button
-                onClick={() => setInstallTab("cli")}
-                className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                  installTab === "cli"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                }`}
-              >
-                CLI
-              </button>
-              <button
-                onClick={() => setInstallTab("manual")}
-                className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                  installTab === "manual"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                }`}
-              >
-                Manual
-              </button>
-            </div>
-
-            <div className="mt-4">
-              {installTab === "cli" ? (
-                <CodeBlock code="npx w3-kit@latest add token-list" id="cli" />
-              ) : (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      1. Install the package using npm:
-                    </p>
-                    <CodeBlock code="npm install @w3-kit/token-list" id="npm" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      2. Import and use the component:
-                    </p>
-                    <CodeBlock
-                      code={`import { TokenList } from "@w3-kit/token-list";
-
-const tokens = [
-  {
-    symbol: "ETH",
-    name: "Ethereum",
-    balance: "1.5",
-    value: 2850.75,
-    price: 1900.50,
-    change24h: 2.5,
-    logoURI: "https://ethereum.org/eth-logo.png"
-  }
-];
-
-export default function Page() {
-  return (
-    <TokenList
-      tokens={tokens}
-      onTokenClick={(token) => console.log("Token clicked:", token)}
-      showPrice={true}
-      showChange={true}
-      showValue={true}
-    />
-  );
-}`}
-                      id="usage"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
