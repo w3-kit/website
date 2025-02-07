@@ -6,7 +6,11 @@ interface DocPage {
 
 const pages: DocPage[] = [
   // Components (in alphabetical order)
-
+  {
+    title: "Address Book",
+    href: "/docs/components/address-book",
+    section: "components",
+  },
   {
     title: "Bridge",
     href: "/docs/components/bridge",
@@ -20,6 +24,11 @@ const pages: DocPage[] = [
   {
     title: "Contract Interaction",
     href: "/docs/components/contract-interaction",
+    section: "components",
+  },
+  {
+    title: "ENS Resolver",
+    href: "/docs/components/ens-resolver",
     section: "components",
   },
   {
@@ -48,13 +57,13 @@ const pages: DocPage[] = [
     section: "components",
   },
   {
-    title: "Token List",
-    href: "/docs/components/token-list",
-    section: "components",
-  }, 
-  {
     title: "Token Card",
     href: "/docs/components/token-card",
+    section: "components",
+  },
+  {
+    title: "Token List",
+    href: "/docs/components/token-list",
     section: "components",
   },
   {
@@ -70,16 +79,6 @@ const pages: DocPage[] = [
   {
     title: "Wallet Balance",
     href: "/docs/components/wallet-balance",
-    section: "components",
-  },
-  {
-    title: "ENS Resolver",
-    href: "/docs/components/ens-resolver",
-    section: "components",
-  },
-  {
-    title: "Address Book",
-    href: "/docs/components/address-book",
     section: "components",
   },
 ];
