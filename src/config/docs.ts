@@ -86,6 +86,11 @@ const pages: DocPage[] = [
     href: "/docs/components/staking-interface",
     section: "components",
   },
+  {
+    title: "Asset Portfolio",
+    href: "/docs/components/asset-portfolio",
+    section: "components",
+  },
 ];
 
 
