@@ -1,9 +1,18 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Code, Palette, Zap, Box, Layers, Shield, Download, Star, Users } from 'lucide-react'
+import { SmartContractScanner } from '@/app/docs/components/smart-contract-scanner/component'
+import { AssetPortfolio } from '@/app/docs/components/asset-portfolio/component'
+import { TOKEN_CONFIGS } from '@/config/tokens'
+import { ContractInteraction } from '@/app/docs/components/contract-interaction/component'
+import { LiquidityPoolStats } from '@/app/docs/components/liquidity-pool-stats/component'
+import { NetworkSwitcher } from '@/app/docs/components/network-switcher/component'
+import { NFTCard } from '@/app/docs/components/nft-card/component'
+import { NETWORKS } from './docs/components/network-switcher/networks'
+import { TEST_NETWORKS } from './docs/components/network-switcher/networks'
 
 const stats = [
   { number: '2.5M', label: 'downloads / month' },
@@ -29,11 +38,201 @@ const features = [
   }
 ]
 
+const previewComponents = [
+  {
+    name: 'NFT Card',
+    description: 'Display NFTs with rich metadata and interactive features',
+    path: '/docs/components/nft-card',
+    preview: (
+      <NFTCard
+        nft={{
+          id: "2",
+          name: "Bored Ape #5678",
+          description: "A unique Bored Ape NFT",
+          image:
+            "https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ",
+          owner: "0x9876543210fedcba9876543210fedcba98765432",
+          collection: "Bored Ape Yacht Club",
+          tokenId: "5678",
+          contractAddress: "0x123456789abcdef123456789abcdef1234567890",
+          chainId: 1,
+          attributes: [
+            { trait_type: "Background", value: "Yellow" },
+            { trait_type: "Fur", value: "Brown" },
+            { trait_type: "Eyes", value: "Bored" },
+            { trait_type: "Clothes", value: "Suit" },
+          ]
+        }}
+        variant="default"
+      />
+    )
+  },
+  {
+    name: 'Smart Contract Scanner',
+    description: 'Analyze and verify smart contracts with comprehensive security checks',
+    path: '/docs/components/smart-contract-scanner',
+    preview: <SmartContractScanner variant="compact" />
+  },
+  {
+    name: 'Asset Portfolio',
+    description: 'Track and manage crypto assets with detailed portfolio analytics',
+    path: '/docs/components/asset-portfolio',
+    preview: (
+      <AssetPortfolio 
+        variant="compact"
+        assets={[
+          {
+            ...TOKEN_CONFIGS.ETH,
+            balance: '2.5',
+            price: 3500,
+            value: 8750,
+            change24h: 4.2,
+            color: '#627EEA'
+          },
+          {
+            ...TOKEN_CONFIGS.BTC,
+            balance: '0.15',
+            price: 45000,
+            value: 6750,
+            change24h: -2.1,
+            color: '#F7931A'
+          },
+          {
+            ...TOKEN_CONFIGS.USDC,
+            balance: '5000',
+            price: 1,
+            value: 5000,
+            change24h: 0.01,
+            color: '#2775CA'
+          },
+          {
+            ...TOKEN_CONFIGS.SOL,
+            balance: '45',
+            price: 110,
+            value: 4950,
+            change24h: 8.5,
+            color: '#00FFA3'
+          }
+        ]}
+        totalValue={15500}
+        totalChange24h={2.8}
+      />
+    )
+  },
+  {
+    name: 'Contract Interaction',
+    description: 'Interact with smart contracts through an intuitive interface',
+    path: '/docs/components/contract-interaction',
+    preview: <ContractInteraction />
+  },
+  {
+    name: 'Liquidity Pool Stats',
+    description: 'View detailed statistics and analytics for liquidity pools',
+    path: '/docs/components/liquidity-pool-stats',
+    preview: (
+      <LiquidityPoolStats
+        poolData={{
+          token0: {
+            symbol: 'ETH',
+            logoURI: '/tokens/eth.svg',
+            liquidity: 125.5
+          },
+          token1: {
+            symbol: 'USDC',
+            logoURI: '/tokens/usdc.svg',
+            liquidity: 250000
+          },
+          fee: 3000,
+          tvl: 500000,
+          tvlChange24h: 5.2,
+          volume24h: 1200000,
+          volumeChange24h: 12.5,
+          apr: 25.5,
+          feesEarned24h: 1200
+        }}
+      />
+    )
+  },
+  {
+    name: 'Network Switcher',
+    description: 'Switch between different blockchain networks seamlessly',
+    path: '/docs/components/network-switcher',
+    preview: <NetworkSwitcher 
+      networks={NETWORKS}
+      testNetworks={TEST_NETWORKS}
+      onSwitch={() => {}}
+        />
+  }
+]
+
+function PreviewCard({ component }: { component: typeof previewComponents[0] }) {
+  const [showPreview, setShowPreview] = useState(false)
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
+
+  const handleMouseEnter = () => {
+    const timeout = setTimeout(() => {
+      setShowPreview(true)
+    }, 200)
+    setHoverTimeout(timeout)
+  }
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+      setHoverTimeout(null)
+    }
+    setShowPreview(false)
+  }
+
+  return (
+    <div 
+      className="relative group"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Link
+        href={component.path}
+        className="block"
+      >
+        <div className="flex items-center justify-center h-32 w-48 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-700">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {component.name}
+          </span>
+        </div>
+      </Link>
+      
+      {/* Preview Popup */}
+      {showPreview && (
+        <div 
+          className="absolute z-40 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+          style={{
+            left: '50%',
+            transform: 'translateX(-50%)',
+            top: 'calc(100% + 0.5rem)'
+          }}
+        >
+          <div className="p-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+              {component.name}
+            </h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
+              {component.description}
+            </p>
+            <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 bg-gray-50 dark:bg-gray-950">
+              {component.preview}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen mx-auto bg-white dark:bg-gray-950">
       {/* Hero Section */}
-      <section className="relative px-6 pt-14 lg:px-8 overflow-hidden">
+      <section className="relative px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-28 sm:py-32">
           <div className="text-center">
             <div className="relative z-10">
@@ -63,18 +262,15 @@ export default function Home() {
         </div>
 
         {/* Component Preview Grid */}
-        <div className="relative">
+        <div className="relative z-10">
           <div className="absolute inset-0 flex items-center" aria-hidden="true">
             <div className="w-full border-t border-gray-200 dark:border-gray-800" />
           </div>
           <div className="relative flex justify-center">
-            <div className="grid grid-cols-3 gap-4 bg-white dark:bg-gray-950 px-4">
-              {['Token Swap', 'Smart Contract Scanner', 'Asset Portfolio'].map((name) => (
-                <div
-                  key={name}
-                  className="flex items-center justify-center h-32 w-48 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
-                >
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{name}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-white dark:bg-gray-950 px-4 py-8">
+              {previewComponents.map((component) => (
+                <div key={component.name} className="flex justify-center">
+                  <PreviewCard component={component} />
                 </div>
               ))}
             </div>
@@ -83,7 +279,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-24 sm:py-32">
+      {/* <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
             {stats.map((stat) => (
@@ -96,10 +292,10 @@ export default function Home() {
             ))}
           </dl>
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
-      <section className="py-24 sm:py-32 bg-gray-50 dark:bg-gray-900/50">
+      <section className="py-24 px-6 sm:py-32 bg-gray-50 dark:bg-gray-900/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
