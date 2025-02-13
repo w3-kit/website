@@ -5,8 +5,7 @@ interface Token {
 }
 
 export interface PoolData {
-  token0: Token;
-  token1: Token;
+  token: Token;
   fee: number;
   tvl: number;
   tvlChange24h: number;
@@ -17,7 +16,21 @@ export interface PoolData {
 }
 
 export interface LiquidityPoolStatsProps {
-  poolData: PoolData;
+  poolData: {
+    token: {
+      symbol: string;
+      logoURI: string;
+      liquidity: number;
+    };
+    fee: number;
+    tvl: number;
+    tvlChange24h: number;
+    volume24h: number;
+    volumeChange24h: number;
+    apr: number;
+    feesEarned24h: number;
+  };
   className?: string;
-  onTokenClick?: (pairId: string) => void;
+  onTokenClick?: (symbol: string) => void;
+  variant?: 'default' | 'compact';
 } 

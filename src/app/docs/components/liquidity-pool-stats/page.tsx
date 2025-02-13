@@ -8,21 +8,17 @@ import { PoolData } from "./types";
 
 export default function LiquidityPoolStatsPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
+  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
 
   // Mock data for preview
   const mockPool: PoolData = {
-    token0: {
-      symbol: "ETH",
-      logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
-      liquidity: 156.78,
-    },
-    token1: {
+    token: {
       symbol: "USDC",
       logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=025",
       liquidity: 285690.45,
     },
-    fee: 500, // 0.05%
+    fee: 500,
     tvl: 548000,
     tvlChange24h: 2.5,
     volume24h: 1250000,
@@ -32,80 +28,81 @@ export default function LiquidityPoolStatsPage() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
+    <div className="w-full max-w-3xl mx-auto px-4">
       <div className="space-y-6 py-4 sm:py-6">
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             Liquidity Pool Stats
           </h1>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-            A component for displaying detailed statistics and metrics for liquidity pools, including TVL, volume, APR, and token pair information.
+            A component for displaying detailed statistics and metrics for liquidity pools.
           </p>
+        </div>
+
+        {/* Variant Selector */}
+        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
+          {(['default', 'compact'] as const).map((variant) => (
+            <button
+              key={variant}
+              onClick={() => setSelectedVariant(variant)}
+              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                selectedVariant === variant
+                  ? "border-b-2 border-blue-500 text-blue-500"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              }`}
+            >
+              {variant.charAt(0).toUpperCase() + variant.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Preview/Code Section */}
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between overflow-x-auto">
-            <div className="flex items-center space-x-2 min-w-full sm:min-w-0">
-              <button
-                onClick={() => setActiveTab("preview")}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
-                  activeTab === "preview"
-                    ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                Preview
-              </button>
-              <button
-                onClick={() => setActiveTab("code")}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
-                  activeTab === "code"
-                    ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-              >
-                <Code className="mr-2 h-4 w-4" />
-                Code
-              </button>
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setActiveTab("preview")}
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
+                activeTab === "preview"
+                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              }`}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Preview
+            </button>
+            <button
+              onClick={() => setActiveTab("code")}
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
+                activeTab === "code"
+                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              }`}
+            >
+              <Code className="mr-2 h-4 w-4" />
+              Code
+            </button>
           </div>
 
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
-              <LiquidityPoolStats
-                poolData={mockPool}
-                onTokenClick={(pairId) => console.log("Token pair clicked:", pairId)}
-              />
+              <div className="p-4 bg-gray-50 dark:bg-gray-900">
+                <LiquidityPoolStats
+                  poolData={mockPool}
+                  variant={selectedVariant}
+                  onTokenClick={(pairId) => console.log("Token pair clicked:", pairId)}
+                />
+              </div>
             ) : (
               <CodeBlock
                 code={`import { LiquidityPoolStats } from "@w3-kit/liquidity-pool-stats";
 
-const poolData = {
-  token0: {
-    symbol: "ETH",
-    logoURI: "https://example.com/eth-logo.svg",
-    liquidity: 156.78
-  },
-  token1: {
-    symbol: "USDC",
-    logoURI: "https://example.com/usdc-logo.svg",
-    liquidity: 285690.45
-  },
-  fee: 500, // 0.05%
-  tvl: 548000,
-  tvlChange24h: 2.5,
-  volume24h: 1250000,
-  volumeChange24h: -1.2,
-  apr: 12.5,
-  feesEarned24h: 1890
-};
+const poolData = ${JSON.stringify(mockPool, null, 2)};
 
 export default function Pool() {
   return (
     <LiquidityPoolStats
       poolData={poolData}
+      variant="${selectedVariant}"
       onTokenClick={(pairId) => console.log("Token pair clicked:", pairId)}
     />
   );
@@ -169,6 +166,7 @@ export default function Pool() {
   return (
     <LiquidityPoolStats
       poolData={poolData}
+      variant="${selectedVariant}"
       onTokenClick={(pairId) => {
         console.log("Token pair clicked:", pairId);
       }}
