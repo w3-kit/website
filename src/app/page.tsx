@@ -166,29 +166,41 @@ const previewComponents = [
 ]
 
 function PreviewCard({ component }: { component: typeof previewComponents[0] }) {
-  const [showPreview, setShowPreview] = useState(false)
-  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [showPreview, setShowPreview] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // Smooth mouse following with requestAnimationFrame
+    requestAnimationFrame(() => {
+      setMousePosition({
+        x: e.clientX + 20,
+        y: e.clientY - 20  // Increased offset from cursor
+      });
+    });
+  };
 
   const handleMouseEnter = () => {
     const timeout = setTimeout(() => {
-      setShowPreview(true)
-    }, 200)
-    setHoverTimeout(timeout)
-  }
+      setShowPreview(true);
+    }, 150); // Slightly faster appearance
+    setHoverTimeout(timeout);
+  };
 
   const handleMouseLeave = () => {
     if (hoverTimeout) {
-      clearTimeout(hoverTimeout)
-      setHoverTimeout(null)
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
     }
-    setShowPreview(false)
-  }
+    setShowPreview(false);
+  };
 
   return (
     <div 
       className="relative group"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
     >
       <Link
         href={component.path}
@@ -202,28 +214,36 @@ function PreviewCard({ component }: { component: typeof previewComponents[0] }) 
       </Link>
       
       {/* Preview Popup */}
-      {showPreview && (
-        <div 
-          className="absolute z-40 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
-          style={{
-            left: '50%',
-            transform: 'translateX(-50%)',
-            top: 'calc(100% + 0.5rem)'
-          }}
-        >
-          <div className="p-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-              {component.name}
-            </h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
-              {component.description}
-            </p>
-            <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 bg-gray-50 dark:bg-gray-950">
-              {component.preview}
-            </div>
+      <div 
+        className={`fixed z-40 w-[90vw] sm:w-[400px] md:w-[480px] lg:w-[520px] bg-white dark:bg-gray-900 
+          rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden 
+          transition-all duration-200
+          ${showPreview 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-2 pointer-events-none'
+          }`}
+        style={{
+          left: `${mousePosition.x}px`,
+          top: `${mousePosition.y}px`,
+          transform: 'translate(-50%, -100%)',
+          pointerEvents: showPreview ? 'auto' : 'none',
+          transitionProperty: 'opacity, transform',
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          maxWidth: 'calc(100vw - 40px)',
+        }}
+      >
+        <div className="p-3 sm:p-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+            {component.name}
+          </h3>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+            {component.description}
+          </p>
+          <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 sm:p-4 bg-gray-50 dark:bg-gray-950">
+            {component.preview}
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
