@@ -68,6 +68,7 @@ export function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   // Preloaded popular components
   const popularComponents = [
@@ -243,86 +244,124 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center space-x-4">
-          {/* Search - Always visible */}
-          <div ref={searchRef} className="relative">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search components..."
-                className="w-64 pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 
-                  dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 
-                  focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-white 
-                  placeholder-gray-500 dark:placeholder-gray-400"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={(e) => {
-                  // Only hide if not clicking inside the results
-                  if (!e.relatedTarget?.closest('.search-results')) {
-                    setIsSearchFocused(false);
-                  }
-                }}
-              />
-            </div>
+          {/* Search - Hidden on mobile by default */}
+          <div className="md:relative">
+            {/* Search Icon for Mobile */}
+            <button 
+              className="md:hidden inline-flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              onClick={() => setIsSearchVisible(!isSearchVisible)}
+            >
+              <Search className="h-5 w-5" />
+            </button>
 
-            {/* Search Results or Popular Components */}
-            {(isSearchFocused || searchResults.length > 0) && (
-              <div className="search-results absolute right-0 mt-2 w-96 bg-white dark:bg-gray-900 
-                rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
-                {searchQuery.length > 0 ? (
-                  // Show search results
-                  <div className="max-h-96 overflow-auto">
-                    {searchResults.map((result) => (
-                      <Link
-                        key={result.href}
-                        href={result.href}
-                        onClick={() => {
-                          setSearchQuery('');
-                          setSearchResults([]);
-                          setIsSearchFocused(false);
-                        }}
-                        className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
-                      >
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {result.name}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {result.category}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  // Show popular components
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                      Popular Components
-                    </h3>
-                    <div className="space-y-2">
-                      {popularComponents.map((component) => (
+            {/* Search Input and Results */}
+            <div className={`
+              absolute md:relative top-0 left-0 right-0 md:right-auto
+              p-2 md:p-0
+              bg-white dark:bg-gray-950 md:bg-transparent
+              border-b border-gray-200 dark:border-gray-800 md:border-0
+              ${isSearchVisible ? 'flex' : 'hidden md:block'}
+            `}>
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search components..."
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 
+                    dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 
+                    focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-white 
+                    placeholder-gray-500 dark:placeholder-gray-400"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={(e) => {
+                    if (!e.relatedTarget?.closest('.search-results')) {
+                      setIsSearchFocused(false);
+                      // Only hide on mobile
+                      if (window.innerWidth < 768) {
+                        setIsSearchVisible(false);
+                      }
+                    }
+                  }}
+                />
+                
+                {/* Close button for mobile */}
+                <button 
+                  className="md:hidden absolute right-2 top-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  onClick={() => setIsSearchVisible(false)}
+                >
+                  <ChevronDown className="h-5 w-5 transform rotate-180" />
+                </button>
+              </div>
+
+              {/* Search Results or Popular Components */}
+              {(isSearchFocused || searchResults.length > 0) && (
+                <div className="search-results 
+                  absolute 
+                  left-2 right-2 md:left-auto md:right-0 
+                  mt-14 md:mt-2 
+                  w-auto md:w-96 
+                  bg-white dark:bg-gray-900 
+                  rounded-lg shadow-lg 
+                  border border-gray-200 dark:border-gray-700 
+                  p-4 z-50
+                  max-h-[80vh] md:max-h-96 overflow-auto"
+                >
+                  {searchQuery.length > 0 ? (
+                    // Show search results
+                    <div className="overflow-auto">
+                      {searchResults.map((result) => (
                         <Link
-                          key={component.href}
-                          href={component.href}
-                          onClick={() => setIsSearchFocused(false)}
-                          className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                          key={result.href}
+                          href={result.href}
+                          onClick={() => {
+                            setSearchQuery('');
+                            setSearchResults([]);
+                            setIsSearchFocused(false);
+                            setIsSearchVisible(false);
+                          }}
+                          className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
                         >
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {component.name}
+                            {result.name}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {component.description}
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {result.category}
                           </div>
                         </Link>
                       ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  ) : (
+                    // Show popular components
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                        Popular Components
+                      </h3>
+                      <div className="space-y-2">
+                        {popularComponents.map((component) => (
+                          <Link
+                            key={component.href}
+                            href={component.href}
+                            onClick={() => setIsSearchFocused(false)}
+                            className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                          >
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                              {component.name}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {component.description}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* GitHub and Theme Toggle buttons stay the same */}
+          {/* GitHub and Theme Toggle buttons */}
           <a
             href="https://github.com/w3-kit"
             target="_blank"
