@@ -305,33 +305,39 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative px-6 pt-14 lg:px-8">
         {/* Floating Components */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-2 overflow-hidden pointer-events-none">
           {/* Top Left */}
-          <div className="absolute left-24 top-32 transform -rotate-12 opacity-40 animate-float-slow">
+          <div className="absolute 
+            -left-20 xs:-left-16 sm:left-16 md:left-24 
+            -top-4 xs:top-0 sm:top-24 md:top-32 
+            transform -rotate-12 opacity-90 animate-float-slow"
+          >
             <NFTCard
               nft={{
                 id: "1",
                 name: "Floating NFT",
-                image:
-                  "https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ",
+                image: "https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ",
                 owner: "0x1234...",
                 tokenId: "1234",
                 contractAddress: "0x1234...",
                 chainId: 1,
               }}
               variant="expanded"
-              className="scale-[0.6] sm:scale-[0.8]"
+              className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>
 
           {/* Top Right */}
-          <div className="absolute right-8 top-28 transform rotate-12 opacity-40 animate-float-delayed">
+          <div className="absolute 
+            -right-20 xs:-right-16 sm:right-16 md:right-24
+            -top-4 xs:top-0 sm:top-24 md:top-32
+            transform rotate-12 opacity-90 animate-float-delayed"
+          >
             <LiquidityPoolStats
               poolData={{
                 token: {
                   symbol: "ETH",
-                  logoURI:
-                    "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
+                  logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
                   liquidity: 156.78,
                 },
                 fee: 500,
@@ -343,45 +349,55 @@ export default function Home() {
                 feesEarned24h: 1890,
               }}
               variant="compact"
-              className="scale-[0.6] sm:scale-[0.8]"
+              className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>
 
           {/* Center Right */}
-          <div className="absolute right-44 top-1/2 transform -translate-y-1/2 rotate-6 opacity-40 animate-float-reverse">
+          <div className="absolute 
+            -right-24 xs:-right-20 sm:right-16 md:right-32
+            top-1/2 transform -translate-y-1/2 rotate-6 
+            opacity-90 animate-float-reverse"
+          >
             <SmartContractScanner
               variant="compact"
-              className="scale-[0.5] sm:scale-[0.7]"
+              className="scale-[0.3] xs:scale-[0.35] sm:scale-[0.4] md:scale-[0.45] lg:scale-[0.55]"
             />
           </div>
 
           {/* Bottom Left */}
-          <div className="absolute left-24 bottom-32 transform -rotate-6 opacity-40 animate-float-reverse">
+          <div className="absolute 
+            -left-20 xs:-left-16 sm:left-16 md:left-24
+            -bottom-4 xs:bottom-0 sm:bottom-24 md:bottom-32
+            transform -rotate-6 opacity-90 animate-float-reverse"
+          >
             <NetworkSwitcher
               networks={[NETWORKS[0]]}
               testNetworks={[]}
               onSwitch={() => {}}
-              className="scale-[0.6] sm:scale-[0.8]"
+              className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>
 
           {/* Bottom Right */}
-          <div className="absolute right-24 bottom-28 transform rotate-6 opacity-40 animate-float">
+          <div className="absolute 
+            -right-20 xs:-right-16 sm:right-16 md:right-24
+            -bottom-4 xs:bottom-0 sm:bottom-24 md:bottom-32
+            transform rotate-6 opacity-90 animate-float"
+          >
             <AssetPortfolio
               variant="compact"
-              assets={[
-                {
-                  ...TOKEN_CONFIGS.ETH,
-                  balance: "2.5",
-                  price: 3500,
-                  value: 8750,
-                  change24h: 4.2,
-                  color: "#627EEA",
-                },
-              ]}
+              assets={[{
+                ...TOKEN_CONFIGS.ETH,
+                balance: "2.5",
+                price: 3500,
+                value: 8750,
+                change24h: 4.2,
+                color: "#627EEA",
+              }]}
               totalValue={8750}
               totalChange24h={4.2}
-              className="scale-[0.6] sm:scale-[0.8]"
+              className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>
 
@@ -432,12 +448,27 @@ export default function Home() {
             <div className="w-full border-t border-gray-200 dark:border-gray-800" />
           </div>
           <div className="relative flex justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-white dark:bg-gray-950 px-4 py-8">
-              {previewComponents.map((component) => (
-                <div key={component.name} className="flex justify-center">
-                  <PreviewCard component={component} />
-                </div>
-              ))}
+            <div className="w-full overflow-x-auto pb-6 hide-scrollbar">
+              <div className="inline-flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8 min-w-full md:min-w-0 
+                animate-scroll md:animate-none whitespace-nowrap md:whitespace-normal">
+                {previewComponents.map((component, index) => (
+                  <React.Fragment key={component.name}>
+                    <div className="flex justify-center shrink-0">
+                      <PreviewCard component={component} />
+                    </div>
+                    {/* Clone components for infinite scroll on mobile */}
+                    {index === previewComponents.length - 1 && (
+                      <div className="flex md:hidden">
+                        {previewComponents.map((c) => (
+                          <div key={`clone-${c.name}`} className="flex justify-center shrink-0">
+                            <PreviewCard component={c} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
           </div>
         </div>

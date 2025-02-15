@@ -32,14 +32,31 @@ module.exports = {
           '0%, 100%': { transform: 'translateY(0) rotate(12deg)' },
           '50%': { transform: 'translateY(-25px) rotate(12deg)' },
         },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        }
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'float-reverse': 'float-reverse 7s ease-in-out infinite',
         'float-slow': 'float-slow 8s ease-in-out infinite',
         'float-delayed': 'float-delayed 9s ease-in-out infinite',
+        'scroll': 'scroll 20s linear infinite',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.hide-scrollbar': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+        },
+      })
+    },
+  ],
 } 
