@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar } from "@/components/docs/sidebar";
 import { Breadcrumbs } from "@/components/docs/breadcrumbs";
 import { RightSidebar } from "@/components/docs/right-sidebar";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function DocsLayout({
   children,
@@ -13,28 +13,58 @@ export default function DocsLayout({
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Handle body scroll lock
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-white dark:bg-gray-950">
       {/* Mobile Menu Button */}
       <button
-        className="md:hidden fixed top-20 right-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-md shadow-lg"
+        className="md:hidden fixed top-20 right-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-md shadow-lg transition-colors"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+        ) : (
+          <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+        )}
       </button>
 
+      {/* Mobile Menu Backdrop */}
+      <div
+        className={`md:hidden fixed inset-0 bg-black transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-50 z-40" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="md:hidden fixed right-0 top-0 h-full w-[280px] bg-white dark:bg-gray-950 z-50 overflow-y-auto">
-            <div className="pt-20 px-4"></div>
+      <div
+        className={`md:hidden fixed right-0 top-0 h-screen w-[280px] bg-white dark:bg-gray-950 z-50 
+          flex flex-col transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        {/* Fixed Header */}
+        <div className="h-20 flex-shrink-0 border-b border-gray-200 dark:border-gray-800" />
+        
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto overscroll-y-contain">
+          <div className="h-full px-4 pb-20">
+            <Sidebar />
           </div>
-        </>
-      )}
+        </div>
+      </div>
 
       <div className="container mx-auto">
         <div className="flex relative">
