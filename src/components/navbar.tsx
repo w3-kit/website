@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Search, Github, Moon, Sun, ChevronDown, X } from "lucide-react";
+import { Search, Github, Moon, Sun, ChevronDown } from "lucide-react";
 import { useThemeContext } from "@/providers/ThemeProvider";
 import Image from "next/image";
 import { usePathname } from "next/navigation";

@@ -2,18 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
-  ArrowRight,
   Code,
   Palette,
-  Zap,
-  Box,
-  Layers,
-  Shield,
-  Download,
-  Star,
-  Users,
+  Zap
 } from "lucide-react";
 import { SmartContractScanner } from "@/app/docs/components/smart-contract-scanner/component";
 import { AssetPortfolio } from "@/app/docs/components/asset-portfolio/component";
@@ -25,11 +17,6 @@ import { NFTCard } from "@/app/docs/components/nft-card/component";
 import { NETWORKS } from "./docs/components/network-switcher/networks";
 import { TEST_NETWORKS } from "./docs/components/network-switcher/networks";
 
-const stats = [
-  { number: "2.5M", label: "downloads / month" },
-  { number: "38.5K", label: "github stars" },
-  { number: "8.9K", label: "discord members" },
-];
 
 const features = [
   {
@@ -473,22 +460,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Stats Section */}
-      {/* <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
-            {stats.map((stat) => (
-              <div key={stat.label} className="mx-auto flex max-w-xs flex-col gap-y-4">
-                <dt className="text-base leading-7 text-gray-600 dark:text-gray-400">{stat.label}</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                  {stat.number}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section> */}
 
       {/* Features Section */}
       <section className="py-24 px-6 sm:py-32 bg-gray-50 dark:bg-gray-900/50">
