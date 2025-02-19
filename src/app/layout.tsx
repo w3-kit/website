@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="light">
+    <html lang="en" suppressHydrationWarning className="light scroll-smooth">
       <head>
         <title>Web3 React Components | W3-Kit</title>
         <meta name="description" content="A comprehensive library of accessible React components for building high-quality Web3 applications and dApps" />
@@ -38,7 +38,9 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <Navbar />
-          {children}
+          <main className="min-h-screen">
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
         <GoogleAnalytics />

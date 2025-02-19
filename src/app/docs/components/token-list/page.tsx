@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { TokenList } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { TOKEN_CONFIGS, TokenSymbol } from '../../../../config/tokens';
+import { TOKEN_CONFIGS } from '../../../../config/tokens';
 
 export default function TokenListPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
