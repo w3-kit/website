@@ -1,58 +1,110 @@
-"use client"
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
-import { Search, Github, Moon, Sun, ChevronDown, X } from 'lucide-react'
-import { useThemeContext } from '@/providers/ThemeProvider'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { Search, Github, Moon, Sun, ChevronDown, X } from "lucide-react";
+import { useThemeContext } from "@/providers/ThemeProvider";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { getComponentList } from "@/config/docs";
 
-// Define menu structures
-const COMPONENTS_MENU = [
-  {
-    title: 'Data Display',
-    items: [
-      { name: 'NFT Card', href: '/docs/components/nft-card' },
-      { name: 'Token Card', href: '/docs/components/token-card' },
-      { name: 'Price Ticker', href: '/docs/components/price-ticker' },
-    ]
-  },
-  {
-    title: 'Inputs & Actions',
-    items: [
-      { name: 'Token Swap', href: '/docs/components/token-swap' },
-      { name: 'Bridge', href: '/docs/components/bridge' },
-      { name: 'Network Switcher', href: '/docs/components/network-switcher' },
-    ]
-  },
-  {
-    title: 'Analytics',
-    items: [
-      { name: 'Asset Portfolio', href: '/docs/components/asset-portfolio' },
-      { name: 'Liquidity Pool Stats', href: '/docs/components/liquidity-pool-stats' },
-      { name: 'Gas Calculator', href: '/docs/components/gas-calculator' },
-    ]
-  }
-]
+// Organize components into categories
+function getComponentsMenu() {
+  const components = getComponentList();
+
+  return [
+    {
+      title: "Data Display",
+      items: components
+        .filter((comp) =>
+          [
+            "NFT Card",
+            "Token Card",
+            "Price Ticker",
+            "NFT Collection Grid",
+            "Token List",
+            "Wallet Balance",
+          ].includes(comp.title)
+        )
+        .map((comp) => ({
+          name: comp.title,
+          href: comp.href,
+        })),
+    },
+    {
+      title: "Inputs & Actions",
+      items: components
+        .filter((comp) =>
+          [
+            "Token Swap",
+            "Bridge",
+            "Network Switcher",
+            "Connect Wallet",
+            "Contract Interaction",
+            "Address Book",
+          ].includes(comp.title)
+        )
+        .map((comp) => ({
+          name: comp.title,
+          href: comp.href,
+        })),
+    },
+    {
+      title: "Analytics",
+      items: components
+        .filter((comp) =>
+          [
+            "Asset Portfolio",
+            "Liquidity Pool Stats",
+            "Gas Calculator",
+            "Transaction History",
+            "Smart Contract Scanner",
+          ].includes(comp.title)
+        )
+        .map((comp) => ({
+          name: comp.title,
+          href: comp.href,
+        })),
+    },
+    {
+      title: "Advanced",
+      items: components
+        .filter((comp) =>
+          [
+            "Multisignature Wallets",
+            "ENS Resolver",
+            "Staking Interface",
+          ].includes(comp.title)
+        )
+        .map((comp) => ({
+          name: comp.title,
+          href: comp.href,
+        })),
+    },
+  ];
+}
+
+// Replace static COMPONENTS_MENU with dynamic function
+const COMPONENTS_MENU = getComponentsMenu();
 
 const DOCS_MENU = [
   {
-    title: 'Getting Started',
+    title: "Getting Started",
     items: [
-      { name: 'Installation', href: '/docs/installation' },
-      { name: 'Quick Start', href: '/docs/quick-start' },
-      { name: 'Customization', href: '/docs/customization' },
-    ]
+      { name: "Installation", href: "/docs/installation" },
+      { name: "Quick Start", href: "/docs/quick-start" },
+      { name: "Customization", href: "/docs/customization" },
+    ],
   },
   {
-    title: 'Core Concepts',
+    title: "Core Concepts",
     items: [
-      { name: 'Architecture', href: '/docs/architecture' },
-      { name: 'Theming', href: '/docs/theming' },
-      { name: 'Web3 Integration', href: '/docs/web3-integration' },
-    ]
-  }
-]
+      { name: "Architecture", href: "/docs/architecture" },
+      { name: "Theming", href: "/docs/theming" },
+      { name: "Web3 Integration", href: "/docs/web3-integration" },
+    ],
+  },
+];
 
 interface SearchResult {
   name: string;
@@ -61,120 +113,126 @@ interface SearchResult {
 }
 
 export function Navbar() {
-  const { theme, toggleTheme, mounted } = useThemeContext()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-  const [activeDropdown, setActiveDropdown] = useState<'docs' | 'components' | null>(null)
-  const searchRef = useRef<HTMLDivElement>(null)
-  const pathname = usePathname()
+  const { theme, toggleTheme, mounted } = useThemeContext();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [activeDropdown, setActiveDropdown] = useState<
+    "docs" | "components" | null
+  >(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   // Preloaded popular components
   const popularComponents = [
     {
-      name: 'NFT Card',
-      href: '/docs/components/nft-card',
-      category: 'Popular Components',
-      description: 'Display NFTs with rich metadata'
+      name: "NFT Card",
+      href: "/docs/components/nft-card",
+      category: "Popular Components",
+      description: "Display NFTs with rich metadata",
     },
     {
-      name: 'Token Swap',
-      href: '/docs/components/token-swap',
-      category: 'Popular Components',
-      description: 'Swap tokens with real-time pricing'
+      name: "Token Swap",
+      href: "/docs/components/token-swap",
+      category: "Popular Components",
+      description: "Swap tokens with real-time pricing",
     },
     {
-      name: 'Wallet Balance',
-      href: '/docs/components/wallet-balance',
-      category: 'Popular Components',
-      description: 'Show wallet assets and balances'
+      name: "Wallet Balance",
+      href: "/docs/components/wallet-balance",
+      category: "Popular Components",
+      description: "Show wallet assets and balances",
     },
     {
-      name: 'Price Ticker',
-      href: '/docs/components/price-ticker',
-      category: 'Popular Components',
-      description: 'Real-time crypto price updates'
-    }
+      name: "Price Ticker",
+      href: "/docs/components/price-ticker",
+      category: "Popular Components",
+      description: "Real-time crypto price updates",
+    },
   ];
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as Element).closest('.dropdown-container')) {
-        setActiveDropdown(null)
+      if (!(event.target as Element).closest(".dropdown-container")) {
+        setActiveDropdown(null);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Watch for pathname changes instead of router events
   useEffect(() => {
-    setSearchQuery('')
-    setSearchResults([])
-    setActiveDropdown(null)
-  }, [pathname])
+    setSearchQuery("");
+    setSearchResults([]);
+    setActiveDropdown(null);
+  }, [pathname]);
 
   // Search functionality
   useEffect(() => {
     if (searchQuery.length > 1) {
       // Combine all searchable items
       const allItems = [
-        ...COMPONENTS_MENU.flatMap(section => 
-          section.items.map(item => ({ ...item, category: section.title }))
+        ...COMPONENTS_MENU.flatMap((section) =>
+          section.items.map((item) => ({ ...item, category: section.title }))
         ),
-        ...DOCS_MENU.flatMap(section => 
-          section.items.map(item => ({ ...item, category: section.title }))
-        )
-      ]
+        ...DOCS_MENU.flatMap((section) =>
+          section.items.map((item) => ({ ...item, category: section.title }))
+        ),
+      ];
 
-      const filtered = allItems.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      setSearchResults(filtered)
+      const filtered = allItems.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(filtered);
     } else {
-      setSearchResults([])
+      setSearchResults([]);
     }
-  }, [searchQuery])
+  }, [searchQuery]);
 
   const handleMenuItemClick = () => {
     // Force close the dropdown by removing hover styles temporarily
-    const dropdowns = document.querySelectorAll('.dropdown-container');
-    dropdowns.forEach(dropdown => {
-      dropdown.classList.add('pointer-events-none');
+    const dropdowns = document.querySelectorAll(".dropdown-container");
+    dropdowns.forEach((dropdown) => {
+      dropdown.classList.add("pointer-events-none");
       setTimeout(() => {
-        dropdown.classList.remove('pointer-events-none');
+        dropdown.classList.remove("pointer-events-none");
       }, 100);
     });
   };
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-20">
         <div className="flex items-center space-x-8">
-          <Link href="/" className="font-semibold text-xl dark:text-white flex items-center gap-2">
+          <Link
+            href="/"
+            className="font-semibold text-xl dark:text-white flex items-center gap-2"
+          >
             <Image src="/w3-kit-logo.svg" alt="w3-kit" width={30} height={30} />
             w3-kit
           </Link>
-          
+
           <nav className="hidden md:flex items-center space-x-6">
             {/* Docs Dropdown */}
             <div className="relative dropdown-container group">
-              <button 
-                className="flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-              >
+              <button className="flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 <span>Docs</span>
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
-              
+
               <div className="absolute top-full left-0 mt-2 w-[300px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
                 <div className="px-4 pb-3 mb-2 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Documentation</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                    Documentation
+                  </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Learn how to integrate and customize W3-Kit components
                   </p>
@@ -201,16 +259,16 @@ export function Navbar() {
 
             {/* Components Dropdown */}
             <div className="relative dropdown-container group">
-              <button 
-                className="flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-              >
+              <button className="flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 <span>Components</span>
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
-              
+
               <div className="absolute top-full left-0 mt-2 w-[600px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
                 <div className="pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Components</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                    Components
+                  </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Explore our collection of Web3 UI components
                   </p>
@@ -236,10 +294,6 @@ export function Navbar() {
                 </div>
               </div>
             </div>
-
-            <Link href="/docs/examples" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              Examples
-            </Link>
           </nav>
         </div>
 
@@ -247,7 +301,7 @@ export function Navbar() {
           {/* Search - Hidden on mobile by default */}
           <div className="md:relative">
             {/* Search Icon for Mobile */}
-            <button 
+            <button
               className="md:hidden inline-flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               onClick={() => setIsSearchVisible(!isSearchVisible)}
             >
@@ -255,13 +309,15 @@ export function Navbar() {
             </button>
 
             {/* Search Input and Results */}
-            <div className={`
+            <div
+              className={`
               absolute md:relative top-0 left-0 right-0 md:right-auto
               p-2 md:p-0
               bg-white dark:bg-gray-950 md:bg-transparent
               border-b border-gray-200 dark:border-gray-800 md:border-0
-              ${isSearchVisible ? 'flex' : 'hidden md:block'}
-            `}>
+              ${isSearchVisible ? "flex" : "hidden md:block"}
+            `}
+            >
               <div className="relative w-full md:w-64">
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
                 <input
@@ -275,7 +331,7 @@ export function Navbar() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={(e) => {
-                    if (!e.relatedTarget?.closest('.search-results')) {
+                    if (!e.relatedTarget?.closest(".search-results")) {
                       setIsSearchFocused(false);
                       // Only hide on mobile
                       if (window.innerWidth < 768) {
@@ -284,9 +340,9 @@ export function Navbar() {
                     }
                   }}
                 />
-                
+
                 {/* Close button for mobile */}
-                <button 
+                <button
                   className="md:hidden absolute right-2 top-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => setIsSearchVisible(false)}
                 >
@@ -296,7 +352,8 @@ export function Navbar() {
 
               {/* Search Results or Popular Components */}
               {(isSearchFocused || searchResults.length > 0) && (
-                <div className="search-results 
+                <div
+                  className="search-results 
                   absolute 
                   left-2 right-2 md:left-auto md:right-0 
                   mt-14 md:mt-2 
@@ -315,7 +372,7 @@ export function Navbar() {
                           key={result.href}
                           href={result.href}
                           onClick={() => {
-                            setSearchQuery('');
+                            setSearchQuery("");
                             setSearchResults([]);
                             setIsSearchFocused(false);
                             setIsSearchVisible(false);
@@ -375,7 +432,7 @@ export function Navbar() {
             onClick={toggleTheme}
             className="inline-flex items-center justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
-            {theme === 'light' ? (
+            {theme === "light" ? (
               <Moon className="h-5 w-5" />
             ) : (
               <Sun className="h-5 w-5" />
@@ -385,5 +442,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
-} 
+  );
+}
