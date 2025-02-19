@@ -12,6 +12,11 @@ const pages: DocPage[] = [
     section: "components",
   },
   {
+    title: "Asset Portfolio",
+    href: "/docs/components/asset-portfolio",
+    section: "components",
+  },
+  {
     title: "Bridge",
     href: "/docs/components/bridge",
     section: "components",
@@ -37,6 +42,11 @@ const pages: DocPage[] = [
     section: "components",
   },
   {
+    title: "Liquidity Pool Stats",
+    href: "/docs/components/liquidity-pool-stats",
+    section: "components",
+  },
+  {
     title: "Multisignature Wallets",
     href: "/docs/components/multisig-wallet",
     section: "components",
@@ -52,8 +62,23 @@ const pages: DocPage[] = [
     section: "components",
   },
   {
+    title: "NFT Collection Grid",
+    href: "/docs/components/nft-collection-grid",
+    section: "components",
+  },
+  {
     title: "Price Ticker",
     href: "/docs/components/price-ticker",
+    section: "components",
+  },
+  {
+    title: "Smart Contract Scanner",
+    href: "/docs/components/smart-contract-scanner",
+    section: "components",
+  },
+  {
+    title: "Staking Interface",
+    href: "/docs/components/staking-interface",
     section: "components",
   },
   {
@@ -79,31 +104,6 @@ const pages: DocPage[] = [
   {
     title: "Wallet Balance",
     href: "/docs/components/wallet-balance",
-    section: "components",
-  },
-  {
-    title: "Staking Interface",
-    href: "/docs/components/staking-interface",
-    section: "components",
-  },
-  {
-    title: "Asset Portfolio",
-    href: "/docs/components/asset-portfolio",
-    section: "components",
-  },
-  {
-    title: "Smart Contract Scanner",
-    href: "/docs/components/smart-contract-scanner",
-    section: "components",
-  },
-  {
-    title: "NFT Collection Grid",
-    href: "/docs/components/nft-collection-grid",
-    section: "components",
-  },
-  {
-    title: "Liquidity Pool Stats",
-    href: "/docs/components/liquidity-pool-stats",
     section: "components",
   },
 ];
