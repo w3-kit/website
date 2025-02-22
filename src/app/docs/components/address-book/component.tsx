@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Trash2, Edit2, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Image as ImageIcon, AlertCircle, ChevronDown, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
 interface AddressEntry {
@@ -52,6 +52,9 @@ interface EditModalProps {
 const isValidEthereumAddress = (address: string): boolean => {
   return /^0x[a-fA-F0-9]{40}$/.test(address) || address.toLowerCase().endsWith('.eth');
 };
+
+// Add constant for max name length
+const MAX_NAME_LENGTH = 30;
 
 const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, onConfirm, name }) => {
   if (!isOpen) return null;
@@ -154,6 +157,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
   });
   const [addressError, setAddressError] = useState('');
   const [originalEntry, setOriginalEntry] = useState<NewEntry | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filteredEntries = entries.filter(entry => 
     entry.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -175,6 +179,9 @@ export const AddressBook: React.FC<AddressBookProps> = ({
 
   const handleSubmit = () => {
     if (!newEntry.name || !newEntry.address) return;
+    if (newEntry.name.length > MAX_NAME_LENGTH) {
+      return;
+    }
     
     // Validate address
     if (!isValidEthereumAddress(newEntry.address)) {
@@ -259,6 +266,32 @@ export const AddressBook: React.FC<AddressBookProps> = ({
     }
   };
 
+  // Update the name input to show character count and limit
+  const renderNameInput = () => (
+    <div className="space-y-1 flex-1">
+      <input
+        type="text"
+        value={newEntry.name}
+        onChange={(e) => {
+          const name = e.target.value.slice(0, MAX_NAME_LENGTH);
+          setNewEntry({ ...newEntry, name });
+        }}
+        placeholder="Name"
+        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg
+          bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+          placeholder-gray-500 dark:placeholder-gray-400
+          focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+      />
+      <div className="flex justify-end">
+        <span className={`text-xs ${
+          newEntry.name.length >= MAX_NAME_LENGTH ? 'text-red-500' : 'text-gray-400'
+        }`}>
+          {newEntry.name.length}/{MAX_NAME_LENGTH}
+        </span>
+      </div>
+    </div>
+  );
+
   // Update the form input for address
   const renderAddressInput = () => (
     <div className="space-y-1">
@@ -278,6 +311,10 @@ export const AddressBook: React.FC<AddressBookProps> = ({
       )}
     </div>
   );
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
 
   if (variant === 'compact') {
     return (
@@ -348,16 +385,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   </label>
                 )}
                 <div className="flex-1">
-                  <input
-                    type="text"
-                    value={newEntry.name}
-                    onChange={(e) => setNewEntry({ ...newEntry, name: e.target.value })}
-                    placeholder="Name"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      placeholder-gray-500 dark:placeholder-gray-400
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  />
+                  {renderNameInput()}
                 </div>
               </div>
 
@@ -398,47 +426,99 @@ export const AddressBook: React.FC<AddressBookProps> = ({
             {filteredEntries.slice(0, 5).map((entry, index) => (
               <div
                 key={entry.id}
-                className={`flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 
-                  rounded-lg transition-all group ${listItemAnimation}`}
+                className={`flex flex-col bg-white dark:bg-gray-800 rounded-lg transition-all ${listItemAnimation}`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="flex items-center space-x-3 min-w-0">
-                  {entry.avatar ? (
-                    <Image
-                      src={entry.avatar}
-                      alt={entry.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full object-cover w-8 h-8"
+                <div 
+                  className="flex items-center justify-between p-2 cursor-pointer hover:bg-gray-50 
+                    dark:hover:bg-gray-700/50 rounded-lg transition-all group"
+                  onClick={() => toggleExpand(entry.id)}
+                >
+                  <div className="flex items-center space-x-3 min-w-0">
+                    {entry.avatar ? (
+                      <Image
+                        src={entry.avatar}
+                        alt={entry.name}
+                        width={32}
+                        height={32}
+                        className="rounded-full object-cover w-8 h-8"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">{entry.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {entry.ensName || entry.address}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 ml-auto">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEdit(entry);
+                        }}
+                        className={`p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 
+                          dark:hover:text-white transition-colors rounded-full 
+                          hover:bg-gray-100 dark:hover:bg-gray-700 ${iconButtonAnimation}`}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(entry.id, entry.name);
+                        }}
+                        className={`p-1.5 text-red-500 hover:text-red-600 transition-colors 
+                          rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 ${deleteIconAnimation}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <ChevronDown 
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 
+                        ${expandedId === entry.id ? 'rotate-180' : ''}`}
                     />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700" />
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white truncate">{entry.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {entry.ensName || entry.address}
-                    </p>
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                  <button
-                    onClick={() => startEdit(entry)}
-                    className={`p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 
-                      dark:hover:text-white transition-colors rounded-full 
-                      hover:bg-gray-100 dark:hover:bg-gray-700 ${iconButtonAnimation}`}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(entry.id, entry.name)}
-                    className={`p-1 text-red-500 hover:text-red-600 transition-colors 
-                      rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 ${deleteIconAnimation}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+
+                {/* Expanded Details */}
+                {expandedId === entry.id && (
+                  <div className={`p-3 border-t border-gray-100 dark:border-gray-700 space-y-2 
+                    animate-in slide-in-from-top-2 duration-200`}>
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Address</label>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-sm text-gray-900 dark:text-white font-mono">{entry.address}</p>
+                        <a
+                          href={`https://etherscan.io/address/${entry.address}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`text-blue-500 hover:text-blue-600 ${iconButtonAnimation}`}
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {entry.ensName && (
+                      <div className="flex flex-col space-y-1">
+                        <label className="text-xs text-gray-500 dark:text-gray-400">ENS Name</label>
+                        <p className="text-sm text-gray-900 dark:text-white">{entry.ensName}</p>
+                      </div>
+                    )}
+
+                    {entry.notes && (
+                      <div className="flex flex-col space-y-1">
+                        <label className="text-xs text-gray-500 dark:text-gray-400">Notes</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{entry.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -527,16 +607,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   </label>
                 )}
                 <div className="flex-1">
-                  <input
-                    type="text"
-                    value={newEntry.name}
-                    onChange={(e) => setNewEntry({ ...newEntry, name: e.target.value })}
-                    placeholder="Name"
-                    className="w-full px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      placeholder-gray-500 dark:placeholder-gray-400
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  />
+                  {renderNameInput()}
                 </div>
               </div>
 
@@ -576,48 +647,94 @@ export const AddressBook: React.FC<AddressBookProps> = ({
           {filteredEntries.map((entry, index) => (
             <div
               key={entry.id}
-              className={`py-4 flex items-center justify-between ${listItemAnimation}`}
+              className={`py-4 flex flex-col ${listItemAnimation}`}
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="flex items-center space-x-4 min-w-0">
-                {entry.avatar ? (
-                  <Image
-                    src={entry.avatar}
-                    alt={entry.name}
-                    width={40}
-                    height={40}
-                    className="rounded-full object-cover w-10 h-10"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700" />
-                )}
-                <div className="min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-white">{entry.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                    {entry.ensName || entry.address}
-                  </p>
-                  {entry.notes && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{entry.notes}</p>
+              <div 
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => toggleExpand(entry.id)}
+              >
+                <div className="flex items-center space-x-4 min-w-0">
+                  {entry.avatar ? (
+                    <Image
+                      src={entry.avatar}
+                      alt={entry.name}
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover w-10 h-10"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700" />
                   )}
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900 dark:text-white">{entry.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                      {entry.ensName || entry.address}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 ml-auto">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(entry);
+                    }}
+                    className={`p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 
+                      dark:hover:text-white transition-colors rounded-full 
+                      hover:bg-gray-100 dark:hover:bg-gray-700 ${iconButtonAnimation}`}
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(entry.id, entry.name);
+                    }}
+                    className={`p-1.5 text-red-500 hover:text-red-600 transition-colors 
+                      rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 ${deleteIconAnimation}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-200 
+                      ${expandedId === entry.id ? 'rotate-180' : ''}`}
+                  />
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => startEdit(entry)}
-                  className={`p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 
-                    dark:hover:text-white transition-colors rounded-full 
-                    hover:bg-gray-100 dark:hover:bg-gray-700 ${iconButtonAnimation}`}
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(entry.id, entry.name)}
-                  className={`p-1 text-red-500 hover:text-red-600 transition-colors 
-                    rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 ${deleteIconAnimation}`}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
+
+              {/* Expanded Details */}
+              {expandedId === entry.id && (
+                <div className={`mt-4 pl-14 space-y-3 animate-in slide-in-from-top-2 duration-200`}>
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-sm text-gray-500 dark:text-gray-400">Address</label>
+                    <div className="flex items-center space-x-2">
+                      <p className="text-gray-900 dark:text-white font-mono">{entry.address}</p>
+                      <a
+                        href={`https://etherscan.io/address/${entry.address}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-blue-500 hover:text-blue-600 ${iconButtonAnimation}`}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {entry.ensName && (
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-sm text-gray-500 dark:text-gray-400">ENS Name</label>
+                      <p className="text-gray-900 dark:text-white">{entry.ensName}</p>
+                    </div>
+                  )}
+
+                  {entry.notes && (
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-sm text-gray-500 dark:text-gray-400">Notes</label>
+                      <p className="text-gray-600 dark:text-gray-300">{entry.notes}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
