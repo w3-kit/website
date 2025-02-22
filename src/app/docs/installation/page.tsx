@@ -1,5 +1,18 @@
+import { Metadata } from 'next';
 import React from 'react'
 
+export const metadata: Metadata = {
+  title: "Installation | W3-Kit",
+  description: "Learn how to install and set up W3-Kit in your Web3 application. Simple setup instructions for npm, yarn, and other package managers.",
+  authors: [{ name: "W3-Kit Team" }],
+  openGraph: {
+    title: "Installation | W3-Kit",
+    description: "Learn how to install and set up W3-Kit in your Web3 application.",
+    type: "website",
+    siteName: "W3-Kit",
+    locale: "en_US",
+  },
+};
 export default function InstallationPage() {
   return (
     <div className="max-w-3xl">
