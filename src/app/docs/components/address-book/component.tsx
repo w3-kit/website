@@ -131,6 +131,36 @@ const EditConfirmationModal: React.FC<EditModalProps> = ({ isOpen, onClose, onCo
   );
 };
 
+function useLoadingStates() {
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
+    add: false,
+    edit: false
+  });
+  const [successStates, setSuccessStates] = useState<Record<string, boolean>>({
+    add: false,
+    edit: false
+  });
+
+  const setLoading = (action: string, isLoading: boolean) => {
+    setLoadingStates(prev => ({
+      ...prev,
+      [action]: isLoading
+    }));
+  };
+
+  const setSuccess = (action: string, isSuccess: boolean) => {
+    setSuccessStates(prev => ({
+      ...prev,
+      [action]: isSuccess
+    }));
+  };
+
+  const isLoading = (action: string) => Boolean(loadingStates[action]);
+  const isSuccess = (action: string) => Boolean(successStates[action]);
+
+  return { setLoading, isLoading, setSuccess, isSuccess };
+}
+
 export const AddressBook: React.FC<AddressBookProps> = ({
   entries,
   onAdd,
@@ -160,6 +190,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
   const [addressError, setAddressError] = useState('');
   const [originalEntry, setOriginalEntry] = useState<NewEntry | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { setLoading, isLoading, setSuccess, isSuccess } = useLoadingStates();
 
   const filteredEntries = entries.filter(entry => 
     entry.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -179,28 +210,37 @@ export const AddressBook: React.FC<AddressBookProps> = ({
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!newEntry.name || !newEntry.address) return;
     if (newEntry.name.length > MAX_NAME_LENGTH) {
       return;
     }
     
-    // Validate address
     if (!isValidEthereumAddress(newEntry.address)) {
       setAddressError('Please enter a valid Ethereum address or ENS name');
       return;
     }
 
-    if (editingId) {
-      // Only show confirmation if changes were made
-      if (hasChanges()) {
-        setEditModal({ isOpen: true, entry: newEntry });
+    const action = editingId ? 'edit' : 'add';
+    setLoading(action, true);
+    try {
+      if (editingId) {
+        if (hasChanges()) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          setEditModal({ isOpen: true, entry: newEntry });
+        } else {
+          handleCancel();
+        }
       } else {
-        handleCancel(); // No changes, just close the form
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await onAdd?.(newEntry);
+        setSuccess(action, true);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        handleCancel();
       }
-    } else {
-      onAdd?.(newEntry);
-      handleCancel();
+    } finally {
+      setLoading(action, false);
+      setTimeout(() => setSuccess(action, false), 1000);
     }
   };
 
@@ -440,11 +480,40 @@ export const AddressBook: React.FC<AddressBookProps> = ({
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!newEntry.name || !newEntry.address}
+                disabled={!newEntry.name || !newEntry.address || isLoading('add') || isLoading('edit')}
                 className={`px-3 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 
-                  transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${textButtonAnimation}`}
+                  transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${textButtonAnimation}
+                  flex items-center justify-center min-w-[60px]`}
               >
-                {editingId ? 'Save' : 'Add'}
+                {(isLoading('add') || isLoading('edit')) ? (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle 
+                      className="opacity-25" 
+                      cx="12" 
+                      cy="12" 
+                      r="10" 
+                      stroke="currentColor" 
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path 
+                      className="opacity-75" 
+                      fill="currentColor" 
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                ) : (isSuccess('add') || isSuccess('edit')) ? (
+                  <svg className="h-4 w-4 animate-in zoom-in duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={3} 
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  <span>{editingId ? 'Save' : 'Add'}</span>
+                )}
               </button>
             </div>
           </div>
@@ -689,11 +758,39 @@ export const AddressBook: React.FC<AddressBookProps> = ({
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!newEntry.name || !newEntry.address}
+                disabled={!newEntry.name || !newEntry.address || isLoading('add') || isLoading('edit')}
                 className={`px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 
                   transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${textButtonAnimation}`}
               >
-                {editingId ? 'Save' : 'Add'}
+                {(isLoading('add') || isLoading('edit')) ? (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle 
+                      className="opacity-25" 
+                      cx="12" 
+                      cy="12" 
+                      r="10" 
+                      stroke="currentColor" 
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path 
+                      className="opacity-75" 
+                      fill="currentColor" 
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                ) : (isSuccess('add') || isSuccess('edit')) ? (
+                  <svg className="h-4 w-4 animate-in zoom-in duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={3} 
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  <span>{editingId ? 'Save' : 'Add'}</span>
+                )}
               </button>
             </div>
           </div>
