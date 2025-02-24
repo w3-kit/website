@@ -4,6 +4,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { ArrowUp, ArrowDown, ChevronDown, ExternalLink } from 'lucide-react';
 import { TOKEN_CONFIGS } from '@/config/tokens';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Animation constants
 const cardAnimation = "transition-all duration-300 ease-in-out";
@@ -113,7 +118,7 @@ const AssetItem: React.FC<{
               alt={token.symbol}
               width={32}
               height={32}
-              className="rounded-full relative z-10 p-1.5 transition-transform group-hover:scale-105"
+              className="rounded-full relative z-10 transition-transform group-hover:scale-105"
               priority
             />
             <div 
@@ -293,46 +298,80 @@ const TimeframeSelector: React.FC<{
   );
 };
 
-// Add this new component for the portfolio distribution chart
+// Update the PortfolioDistributionChart component
 const PortfolioDistributionChart: React.FC<{
   assets: Asset[];
   totalValue: number;
-}> = ({ assets, totalValue }) => {
-  // Calculate the cumulative percentages for the conic gradient
-  let cumulativePercentage = 0;
-  const segments = assets.map(asset => {
-    const percentage = (asset.value / totalValue) * 100;
-    const start = cumulativePercentage;
-    cumulativePercentage += percentage;
-    return {
-      color: asset.color,
-      start,
-      end: cumulativePercentage
-    };
-  });
+  selectedIndex: number | null;
+  hoveredIndex: number | null;
+}> = ({ assets, totalValue, selectedIndex, hoveredIndex }) => {
+  const activeIndex = selectedIndex ?? hoveredIndex;
+  const activeAsset = activeIndex !== null ? assets[activeIndex] : null;
 
-  // Create the conic gradient string
-  const conicGradient = segments
-    .map(segment => `${segment.color} ${segment.start}% ${segment.end}%`)
-    .join(', ');
+  const data = {
+    labels: assets.map(a => a.symbol),
+    datasets: [
+      {
+        data: assets.map(a => a.value),
+        backgroundColor: assets.map((a, i) => 
+          i === activeIndex ? a.color : `${a.color}80`
+        ),
+        borderColor: '#ffffff',
+        borderWidth: assets.map((_, i) => 
+          i === activeIndex ? 2 : 1
+        ),
+        hoverOffset: 15,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '70%',
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        enabled: false
+      }
+    }
+  };
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <div 
-        className="w-48 h-48 rounded-full"
-        style={{
-          background: `conic-gradient(${conicGradient})`
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-32 h-32 rounded-full bg-white dark:bg-gray-800" />
+      <div className="relative w-[280px] h-[280px]">
+        {/* Chart */}
+        <div className="absolute inset-0">
+          <Doughnut data={data} options={options} />
         </div>
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Value</div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white">
-            ${totalValue.toLocaleString()}
+        
+        {/* Center Content */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center bg-white dark:bg-gray-800 rounded-full p-4 w-36 h-36 flex items-center justify-center shadow-inner">
+            {activeAsset ? (
+              <div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  {activeAsset.symbol}
+                </div>
+                <div className="text-lg font-bold text-gray-900 dark:text-white">
+                  ${activeAsset.value.toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {((activeAsset.value / totalValue) * 100).toFixed(1)}%
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Total Value
+                </div>
+                <div className="text-lg font-bold text-gray-900 dark:text-white">
+                  ${totalValue.toLocaleString()}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -350,6 +389,8 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
 }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleExpand = (symbol: string) => {
     setExpandedAsset(expandedAsset === symbol ? null : symbol);
@@ -379,6 +420,8 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
     ],
   };
 
+  const activeIndex = selectedIndex ?? hoveredIndex;
+
   if (variant === 'compact') {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 ${className}`}>
@@ -405,14 +448,14 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                   hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="relative w-8 h-8">
+                  <div className="relative w-8 h-8 flex items-center justify-center">
                     <div className="absolute inset-0 rounded-full bg-gray-50 dark:bg-gray-700" />
                     <Image
                       src={TOKEN_CONFIGS[asset.symbol].logoURI}
                       alt={asset.symbol}
                       width={24}
                       height={24}
-                      className="rounded-full relative z-10 p-1"
+                      className="rounded-full relative z-10 transition-transform group-hover:scale-105"
                       priority
                     />
                   </div>
@@ -527,7 +570,6 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Portfolio Value</h2>
-          
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -535,33 +577,66 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {formatCurrency(totalValue)}
             </div>
-            <div className={`flex items-center text-sm font-medium ${
+            <div className={`flex items-center text-sm font-medium mb-4 ${
               totalChange24h >= 0 ? 'text-green-500' : 'text-red-500'
             }`}>
               {totalChange24h >= 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
               {formatPercent(totalChange24h)}
             </div>
-            
-            {/* Add distribution legend */}
-            <div className="mt-4 space-y-2">
-              {assets.map(asset => (
-                <div key={asset.symbol} className="flex items-center space-x-2">
-                  <div 
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: asset.color }}
-                  />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {asset.symbol} ({((asset.value / totalValue) * 100).toFixed(1)}%)
-                  </span>
-                </div>
+
+            {/* Single Column Interactive Legend */}
+            <div className="space-y-2">
+              {assets.map((asset, i) => (
+                <button
+                  key={asset.symbol}
+                  onClick={() => setSelectedIndex(selectedIndex === i ? null : i)}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-all
+                    ${i === activeIndex 
+                      ? 'bg-gray-100 dark:bg-gray-700 shadow-sm' 
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: asset.color }}
+                    />
+                    <span className={`text-sm ${
+                      i === activeIndex
+                        ? 'text-gray-900 dark:text-white font-medium'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}>
+                      {asset.symbol}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className={`text-sm ${
+                      i === activeIndex
+                        ? 'text-gray-900 dark:text-white font-medium'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      ${asset.value.toLocaleString()}
+                    </span>
+                    <span className={`text-xs ${
+                      i === activeIndex
+                        ? 'text-gray-700 dark:text-gray-300'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {((asset.value / totalValue) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </button>
               ))}
             </div>
           </div>
           
-          <div className="relative h-48">
+          <div className="relative flex items-center justify-center min-h-[320px]">
             <PortfolioDistributionChart
               assets={assets}
               totalValue={totalValue}
+              selectedIndex={selectedIndex}
+              hoveredIndex={hoveredIndex}
             />
           </div>
         </div>

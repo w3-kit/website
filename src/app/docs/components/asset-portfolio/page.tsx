@@ -48,7 +48,7 @@ export default function AssetPortfolioPage() {
   // Update mockAssets
   const mockAssets = [
     {
-      ...TOKEN_CONFIGS.ETH,
+      ...TOKEN_CONFIGS.ADA,
       balance: '2.5',
       price: 3500,
       value: 8750,
