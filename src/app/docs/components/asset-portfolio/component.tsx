@@ -494,38 +494,42 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                   ${expandedAsset === asset.symbol ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
                 <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700">
-                  {/* Price Chart */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        Price History
+                  {/* Price Chart - Only render if priceHistory exists */}
+                  {asset.priceHistory && (
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          Price History
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {(['24h', '7d', '30d'] as const).map((t) => (
+                            <button
+                              key={t}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedTimeframe(t);
+                              }}
+                              className={`px-2 py-1 text-xs font-medium rounded ${
+                                selectedTimeframe === t
+                                  ? 'bg-blue-500 text-white'
+                                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+                              }`}
+                            >
+                              {t.toUpperCase()}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        {(['24h', '7d', '30d'] as const).map((t) => (
-                          <button
-                            key={t}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedTimeframe(t);
-                            }}
-                            className={`px-2 py-1 text-xs font-medium rounded ${
-                              selectedTimeframe === t
-                                ? 'bg-blue-500 text-white'
-                                : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-                            }`}
-                          >
-                            {t.toUpperCase()}
-                          </button>
-                        ))}
+                      <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
+                        {asset.priceHistory[selectedTimeframe] && (
+                          <PriceChart
+                            data={asset.priceHistory[selectedTimeframe]}
+                            color={asset.color}
+                          />
+                        )}
                       </div>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
-                      <PriceChart
-                        data={asset.priceHistory[selectedTimeframe]}
-                        color={asset.color}
-                      />
-                    </div>
-                  </div>
+                  )}
 
                   {/* Token Stats */}
                   <div className="grid grid-cols-2 gap-2">

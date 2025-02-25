@@ -13,6 +13,26 @@ import { PreviewCard } from "@/components/PreviewCard";
 import { previewComponents } from "@/constants/preview-components";
 import { features } from "@/constants/home-page-features";
 
+// Helper function at the top of the file
+const mockAssetData = {
+  ...TOKEN_CONFIGS.ETH,
+  balance: "2.5",
+  price: 3500,
+  value: 8750,
+  change24h: 4.2,
+  color: "#627EEA",
+  priceHistory: {
+    '24h': Array.from({ length: 24 }, (_, i) => 3500 + Math.sin(i / 4) * 100),
+    '7d': Array.from({ length: 7 }, (_, i) => 3500 + Math.sin(i / 2) * 200),
+    '30d': Array.from({ length: 30 }, (_, i) => 3500 + Math.sin(i) * 300)
+  },
+  candleData: {
+    '24h': [],
+    '7d': [],
+    '30d': []
+  }
+};
+
 export default function Home() {
   const [copied, setCopied] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -125,16 +145,7 @@ export default function Home() {
           >
             <AssetPortfolio
               variant="compact"
-              assets={[
-                {
-                  ...TOKEN_CONFIGS.ETH,
-                  balance: "2.5",
-                  price: 3500,
-                  value: 8750,
-                  change24h: 4.2,
-                  color: "#627EEA",
-                },
-              ]}
+              assets={[mockAssetData]}
               totalValue={8750}
               totalChange24h={4.2}
               className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"

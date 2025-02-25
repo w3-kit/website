@@ -40,6 +40,14 @@ const generateCandleData = (basePrice: number, timeframe: '24h' | '7d' | '30d'):
   });
 };
 
+// Add these helper functions at the top
+const generatePriceHistory = (basePrice: number, volatility: number, length: number) => {
+  return Array.from({ length }, (_, i) => {
+    const change = Math.sin(i / (length / Math.PI)) * volatility;
+    return basePrice + change;
+  });
+};
+
 export default function AssetPortfolioPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
@@ -55,9 +63,9 @@ export default function AssetPortfolioPage() {
       change24h: 4.2,
       color: '#627EEA',
       priceHistory: {
-        '24h': Array.from({ length: 24 }, () => Math.random() * 100 + 3400),
-        '7d': Array.from({ length: 7 }, () => Math.random() * 200 + 3300),
-        '30d': Array.from({ length: 30 }, () => Math.random() * 300 + 3200)
+        '24h': generatePriceHistory(3500, 5, 24),
+        '7d': generatePriceHistory(3500, 10, 7),
+        '30d': generatePriceHistory(3500, 15, 30)
       },
       candleData: {
         '24h': generateCandleData(3500, '24h'),
@@ -73,9 +81,9 @@ export default function AssetPortfolioPage() {
       change24h: -2.1,
       color: '#F7931A',
       priceHistory: {
-        '24h': Array.from({ length: 24 }, () => Math.random() * 1000 + 44000),
-        '7d': Array.from({ length: 7 }, () => Math.random() * 2000 + 43000),
-        '30d': Array.from({ length: 30 }, () => Math.random() * 3000 + 42000)
+        '24h': generatePriceHistory(45000, 1000, 24),
+        '7d': generatePriceHistory(45000, 2000, 7),
+        '30d': generatePriceHistory(45000, 3000, 30)
       },
       candleData: {
         '24h': generateCandleData(45000, '24h'),
@@ -91,9 +99,9 @@ export default function AssetPortfolioPage() {
       change24h: 0.01,
       color: '#2775CA',
       priceHistory: {
-        '24h': Array.from({ length: 24 }, () => 1 + Math.random() * 0.001),
-        '7d': Array.from({ length: 7 }, () => 1 + Math.random() * 0.002),
-        '30d': Array.from({ length: 30 }, () => 1 + Math.random() * 0.003)
+        '24h': generatePriceHistory(1, 0.001, 24),
+        '7d': generatePriceHistory(1, 0.002, 7),
+        '30d': generatePriceHistory(1, 0.003, 30)
       },
       candleData: {
         '24h': generateCandleData(1, '24h'),
@@ -109,9 +117,9 @@ export default function AssetPortfolioPage() {
       change24h: 0.02,
       color: '#26A17B',
       priceHistory: {
-        '24h': Array.from({ length: 24 }, () => 1 + Math.random() * 0.001),
-        '7d': Array.from({ length: 7 }, () => 1 + Math.random() * 0.002),
-        '30d': Array.from({ length: 30 }, () => 1 + Math.random() * 0.003)
+        '24h': generatePriceHistory(1, 0.001, 24),
+        '7d': generatePriceHistory(1, 0.002, 7),
+        '30d': generatePriceHistory(1, 0.003, 30)
       },
       candleData: {
         '24h': generateCandleData(1, '24h'),
