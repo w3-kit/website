@@ -14,17 +14,23 @@ export default function LiquidityPoolStatsPage() {
   // Mock data for preview
   const mockPool: PoolData = {
     token: {
-      symbol: "USDC",
-      logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=025",
-      liquidity: 285690.45,
+      symbol: "ETH-USDC",
+      logoURI: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+      liquidity: 245678.34,
+      price: 2845.67,
+      marketCap: 345678901.23,
+      totalSupply: 120000000,
+      circulatingSupply: 118500000,
     },
-    fee: 500,
-    tvl: 548000,
-    tvlChange24h: 2.5,
-    volume24h: 1250000,
-    volumeChange24h: -1.2,
-    apr: 12.5,
-    feesEarned24h: 1890,
+    fee: 3000, // 0.3%
+    tvl: 456789123.45,
+    tvlChange24h: 5.67,
+    volume24h: 89012345.67,
+    volumeChange24h: -2.34,
+    apr: 12.34,
+    feesEarned24h: 23456.78,
+    uniqueHolders: 45678,
+    transactions24h: 3456,
   };
 
   return (
