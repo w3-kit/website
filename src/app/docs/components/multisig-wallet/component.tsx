@@ -14,6 +14,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
 }) => {
   const [isProposing, setIsProposing] = useState(false);
   const [activeTab, setActiveTab] = useState<'pending' | 'executed' | 'all'>('pending');
+  const [hoveredTx, setHoveredTx] = useState<string | null>(null);
   const [newTx, setNewTx] = useState({
     description: '',
     to: '',
@@ -38,7 +39,8 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm 
+      transition-all duration-300 hover:shadow-lg ${className}`}>
       {/* Header */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
@@ -46,14 +48,20 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Multi-Signature Wallet</h2>
             <div className="flex items-center mt-2 space-x-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">Address:</span>
-              <code className="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-900 dark:text-white">
+              <code className="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-900 dark:text-white
+                transition-colors duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer group">
                 {formatAddress(walletAddress)}
+                <span className="text-xs text-blue-500 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Copy
+                </span>
               </code>
             </div>
           </div>
           <div className="text-right">
             <div className="text-sm text-gray-500 dark:text-gray-400">Required Approvals</div>
-            <div className="text-2xl font-semibold text-gray-900 dark:text-white">{requiredApprovals}/{signers.length}</div>
+            <div className="text-2xl font-semibold text-gray-900 dark:text-white">
+              {requiredApprovals}/{signers.length}
+            </div>
           </div>
         </div>
       </div>
@@ -65,9 +73,12 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
           {signers.map((signer) => (
             <div
               key={signer.address}
-              className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700"
+              className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 
+                dark:border-gray-700 transition-all duration-200 hover:shadow-md hover:border-gray-300 
+                dark:hover:border-gray-600 group"
             >
-              <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center
+                transition-transform duration-200 group-hover:scale-110">
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {signer.name?.[0] || 'S'}
                 </span>
@@ -76,7 +87,8 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 {signer.name && (
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{signer.name}</p>
                 )}
-                <code className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <code className="text-xs text-gray-500 dark:text-gray-400 truncate group-hover:text-blue-500 
+                  transition-colors">
                   {formatAddress(signer.address)}
                 </code>
               </div>
@@ -88,15 +100,15 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
       {/* Transactions */}
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             {(['pending', 'executed', 'all'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1.5 text-sm transition-colors rounded
+                className={`px-3 py-1.5 text-sm font-medium rounded transition-all duration-200
                   ${activeTab === tab 
-                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -105,10 +117,12 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
           </div>
           <button
             onClick={() => setIsProposing(true)}
-            className="inline-flex items-center px-3 py-1.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded
-              hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-sm"
+            className="inline-flex items-center px-3 py-1.5 bg-gray-900 dark:bg-gray-100 text-white 
+              dark:text-gray-900 rounded hover:bg-gray-800 dark:hover:bg-gray-200 transition-all 
+              duration-200 text-sm hover:shadow-md active:scale-95"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             New Transaction
@@ -119,7 +133,10 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
           {filteredTransactions.map((tx) => (
             <div
               key={tx.id}
-              className="border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow bg-white dark:bg-gray-800"
+              onMouseEnter={() => setHoveredTx(tx.id)}
+              onMouseLeave={() => setHoveredTx(null)}
+              className={`border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200
+                ${hoveredTx === tx.id ? 'shadow-md border-gray-300 dark:border-gray-600' : 'hover:shadow-sm'}`}
             >
               <div className="p-4">
                 <div className="flex items-start justify-between mb-3">
@@ -186,11 +203,16 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
         </div>
       </div>
 
-      {/* New Transaction Modal */}
+      {/* Modal with backdrop blur and fade */}
       {isProposing && (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center 
+            justify-center z-50 animate-fade-in"
+          onClick={() => setIsProposing(false)}
+        >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-4 shadow-2xl animate-in fade-in duration-200"
+            className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-4 shadow-2xl 
+              animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b">
