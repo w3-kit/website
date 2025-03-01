@@ -18,6 +18,12 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
   const [expandedTx, setExpandedTx] = useState<string | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [newTransactions, setNewTransactions] = useState<Set<string>>(new Set());
+  const [formErrors, setFormErrors] = useState<{
+    description?: string;
+    to?: string;
+    value?: string;
+    data?: string;
+  }>({});
   const lastTransactionRef = useRef<HTMLDivElement>(null);
   const [newTx, setNewTx] = useState({
     description: '',
@@ -48,11 +54,90 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
     }
   }, [transactions]);
 
-  // Handle copy address
+  // Validate Ethereum address
+  const isValidAddress = (address: string) => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const errors: typeof formErrors = {};
+
+    if (!newTx.description.trim()) {
+      errors.description = 'Description is required';
+    }
+
+    if (!newTx.to) {
+      errors.to = 'Address is required';
+    } else if (!isValidAddress(newTx.to)) {
+      errors.to = 'Invalid Ethereum address';
+    }
+
+    if (!newTx.value) {
+      errors.value = 'Value is required';
+    } else if (isNaN(Number(newTx.value)) || Number(newTx.value) < 0) {
+      errors.value = 'Invalid value';
+    }
+
+    if (newTx.data && !/^0x[a-fA-F0-9]*$/.test(newTx.data)) {
+      errors.data = 'Invalid hex data';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handlePropose = () => {
+    try {
+      if (!validateForm()) {
+        return;
+      }
+
+      const newTxId = `tx-${Date.now()}`;
+      const transaction = {
+        ...newTx,
+        id: newTxId,
+        proposer: '',
+        approvals: 0,
+        status: 'pending' as const,
+        timestamp: Date.now(),
+        requiredApprovals,
+        signers: signers.map(s => ({ ...s, hasApproved: false }))
+      };
+
+      setNewTransactions(prev => new Set([...prev, newTxId]));
+      onPropose?.(transaction);
+      setIsProposing(false);
+      setNewTx({ description: '', to: '', value: '', data: '' });
+      setFormErrors({});
+
+      if (activeTab !== 'pending') {
+        setActiveTab('pending');
+      }
+
+      setTimeout(() => {
+        setNewTransactions(prev => {
+          const updated = new Set(prev);
+          updated.delete(newTxId);
+          return updated;
+        });
+      }, 1000);
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      // You could set a general error state here if needed
+    }
+  };
+
+  // Handle copy address with error handling
   const handleCopyAddress = async (address: string) => {
-    await navigator.clipboard.writeText(address);
-    setCopiedAddress(address);
-    setTimeout(() => setCopiedAddress(null), 2000);
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedAddress(address);
+      setTimeout(() => setCopiedAddress(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy address:', error);
+      // You could show a toast/notification here
+    }
   };
 
   // Scroll to new transaction
@@ -61,44 +146,6 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
       lastTransactionRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [transactions.length]);
-
-  const handlePropose = () => {
-    const newTxId = `tx-${Date.now()}`;
-    const transaction = {
-      ...newTx,
-      id: newTxId,
-      proposer: '',
-      approvals: 0,
-      status: 'pending' as const,
-      timestamp: Date.now(),
-      requiredApprovals,
-      signers: signers.map(s => ({ ...s, hasApproved: false }))
-    };
-
-    // Add to new transactions set for animation
-    setNewTransactions(prev => new Set([...prev, newTxId]));
-
-    // Call the onPropose callback with the new transaction
-    onPropose?.(transaction);
-
-    // Close modal and reset form
-    setIsProposing(false);
-    setNewTx({ description: '', to: '', value: '', data: '' });
-
-    // Switch to pending tab if not already there
-    if (activeTab !== 'pending') {
-      setActiveTab('pending');
-    }
-
-    // Remove animation class after animation completes
-    setTimeout(() => {
-      setNewTransactions(prev => {
-        const updated = new Set(prev);
-        updated.delete(newTxId);
-        return updated;
-      });
-    }, 1000);
-  };
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 
@@ -230,7 +277,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                       </svg>
                     </h4>
                     <div className="flex items-center mt-1 space-x-4">
-                      <div className="group relative">
+                      <div className="group">
                         <code 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -241,12 +288,6 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                         >
                           To: {formatAddress(tx.to)}
                         </code>
-                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 
-                          text-xs bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded 
-                          shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity 
-                          duration-200">
-                          Click to copy
-                        </span>
                       </div>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         Value: {formatEther(tx.value)} ETH
@@ -406,11 +447,18 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 <input
                   type="text"
                   value={newTx.description}
-                  onChange={(e) => setNewTx({ ...newTx, description: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border rounded-md 
-                    focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={(e) => {
+                    setNewTx({ ...newTx, description: e.target.value });
+                    setFormErrors(prev => ({ ...prev, description: undefined }));
+                  }}
+                  className={`w-full px-3 py-2 text-sm border rounded-md 
+                    focus:outline-none focus:ring-1 focus:ring-black
+                    ${formErrors.description ? 'border-red-500' : ''}`}
                   placeholder="Enter transaction description"
                 />
+                {formErrors.description && (
+                  <p className="text-xs text-red-500 mt-1">{formErrors.description}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -420,11 +468,18 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 <input
                   type="text"
                   value={newTx.to}
-                  onChange={(e) => setNewTx({ ...newTx, to: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border rounded-md font-mono
-                    focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={(e) => {
+                    setNewTx({ ...newTx, to: e.target.value });
+                    setFormErrors(prev => ({ ...prev, to: undefined }));
+                  }}
+                  className={`w-full px-3 py-2 text-sm border rounded-md font-mono
+                    focus:outline-none focus:ring-1 focus:ring-black
+                    ${formErrors.to ? 'border-red-500' : ''}`}
                   placeholder="0x..."
                 />
+                {formErrors.to && (
+                  <p className="text-xs text-red-500 mt-1">{formErrors.to}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -434,12 +489,20 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 <input
                   type="number"
                   value={newTx.value}
-                  onChange={(e) => setNewTx({ ...newTx, value: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={(e) => {
+                    setNewTx({ ...newTx, value: e.target.value });
+                    setFormErrors(prev => ({ ...prev, value: undefined }));
+                  }}
+                  className={`w-full px-3 py-2 text-sm border rounded-md
+                    focus:outline-none focus:ring-1 focus:ring-black
+                    ${formErrors.value ? 'border-red-500' : ''}`}
                   placeholder="0.0"
                   step="0.0001"
+                  min="0"
                 />
+                {formErrors.value && (
+                  <p className="text-xs text-red-500 mt-1">{formErrors.value}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -449,11 +512,18 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 <input
                   type="text"
                   value={newTx.data}
-                  onChange={(e) => setNewTx({ ...newTx, data: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border rounded-md font-mono
-                    focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={(e) => {
+                    setNewTx({ ...newTx, data: e.target.value });
+                    setFormErrors(prev => ({ ...prev, data: undefined }));
+                  }}
+                  className={`w-full px-3 py-2 text-sm border rounded-md font-mono
+                    focus:outline-none focus:ring-1 focus:ring-black
+                    ${formErrors.data ? 'border-red-500' : ''}`}
                   placeholder="0x"
                 />
+                {formErrors.data && (
+                  <p className="text-xs text-red-500 mt-1">{formErrors.data}</p>
+                )}
               </div>
             </div>
 
