@@ -23,6 +23,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
     to?: string;
     value?: string;
     data?: string;
+    submit?: string;
   }>({});
   const lastTransactionRef = useRef<HTMLDivElement>(null);
   const [newTx, setNewTx] = useState({
@@ -31,25 +32,28 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
     value: '',
     data: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isApproving, setIsApproving] = useState<string | null>(null);
+  const [isRejecting, setIsRejecting] = useState<string | null>(null);
 
-  const filteredTransactions = transactions
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .filter(tx => activeTab === 'all' || tx.status === activeTab);
+  // Add state to manage transactions locally
+  const [localTransactions, setLocalTransactions] = useState(transactions);
+
+  // Update transactions when prop changes
+  useEffect(() => {
+    setLocalTransactions(transactions);
+  }, [transactions]);
 
   // Track new transactions
   useEffect(() => {
     if (transactions.length > 0) {
       const latestTx = transactions[0];
       if (latestTx && !newTransactions.has(latestTx.id)) {
-        setNewTransactions(prev => new Set([...prev, latestTx.id]));
-        // Remove animation class after animation completes
-        setTimeout(() => {
-          setNewTransactions(prev => {
-            const updated = new Set(prev);
-            updated.delete(latestTx.id);
-            return updated;
-          });
-        }, 1000);
+        setNewTransactions(prev => {
+          const updated = new Set(prev);
+          updated.delete(latestTx.id);
+          return updated;
+        });
       }
     }
   }, [transactions]);
@@ -87,17 +91,19 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
     return Object.keys(errors).length === 0;
   };
 
-  const handlePropose = () => {
+  const handlePropose = async () => {
     try {
       if (!validateForm()) {
         return;
       }
 
+      setIsSubmitting(true);
+
       const newTxId = `tx-${Date.now()}`;
       const transaction = {
         ...newTx,
         id: newTxId,
-        proposer: '',
+        proposer: signers[0]?.address || '',
         approvals: 0,
         status: 'pending' as const,
         timestamp: Date.now(),
@@ -105,26 +111,25 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
         signers: signers.map(s => ({ ...s, hasApproved: false }))
       };
 
-      setNewTransactions(prev => new Set([...prev, newTxId]));
-      onPropose?.(transaction);
+      await onPropose?.(transaction);
       setIsProposing(false);
       setNewTx({ description: '', to: '', value: '', data: '' });
       setFormErrors({});
 
-      if (activeTab !== 'pending') {
+      // Only switch to pending if we're in executed tab
+      if (activeTab === 'executed') {
         setActiveTab('pending');
       }
+      // Stay in current tab otherwise (all or pending)
 
-      setTimeout(() => {
-        setNewTransactions(prev => {
-          const updated = new Set(prev);
-          updated.delete(newTxId);
-          return updated;
-        });
-      }, 1000);
     } catch (error) {
       console.error('Error creating transaction:', error);
-      // You could set a general error state here if needed
+      setFormErrors(prev => ({
+        ...prev,
+        submit: 'Failed to create transaction. Please try again.'
+      }));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -146,6 +151,100 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
       lastTransactionRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [transactions.length]);
+
+  // Add a function to check if transaction should be executed
+  const shouldExecuteTransaction = (tx: typeof transactions[0], newApprovals: number) => {
+    return newApprovals >= tx.requiredApprovals;
+  };
+
+  // Update the approve handler
+  const handleApprove = async (txId: string) => {
+    try {
+      setIsApproving(txId);
+      
+      const tx = localTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      // Check if current signer has already approved
+      const currentSigner = signers[0]?.address;
+      const hasAlreadyApproved = tx.signers.find(s => s.address === currentSigner)?.hasApproved;
+      
+      if (hasAlreadyApproved) {
+        return; // Already approved, do nothing
+      }
+
+      const updatedTransactions = localTransactions.map(tx => {
+        if (tx.id === txId) {
+          const newApprovals = tx.approvals + 1;
+          const newStatus = newApprovals >= tx.requiredApprovals ? 'executed' as const : 'pending' as const;
+          
+          return {
+            ...tx,
+            approvals: newApprovals,
+            status: newStatus,
+            signers: tx.signers.map(s => 
+              s.address === currentSigner ? { ...s, hasApproved: true } : s
+            )
+          };
+        }
+        return tx;
+      });
+
+      setLocalTransactions(updatedTransactions);
+      await onApprove?.(txId);
+      setExpandedTx(null); // Close the card
+    } catch (error) {
+      console.error('Error approving transaction:', error);
+    } finally {
+      setIsApproving(null);
+    }
+  };
+
+  // Update the reject handler
+  const handleReject = async (txId: string) => {
+    try {
+      setIsRejecting(txId);
+      
+      const tx = localTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      // Check if current signer has already rejected
+      const currentSigner = signers[0]?.address;
+      const hasAlreadyRejected = tx.status === 'rejected';
+      
+      if (hasAlreadyRejected) {
+        return; // Already rejected, do nothing
+      }
+
+      const updatedTransactions = localTransactions.map(tx => {
+        if (tx.id === txId) {
+          return {
+            ...tx,
+            status: 'rejected' as const,
+            approvals: 0, // Reset approvals
+            signers: tx.signers.map(s => ({ 
+              ...s, 
+              hasApproved: false // Set all signers to not approved
+            }))
+          };
+        }
+        return tx;
+      });
+
+      setLocalTransactions(updatedTransactions);
+      await onReject?.(txId);
+      setExpandedTx(null);
+    } catch (error) {
+      console.error('Error rejecting transaction:', error);
+    } finally {
+      setIsRejecting(null);
+    }
+  };
+
+  // Update the filtered transactions to use local state
+  const filteredTransactions = localTransactions
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .filter(tx => activeTab === 'all' || tx.status === activeTab);
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 
@@ -185,33 +284,43 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
 
       {/* Signers */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Signers</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Signers</h3>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {signers.length} signer{signers.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {signers.map((signer) => (
             <div
               key={signer.address}
-              className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded 
+              className="flex items-center space-x-3 bg-white dark:bg-gray-800 p-3 rounded-lg 
                 border border-gray-200 dark:border-gray-700 transition-all duration-200 
-                hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 group 
-                cursor-pointer"
-              onClick={() => handleCopyAddress(signer.address)}
+                hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 group"
             >
-              <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center 
-                justify-center transition-transform duration-200 group-hover:scale-110">
+              <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center 
+                justify-center transition-transform duration-200 group-hover:scale-110 flex-shrink-0">
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {signer.name?.[0] || 'S'}
                 </span>
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 {signer.name && (
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {signer.name}
                   </p>
                 )}
-                <code className="text-xs text-gray-500 dark:text-gray-400 truncate 
-                  group-hover:text-blue-500 transition-colors">
-                  {formatAddress(signer.address)}
-                </code>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs text-gray-500 dark:text-gray-400 truncate 
+                    group-hover:text-blue-500 transition-colors cursor-pointer"
+                    onClick={() => handleCopyAddress(signer.address)}
+                  >
+                    {formatAddress(signer.address)}
+                  </code>
+                  {copiedAddress === signer.address && (
+                    <span className="text-xs text-green-500">Copied!</span>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -250,23 +359,26 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[600px] overflow-y-auto scrollbar-thin 
+          scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 
+          scrollbar-track-transparent">
           {filteredTransactions.map((tx, index) => (
             <div
               key={tx.id}
               ref={index === 0 ? lastTransactionRef : null}
-              className={`group border border-gray-200 dark:border-gray-700 rounded-lg bg-white 
-                dark:bg-gray-800 overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 
-                hover:shadow-md ${newTransactions.has(tx.id) ? 'animate-slide-up' : ''}`}
+              className={`group border border-gray-200 dark:border-gray-700 rounded-lg 
+                bg-white dark:bg-gray-800 overflow-hidden transition-all duration-300 
+                hover:-translate-y-0.5 hover:shadow-md 
+                ${newTransactions.has(tx.id) ? 'animate-slide-up' : ''}`}
               onClick={() => setExpandedTx(expandedTx === tx.id ? null : tx.id)}
             >
               <div className="p-4 cursor-pointer">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-900 dark:text-white flex items-center">
-                      {tx.description}
+                      <span className="truncate">{tx.description}</span>
                       <svg 
-                        className={`w-4 h-4 ml-2 transition-transform duration-200 
+                        className={`w-4 h-4 ml-2 flex-shrink-0 transition-transform duration-200 
                           ${expandedTx === tx.id ? 'rotate-180' : ''}`} 
                         fill="none" 
                         viewBox="0 0 24 24" 
@@ -276,7 +388,8 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                           d="M19 9l-7 7-7-7" />
                       </svg>
                     </h4>
-                    <div className="flex items-center mt-1 space-x-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center mt-1 space-y-2 
+                      sm:space-y-0 sm:space-x-4">
                       <div className="group">
                         <code 
                           onClick={(e) => {
@@ -284,29 +397,32 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             handleCopyAddress(tx.to);
                           }}
                           className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer 
-                            hover:text-blue-500 transition-colors"
+                            hover:text-blue-500 transition-colors truncate block"
                         >
                           To: {formatAddress(tx.to)}
                         </code>
                       </div>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Value: {formatEther(tx.value)} ETH
+                        Value: {Number(tx.value).toLocaleString()} ETH
                       </span>
                     </div>
                   </div>
-                  <span className={`px-2 py-1 text-xs rounded-full
-                    ${tx.status === 'executed' 
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                      : tx.status === 'rejected'
-                      ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
-                  >
-                    {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 text-xs rounded-full whitespace-nowrap
+                      ${tx.status === 'executed' 
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                        : tx.status === 'rejected'
+                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                    >
+                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 mb-3 overflow-hidden">
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 mb-3 
+                  overflow-hidden">
                   <div
                     className="bg-gray-900 dark:bg-gray-100 h-1.5 rounded-full transition-all 
                       duration-700 ease-out"
@@ -314,12 +430,84 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <div>
-                    {tx.approvals} of {tx.requiredApprovals} approvals
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between 
+                  text-sm text-gray-500 dark:text-gray-400 gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      {tx.signers.filter(s => s.hasApproved).map((signer, idx) => (
+                        <div
+                          key={signer.address}
+                          className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 
+                            flex items-center justify-center ring-2 ring-white dark:ring-gray-800"
+                          title={signer.name || formatAddress(signer.address)}
+                        >
+                          <span className="text-xs font-medium">
+                            {signer.name?.[0] || 'S'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <span>{tx.approvals} of {tx.requiredApprovals} approvals</span>
                   </div>
-                  <div>
-                    Proposed {formatTimestamp(tx.timestamp)}
+                  <div className="flex items-center gap-3">
+                    <span className="text-right">
+                      Proposed {formatTimestamp(tx.timestamp)}
+                    </span>
+                    {tx.status === 'pending' && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleApprove(tx.id);
+                          }}
+                          disabled={
+                            isApproving === tx.id || 
+                            isRejecting === tx.id || 
+                            tx.signers.find(s => s.address === signers[0]?.address)?.hasApproved ||
+                            tx.status as string !== 'pending'
+                          }
+                          className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                            transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Approve"
+                        >
+                          {isApproving === tx.id ? (
+                            <div className="w-4 h-4 border-2 border-green-500 
+                              border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" 
+                              stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleReject(tx.id);
+                          }}
+                          disabled={
+                            isApproving === tx.id || 
+                            isRejecting === tx.id || 
+                            tx.status !== 'pending'
+                          }
+                          className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                            transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Reject"
+                        >
+                          {isRejecting === tx.id ? (
+                            <div className="w-4 h-4 border-2 border-red-500 
+                              border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" 
+                              stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -354,51 +542,60 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                                 </svg>
                               )}
                             </div>
-                            <span className="text-gray-900 dark:text-white">
-                              {signer.name || formatAddress(signer.address)}
+                            <span className={`text-sm transition-colors duration-200
+                              ${tx.status === 'rejected'
+                                ? 'text-red-700 dark:text-red-400'
+                                : signer.hasApproved 
+                                  ? 'text-green-700 dark:text-green-400' 
+                                  : 'text-gray-500 dark:text-gray-400'}`}
+                            >
+                              {tx.status === 'rejected' 
+                                ? 'Rejected' 
+                                : signer.hasApproved 
+                                  ? 'Approved' 
+                                  : 'Pending'}
                             </span>
                           </div>
-                          <span className={`text-sm transition-colors duration-200
-                            ${signer.hasApproved 
-                              ? 'text-green-700 dark:text-green-400' 
-                              : 'text-gray-500 dark:text-gray-400'}`}
-                          >
-                            {signer.hasApproved ? 'Approved' : 'Pending'}
-                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {tx.status === 'pending' && (
-                    <div className="mt-4 flex space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onApprove?.(tx.id);
-                        }}
-                        className="flex-1 px-3 py-1.5 bg-gray-900 dark:bg-gray-100 text-white 
-                          dark:text-gray-900 rounded text-sm hover:bg-gray-800 dark:hover:bg-gray-200 
-                          transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed 
-                          transform hover:scale-[1.02] active:scale-[0.98]"
-                        disabled={tx.signers.find(s => s.address === '')?.hasApproved}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onReject?.(tx.id);
-                        }}
-                        className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-gray-700 
-                          rounded text-sm text-gray-900 dark:text-white hover:bg-gray-50 
-                          dark:hover:bg-gray-700 transition-all duration-200 transform 
-                          hover:scale-[1.02] active:scale-[0.98]"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-4 flex space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApprove(tx.id);
+                      }}
+                      disabled={
+                        isApproving === tx.id || 
+                        isRejecting === tx.id || 
+                        tx.signers.find(s => s.address === signers[0]?.address)?.hasApproved ||
+                        !['pending'].includes(tx.status)
+                      }
+                      className="flex-1 px-3 py-1.5 bg-gray-900 dark:bg-gray-100 text-white 
+                        dark:text-gray-900 rounded text-sm hover:bg-gray-800 dark:hover:bg-gray-200 
+                        transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isApproving === tx.id ? 'Approving...' : 'Approve'}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleReject(tx.id);
+                      }}
+                      disabled={
+                        isApproving === tx.id || 
+                        isRejecting === tx.id || 
+                        tx.status !== 'pending'
+                      }
+                      className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-gray-700 
+                        rounded text-sm text-gray-900 dark:text-white hover:bg-gray-50 
+                        dark:hover:bg-gray-700 transition-all duration-200"
+                    >
+                      {isRejecting === tx.id ? 'Rejecting...' : 'Reject'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -527,18 +724,29 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
               </div>
             </div>
 
-            <div className="p-6 border-t bg-gray-50 flex space-x-3">
+            <div className="p-6 border-t bg-gray-50 dark:bg-gray-800/50 flex space-x-3">
               <button
                 onClick={handlePropose}
-                className="flex-1 px-4 py-2 bg-black text-white rounded-md text-sm
-                  hover:bg-gray-800 transition-colors"
+                disabled={isSubmitting}
+                className="flex-1 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white 
+                  dark:text-gray-900 rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-white
+                  transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+                  transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
               >
-                Confirm
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white dark:border-gray-900 
+                    border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Confirm'
+                )}
               </button>
               <button
                 onClick={() => setIsProposing(false)}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-md text-sm
-                  hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+                className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 
+                  rounded-lg text-sm text-gray-900 dark:text-white hover:bg-gray-50 
+                  dark:hover:bg-gray-700 transition-all duration-200 transform 
+                  hover:scale-[1.02] active:scale-[0.98]"
               >
                 Cancel
               </button>
