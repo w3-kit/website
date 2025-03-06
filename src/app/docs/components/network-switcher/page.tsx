@@ -4,13 +4,44 @@ import React, { useState } from "react";
 import { NetworkSwitcher } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { NETWORKS, TEST_NETWORKS } from './networks';
+import { NETWORKS } from './networks';
+
+// Import or define the test networks data
+const TEST_NETWORKS = [
+  {
+    name: 'Mumbai',
+    chainId: 80001,
+    symbol: 'MATIC',
+    currency: 'MATIC',
+    rpcUrl: 'https://rpc-mumbai.maticvigil.com',
+    blockExplorer: 'https://mumbai.polygonscan.com',
+    logoURI: 'https://cryptologos.cc/logos/polygon-matic-logo.png'
+  },
+  {
+    name: 'BSC Testnet',
+    chainId: 97,
+    symbol: 'BNB',
+    currency: 'BNB',
+    rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+    blockExplorer: 'https://testnet.bscscan.com',
+    logoURI: 'https://cryptologos.cc/logos/bnb-bnb-logo.png'
+  },
+  {
+    name: 'Arbitrum Goerli',
+    chainId: 421613,
+    symbol: 'ETH',
+    currency: 'ETH',
+    rpcUrl: 'https://goerli-rollup.arbitrum.io/rpc',
+    blockExplorer: 'https://goerli.arbiscan.io',
+    logoURI: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png'
+  }
+];
 
 export default function NetworkSwitcherPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
 
-  // Mock data for preview
+  // Update the mockData object
   const mockData = {
     networks: NETWORKS,
     testNetworks: TEST_NETWORKS,
