@@ -75,17 +75,20 @@ export default function NFTCardPage() {
 
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
-              mockData.map((nft) => (
-                <NFTCard
-                  key={nft.id}
-                  nft={nft}
-                  variant="expanded"
-                  onOwnerClick={(owner) =>
-                    console.log("Owner clicked:", owner)
-                  }
-                  onNFTClick={(nft) => console.log("NFT clicked:", nft)}
-                />
-              ))
+              <div className="w-full max-w-md mx-auto">
+                {mockData.map((nft) => (
+                  <NFTCard
+                    key={nft.id}
+                    nft={nft}
+                    variant="expanded"
+                    onOwnerClick={(owner) =>
+                      console.log("Owner clicked:", owner)
+                    }
+                    onNFTClick={(nft) => console.log("NFT clicked:", nft)}
+                    className="transform scale-90"
+                  />
+                ))}
+              </div>
             ) : (
               <CodeBlock
                 code={`// Component code will be here`}
