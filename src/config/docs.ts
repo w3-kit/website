@@ -99,6 +99,13 @@ const pages: DocPage[] = [
     description: "Stake and manage token staking positions with rewards tracking",
   },
   {
+    title: "Token Airdrop",
+    href: "/docs/components/token-airdrop",
+    section: "components",
+    description: "Manage and distribute token airdrops with merkle proof verification",
+    isNew: true,
+  },
+  {
     title: "Token Card",
     href: "/docs/components/token-card",
     section: "components",
