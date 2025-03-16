@@ -5,7 +5,18 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getComponentList } from '@/config/docs'
 
-const sidebarItems = [
+interface SidebarItem {
+  title: string;
+  href: string;
+  isNew?: boolean;
+}
+
+interface SidebarSection {
+  section: string;
+  items: SidebarItem[];
+}
+
+const sidebarItems: SidebarSection[] = [
   {
     section: 'Getting Started',
     items: [
@@ -18,6 +29,7 @@ const sidebarItems = [
     items: getComponentList().map(component => ({
       title: component.title,
       href: component.href,
+      isNew: component.isNew,
     }))
   }
 ]
@@ -49,13 +61,18 @@ export function Sidebar() {
                       <Link
                         href={item.href}
                         onClick={handleLinkClick}
-                        className={`block text-sm transition-colors ${
+                        className={`group flex items-center justify-between text-sm transition-colors ${
                           isActive 
                             ? "text-blue-600 dark:text-blue-400 font-medium"
                             : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                         }`}
                       >
-                        {item.title}
+                        <span>{item.title}</span>
+                        {item.isNew && (
+                          <span className="ml-2 inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+                            NEW
+                          </span>
+                        )}
                       </Link>
                     </li>
                   )

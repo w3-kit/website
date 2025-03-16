@@ -3,6 +3,7 @@ interface DocPage {
   href: string;
   section: "getting-started" | "components" | "examples";
   description?: string;
+  isNew?: boolean;
 }
 
 const pages: DocPage[] = [
@@ -114,6 +115,13 @@ const pages: DocPage[] = [
     href: "/docs/components/token-swap",
     section: "components",
     description: "Token swap interface with multiple DEX support and best rates",
+  },
+  {
+    title: "Token Vesting",
+    href: "/docs/components/token-vesting",
+    section: "components",
+    description: "Track and manage token vesting schedules with detailed progress visualization",
+    isNew: true,
   },
   {
     title: "Transaction History",
