@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowUpDown, Check, Loader2, Info } from "lucide-react";
+import Image from "next/image";
 
 export interface Network {
   id: number;
@@ -169,9 +170,11 @@ export function BridgeWidget({ className = "" }: BridgeProps) {
                     : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                   }`}
               >
-                <img
+                <Image
                   src={network.icon}
                   alt={network.name}
+                  width={32}
+                  height={32}
                   className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8"
                 />
                 <span className="text-xs sm:text-sm font-medium">
@@ -224,9 +227,11 @@ export function BridgeWidget({ className = "" }: BridgeProps) {
                     : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                   }`}
               >
-                <img
+                <Image
                   src={network.icon}
                   alt={network.name}
+                  width={32}
+                  height={32}
                   className="w-6 h-6 sm:w-8 sm:h-8"
                 />
                 <span className="text-xs sm:text-sm font-medium">
@@ -254,9 +259,11 @@ export function BridgeWidget({ className = "" }: BridgeProps) {
                     : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                   }`}
               >
-                <img
+                <Image
                   src={token.icon}
                   alt={token.symbol}
+                  width={32}
+                  height={32}
                   className="w-6 h-6 sm:w-8 sm:h-8"
                 />
                 <div className="text-center">

@@ -49,14 +49,10 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
     if (transactions.length > 0) {
       const latestTx = transactions[0];
       if (latestTx && !newTransactions.has(latestTx.id)) {
-        setNewTransactions(prev => {
-          const updated = new Set(prev);
-          updated.delete(latestTx.id);
-          return updated;
-        });
+        setNewTransactions(prev => new Set([...prev, latestTx.id]));
       }
     }
-  }, [transactions, newTransactions]);
+  }, [transactions]);
 
   // Validate Ethereum address
   const isValidAddress = (address: string) => {

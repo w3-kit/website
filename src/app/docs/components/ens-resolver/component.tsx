@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, ArrowRight, Copy, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 
 interface ENSResolverProps {
   onResolve?: (result: {
@@ -143,11 +144,11 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
     setCopied(null);
   };
 
-  if (variant === 'compact') {
-    useEffect(() => {
-      resetState();
-    }, [variant]);
+  useEffect(() => {
+    resetState();
+  }, [variant]);
 
+  if (variant === 'compact') {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 sm:p-4 w-full ${className}`}>
         <div className="relative" ref={inputRef}>
@@ -216,11 +217,15 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
                     transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg
                     flex items-center space-x-2 text-sm"
                 >
-                  <img 
-                    src={search.result.avatar} 
-                    alt="Avatar"
-                    className="w-5 h-5 rounded-full"
-                  />
+                  {search.result.avatar && (
+                    <Image 
+                      src={search.result.avatar} 
+                      alt="Avatar"
+                      width={20}
+                      height={20}
+                      className="w-5 h-5 rounded-full"
+                    />
+                  )}
                   <span className="text-gray-900 dark:text-white">
                     {search.query}
                   </span>
@@ -242,9 +247,11 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {result.avatar && (
-                  <img 
-                    src={result.avatar} 
+                  <Image 
+                    src={result.avatar as string} 
                     alt="Avatar"
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-700"
                   />
                 )}
@@ -300,10 +307,6 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
     );
   }
 
-  useEffect(() => {
-    resetState();
-  }, [variant]);
-
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full ${className}`}>
       <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -357,11 +360,15 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
                     transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg
                     flex items-center space-x-2"
                 >
-                  <img 
-                    src={search.result.avatar} 
-                    alt="Avatar"
-                    className="w-6 h-6 rounded-full"
-                  />
+                  {search.result.avatar && (
+                    <Image 
+                      src={search.result.avatar} 
+                      alt="Avatar"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6 rounded-full"
+                    />
+                  )}
                   <span className="text-sm text-gray-900 dark:text-white">
                     {search.query}
                   </span>
@@ -402,9 +409,11 @@ export const ENSResolver: React.FC<ENSResolverProps> = ({
           <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4 animate-slideIn">
             {result.avatar && (
               <div className="flex justify-center">
-                <img 
-                  src={result.avatar} 
+                <Image 
+                  src={result.avatar as string} 
                   alt="ENS Avatar" 
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full ring-4 ring-white dark:ring-gray-700"
                 />
               </div>

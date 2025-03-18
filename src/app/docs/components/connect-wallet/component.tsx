@@ -3,15 +3,21 @@ import { MetaMaskInpageProvider } from '@metamask/providers';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import Image from 'next/image';
 
+interface CoinbaseWalletProvider {
+  request: (args: { method: string }) => Promise<string[]>;
+}
+
+interface SolanaProvider {
+  connect(): Promise<{ publicKey: { toString(): string } }>;
+}
+
 declare global {
   interface Window {
     ethereum?: MetaMaskInpageProvider;
-    coinbaseWalletExtension?: any;
-    solana?: any;
+    coinbaseWalletExtension?: CoinbaseWalletProvider;
+    solana?: SolanaProvider;
     phantom?: {
-      solana?: {
-        connect(): Promise<{ publicKey: { toString(): string } }>;
-      };
+      solana?: SolanaProvider;
     };
   }
 }
@@ -136,7 +142,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
       }
 
       // Check if the provider is actually MetaMask
-      // @ts-ignore - ethereum.isMetaMask exists but isn't in the type definitions
+     
       if (!window.ethereum.isMetaMask) {
         throw new Error('Please switch to MetaMask');
       }
