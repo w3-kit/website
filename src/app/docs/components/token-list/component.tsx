@@ -1,7 +1,19 @@
 import React, { useState, useMemo, useCallback, memo } from "react";
+import Image from "next/image";
 import { TokenListProps, SortField, SortDirection } from "./types";
 import { formatBalance, formatCurrency } from "./utils";
 import { TOKEN_CONFIGS } from "../../../../config/tokens";
+
+interface Token {
+  name: string;
+  symbol: string;
+  logoURI?: string;
+  balance?: string;
+  price?: number;
+  decimals: number;
+  chainId: number;
+  address: string;
+}
 
 // Memoized token image component with fallback
 const TokenImage = memo(({ logoURI, symbol, size = "md" }: { logoURI?: string; symbol: string; size?: "sm" | "md" | "lg" }) => {
@@ -25,13 +37,14 @@ const TokenImage = memo(({ logoURI, symbol, size = "md" }: { logoURI?: string; s
   
   return (
     <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 relative`}>
-      <img
+      <Image
         src={logoURI}
         alt={symbol}
+        width={32}
+        height={32}
         className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onError={() => setHasError(true)}
         onLoad={() => setIsLoaded(true)}
-        loading="lazy"
       />
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 animate-pulse">
@@ -41,6 +54,7 @@ const TokenImage = memo(({ logoURI, symbol, size = "md" }: { logoURI?: string; s
     </div>
   );
 });
+TokenImage.displayName = "TokenImage";
 
 // Memoized token card for grid view
 const TokenGridCard = memo(({ 
@@ -50,10 +64,10 @@ const TokenGridCard = memo(({
   showBalances, 
   showPrices 
 }: { 
-  token: any; 
-  isSelected: boolean; 
-  onSelect: () => void; 
-  showBalances: boolean; 
+  token: Token;
+  isSelected: boolean;
+  onSelect: () => void;
+  showBalances: boolean;
   showPrices: boolean;
 }) => {
   return (
@@ -89,7 +103,7 @@ const TokenGridCard = memo(({
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500 dark:text-gray-400">Balance:</span>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2 truncate">
-              {formatBalance(token.balance, token.decimals)}
+              {formatBalance(token.balance || "0", token.decimals)}
             </p>
           </div>
         )}
@@ -117,6 +131,7 @@ const TokenGridCard = memo(({
     </div>
   );
 });
+TokenGridCard.displayName = "TokenGridCard";
 
 // Memoized token row for list view
 const TokenListRow = memo(({ 
@@ -126,10 +141,10 @@ const TokenListRow = memo(({
   showBalances, 
   showPrices 
 }: { 
-  token: any; 
-  isSelected: boolean; 
-  onSelect: () => void; 
-  showBalances: boolean; 
+  token: Token;
+  isSelected: boolean;
+  onSelect: () => void;
+  showBalances: boolean;
   showPrices: boolean;
 }) => {
   return (
@@ -164,7 +179,7 @@ const TokenListRow = memo(({
           <div className="flex flex-col items-end">
             <span className="text-xs text-gray-500 dark:text-gray-400">Balance</span>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
-              {formatBalance(token.balance, token.decimals)}
+              {formatBalance(token.balance || "0", token.decimals)}
             </span>
           </div>
         )}
@@ -183,6 +198,7 @@ const TokenListRow = memo(({
     </div>
   );
 });
+TokenListRow.displayName = "TokenListRow";
 
 export const TokenList: React.FC<TokenListProps> = ({
   tokens,
@@ -431,7 +447,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                       </td>
                       {showBalances && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900 dark:text-white">
-                          {formatBalance(token.balance, token.decimals)}
+                          {formatBalance(token.balance || "0", token.decimals)}
                         </td>
                       )}
                       {showPrices && (

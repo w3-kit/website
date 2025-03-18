@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import Image from 'next/image';
 
 export interface AirdropInfo {
   id: string;
@@ -130,10 +131,12 @@ export function TokenAirdrop({ airdrops, onClaim }: TokenAirdropProps) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               {airdrop.logoURI && (
-                <img
+                <Image
                   src={airdrop.logoURI}
                   alt={airdrop.tokenSymbol}
-                  className="w-8 h-8 rounded-full bg-white dark:bg-gray-700"
+                  width={32}
+                  height={32}
+                  className="rounded-full bg-white dark:bg-gray-700"
                 />
               )}
               <div>

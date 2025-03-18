@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { Token } from '../token-list/types';
 import { formatBalance, formatCurrency } from '../token-list/utils';
 import { 
-  TrendingUp, TrendingDown, ArrowRight, ExternalLink, Wallet, DollarSign, 
-  Star, StarOff, Share2, Info, BarChart2, Clock, AlertCircle, ChevronDown, ChevronUp,
+  TrendingUp, TrendingDown, ArrowRight, Wallet, DollarSign, 
+  Star, StarOff, Share2, Info, BarChart2, Clock, ChevronDown, ChevronUp,
   MoreVertical, Copy, Check, Zap
 } from 'lucide-react';
 
@@ -83,13 +83,6 @@ export const TokenCard: React.FC<TokenCardProps> = ({
     );
   };
 
-  // Helper function to format large numbers
-  const formatLargeNumber = (num: number): string => {
-    if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
-    if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-    if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
-    return num.toString();
-  };
 
   // Helper function to format date
   const formatDate = (dateString: string): string => {
