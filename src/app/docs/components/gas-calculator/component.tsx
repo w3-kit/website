@@ -15,7 +15,6 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedSpeed, setSelectedSpeed] = useState<'low' | 'medium' | 'high'>('medium');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showGasInfo, setShowGasInfo] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<keyof typeof gasPresets>('Transfer');
 
   const updateGasPrice = useCallback(async (showRefreshAnimation = true) => {
@@ -85,13 +84,7 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
     }
   };
 
-  const commonGasLimits = {
-    'ETH Transfer': 21000,
-    'ERC20 Transfer': 65000,
-    'NFT Mint': 150000,
-    'Swap': 200000,
-    'Contract Deploy': 1000000
-  };
+
 
   const gasPresets = {
     'Transfer': {
@@ -183,7 +176,7 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
               value={gasLimit}
               onChange={(e) => {
                 setGasLimit(Number(e.target.value));
-                setSelectedPreset(null as any);
+                setSelectedPreset('' as keyof typeof gasPresets);
               }}
               className="w-full px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 
                 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white

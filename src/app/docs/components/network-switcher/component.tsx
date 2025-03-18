@@ -12,9 +12,9 @@ export const NetworkSwitcher: React.FC<NetworkSwitcherProps> = ({
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [networkStatus, setNetworkStatus] = useState<'connected' | 'connecting' | 'error'>('connected');
-  const [gasPrice, setGasPrice] = useState<string>('');
-  const [latency, setLatency] = useState<number>(0);
+  const networkStatus: 'connected' | 'connecting' | 'error' = 'connected';
+  const gasPrice = '';
+  const latency = 0;
 
   const currentNetworks = showTestnets ? testNetworks : networks;
   

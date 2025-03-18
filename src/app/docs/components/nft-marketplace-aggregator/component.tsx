@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { AlertTriangle, Shield, ShieldCheck, ShieldAlert, ExternalLink, Info, Search, TrendingUp, Clock, Tag, ArrowUpDown, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertTriangle, Shield, ShieldCheck, ShieldAlert, ExternalLink, Search, TrendingUp, Clock, Tag, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import Image from 'next/image';
 
 export enum RiskLevel {
   LOW = 'LOW',
@@ -403,7 +404,6 @@ export function NFTMarketplaceAggregator({ onSearch }: NFTMarketplaceAggregatorP
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedMarketplaces, setSelectedMarketplaces] = useState<string[]>([]);
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   // Update the useEffect for search
   useEffect(() => {
@@ -644,8 +644,7 @@ export function NFTMarketplaceAggregator({ onSearch }: NFTMarketplaceAggregatorP
             <div
               key={`${listing.id}-${listing.marketplace}`}
               className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 
-                       dark:border-gray-700 transition-all duration-200 
-                       ${expandedCard === listing.id ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}
+                       dark:border-gray-700 transition-all duration-200 hover:shadow-md`}
             >
               <div className="p-4">
                 <div className="flex items-start space-x-4">
@@ -670,9 +669,11 @@ export function NFTMarketplaceAggregator({ onSearch }: NFTMarketplaceAggregatorP
                       </div>
                       <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 
                                     px-3 py-1 rounded-full">
-                        <img
+                        <Image
                           src={listing.marketplaceIcon}
                           alt={listing.marketplace}
+                          width={16}
+                          height={16}
                           className="w-4 h-4"
                         />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -732,7 +733,7 @@ export function NFTMarketplaceAggregator({ onSearch }: NFTMarketplaceAggregatorP
                      border-gray-200 dark:border-gray-700">
           <div className="space-y-3">
             <p className="text-gray-500 dark:text-gray-400 text-lg">
-              No listings found for "{query}"
+              No listings found for &quot;{query}&quot;
             </p>
             <p className="text-sm text-gray-400 dark:text-gray-500">
               Try adjusting your search or filters

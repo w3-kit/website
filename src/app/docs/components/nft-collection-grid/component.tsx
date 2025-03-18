@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { NFTCard } from '../nft-card/component';
 import { NFTCollectionGridProps } from './types';
 
@@ -311,7 +311,7 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
           </svg>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No NFTs Found</h3>
           <p className="text-gray-500 dark:text-gray-400 max-w-md">
-            We couldn't find any NFTs matching your search criteria. Try adjusting your filters or search term.
+            We couldn&apos;t find any NFTs matching your search criteria. Try adjusting your filters or search term.
           </p>
           <button
             onClick={handleResetFilters}
