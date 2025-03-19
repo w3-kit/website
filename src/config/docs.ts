@@ -45,6 +45,13 @@ const pages: DocPage[] = [
     description: "Resolve and manage ENS names and domains with reverse lookup",
   },
   {
+    title: "Flash Loan Executor",
+    href: "/docs/components/flash-loan-executor",
+    section: "components",
+    description: "Execute flash loans across multiple protocols with profit calculation and risk assessment",
+    isNew: true,
+  },
+  {
     title: "Gas Calculator",
     href: "/docs/components/gas-calculator",
     section: "components",
