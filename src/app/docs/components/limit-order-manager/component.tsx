@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, Check, Trash2 } from "lucide-react";
 import Image from "next/image";
 
 export interface OrderData {
@@ -25,38 +25,115 @@ interface LimitOrderManagerProps {
 }
 
 export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
-  orders,
+  orders: initialOrders,
   onOrderCreate,
   onOrderCancel,
   className = "",
 }) => {
+  const [orders, setOrders] = useState<OrderData[]>(initialOrders);
   const [showCreateOrder, setShowCreateOrder] = useState(false);
   const [orderType, setOrderType] = useState<"limit" | "stop-loss">("limit");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
   const [expiry, setExpiry] = useState("");
+  const [errors, setErrors] = useState<{
+    amount?: string;
+    price?: string;
+    expiry?: string;
+  }>({});
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleCreateOrder = () => {
-    if (!amount || !price) return;
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
     
-    onOrderCreate?.({
-      type: orderType,
-      token: {
-        symbol: "ETH",
-        logoURI: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
-        price: 2845.67,
-      },
-      amount,
-      price,
-      status: "active",
-      expiry: expiry ? Date.now() + parseInt(expiry) * 24 * 60 * 60 * 1000 : undefined,
-    });
+    if (!amount || parseFloat(amount) <= 0) {
+      newErrors.amount = "Amount must be greater than 0";
+    }
+    
+    if (!price || parseFloat(price) <= 0) {
+      newErrors.price = "Price must be greater than 0";
+    }
+    
+    if (expiry && (parseInt(expiry) <= 0 || parseInt(expiry) > 30)) {
+      newErrors.expiry = "Expiry must be between 1 and 30 days";
+    }
 
-    // Reset form
-    setAmount("");
-    setPrice("");
-    setExpiry("");
-    setShowCreateOrder(false);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCreateOrder = async () => {
+    if (!validateForm()) return;
+    
+    setIsCreating(true);
+    try {
+      const newOrder: OrderData = {
+        id: Date.now().toString(),
+        type: orderType,
+        token: {
+          symbol: "ETH",
+          logoURI: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+          price: 2845.67,
+        },
+        amount,
+        price,
+        status: "active",
+        timestamp: Date.now(),
+        expiry: expiry ? Date.now() + parseInt(expiry) * 24 * 60 * 60 * 1000 : undefined,
+      };
+
+      setOrders(prev => [...prev, newOrder]);
+      await onOrderCreate?.({
+        type: orderType,
+        token: newOrder.token,
+        amount,
+        price,
+        status: "active",
+        expiry: newOrder.expiry,
+      });
+
+      // Show loading for 1 second before success
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success animation
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        // Reset form and close modal
+        setAmount("");
+        setPrice("");
+        setExpiry("");
+        setErrors({});
+        setShowCreateOrder(false);
+      }, 1500);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCancelClick = (orderId: string) => {
+    setOrderToCancel(orderId);
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (orderToCancel) {
+      setOrders(prev => prev.map(order => 
+        order.id === orderToCancel 
+          ? { ...order, status: "cancelled" }
+          : order
+      ));
+      onOrderCancel?.(orderToCancel);
+      setShowCancelModal(false);
+      setOrderToCancel(null);
+    }
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    setOrders(prev => prev.filter(order => order.id !== orderId));
   };
 
   const getStatusColor = (status: OrderData["status"]) => {
@@ -82,12 +159,19 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
         </button>
       </div>
 
-      {showCreateOrder && (
-        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      {/* Create Order Form with Transitions */}
+      <div
+        className={`transition-all duration-300 ease-in-out ${
+          showCreateOrder
+            ? "opacity-100 max-h-[1000px] mb-6"
+            : "opacity-0 max-h-0 overflow-hidden"
+        }`}
+      >
+        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="flex space-x-2 mb-4">
             <button
               onClick={() => setOrderType("limit")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-lg transition-colors ${
                 orderType === "limit"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
@@ -97,7 +181,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
             </button>
             <button
               onClick={() => setOrderType("stop-loss")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-lg transition-colors ${
                 orderType === "stop-loss"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
@@ -116,9 +200,14 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
+                  errors.amount ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                }`}
                 placeholder="0.0"
               />
+              {errors.amount && (
+                <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+              )}
             </div>
 
             <div>
@@ -129,9 +218,14 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
+                  errors.price ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                }`}
                 placeholder="0.0"
               />
+              {errors.price && (
+                <p className="mt-1 text-sm text-red-500">{errors.price}</p>
+              )}
             </div>
 
             <div>
@@ -142,26 +236,65 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
+                  errors.expiry ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                }`}
                 placeholder="Optional"
               />
+              {errors.expiry && (
+                <p className="mt-1 text-sm text-red-500">{errors.expiry}</p>
+              )}
             </div>
 
             <button
               onClick={handleCreateOrder}
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              disabled={isCreating || showSuccess}
+              className={`w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center relative ${
+                (isCreating || showSuccess) ? "opacity-75 cursor-not-allowed" : ""
+              }`}
             >
-              Create Order
+              {isCreating ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Creating Order...
+                </>
+              ) : showSuccess ? (
+                <>
+                  <Check className="w-5 h-5 mr-2 animate-scale-in" />
+                  Order Created!
+                </>
+              ) : (
+                "Create Order"
+              )}
             </button>
           </div>
         </div>
-      )}
+      </div>
 
       <div className="space-y-2">
         {orders.map((order) => (
           <div
             key={order.id}
-            className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+            className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg group"
           >
             <div className="flex items-center space-x-3">
               <div className="relative">
@@ -194,16 +327,54 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </span>
               </div>
-              <button
-                onClick={() => onOrderCancel?.(order.id)}
-                className="text-red-500 hover:text-red-600 transition-colors"
-              >
-                Cancel
-              </button>
+              {order.status === "active" ? (
+                <button
+                  onClick={() => handleCancelClick(order.id)}
+                  className="text-red-500 hover:text-red-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleDeleteOrder(order.id)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500"
+                  title="Delete order"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Confirm Cancellation
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to cancel this order? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                No, Keep Order
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
