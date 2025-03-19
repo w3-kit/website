@@ -33,13 +33,18 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState(plans[0]?.id || "");
-  const [showSubscribeAnimation, setShowSubscribeAnimation] = useState(false);
+
+  // Ensure activeTab is always valid
+  React.useEffect(() => {
+    if (plans.length > 0 && !plans.some(plan => plan.id === activeTab)) {
+      setActiveTab(plans[0].id);
+    }
+  }, [plans, activeTab]);
 
   const handleSubscribe = async () => {
     if (!selectedPlan) return;
     
     setIsSubscribing(true);
-    setShowSubscribeAnimation(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       await onSubscribe?.(selectedPlan.id);
@@ -47,7 +52,6 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
-        setShowSubscribeAnimation(false);
         setSelectedPlan(null);
       }, 1500);
     } finally {
@@ -79,14 +83,16 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
               onClick={() => setActiveTab(plan.id)}
               className={`relative flex items-center space-x-2 px-4 py-2 rounded-t-lg transition-colors ${
                 activeTab === plan.id
-                  ? "bg-blue-500 text-white"
+                  ? plan.isPopular
+                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                    : "bg-blue-500 text-white"
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               {getIcon(plan.icon)}
               <span className="font-medium">{plan.name}</span>
               {plan.isPopular && (
-                <span className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center">
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center shadow-sm">
                   <Star className="w-3 h-3 mr-1" />
                   Popular
                 </span>
@@ -108,7 +114,7 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
                       {currentPlan.name}
                     </h3>
                     {currentPlan.isPopular && (
-                      <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center">
+                      <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center shadow-sm">
                         <Star className="w-3 h-3 mr-1" />
                         Popular
                       </span>
@@ -148,13 +154,13 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
 
             {/* Subscribe Button */}
             <button
-              onClick={() => setSelectedPlan(currentPlan)}
+              onClick={handleSubscribe}
               disabled={isSubscribing || showSuccess}
               className={`relative w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center overflow-hidden ${
                 (isSubscribing || showSuccess) ? "opacity-75 cursor-not-allowed" : ""
               }`}
             >
-              {showSubscribeAnimation && (
+              {isSubscribing && (
                 <div className="absolute inset-0 bg-blue-600 animate-subscribe-pulse" />
               )}
               {isSubscribing ? (
@@ -164,7 +170,7 @@ export const SubscriptionPayments: React.FC<SubscriptionPaymentsProps> = ({
                 </>
               ) : showSuccess ? (
                 <>
-                  <Check className="w-5 h-5 mr-2" />
+                  <Check className="w-5 h-5 mr-2 animate-scale-in" />
                   <span className="whitespace-nowrap">Subscribed!</span>
                 </>
               ) : (

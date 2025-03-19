@@ -129,6 +129,21 @@
   }
 }
 
+@keyframes subscribePulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
 .animate-sparkle {
   animation: sparkle 0.4s ease-in-out;
 }
@@ -143,4 +158,8 @@
 
 .animate-slide-in {
   animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-subscribe-pulse {
+  animation: subscribePulse 1s ease-in-out infinite;
 } 

@@ -7,7 +7,7 @@ import { CodeBlock } from "@/components/docs/codeBlock";
 
 const mockPlans: SubscriptionPlan[] = [
   {
-    id: "1",
+    id: "basic",
     name: "Basic",
     price: "0.1",
     token: {
@@ -17,14 +17,16 @@ const mockPlans: SubscriptionPlan[] = [
     },
     interval: "monthly",
     features: [
-      "Basic API Access",
-      "Up to 1000 requests/day",
-      "Email Support",
-      "Basic Analytics",
+      "Basic features",
+      "Email support",
+      "Community access",
+      "Basic analytics",
     ],
+    description: "Perfect for getting started with our platform",
+    icon: "sparkles",
   },
   {
-    id: "2",
+    id: "pro",
     name: "Pro",
     price: "0.5",
     token: {
@@ -34,15 +36,18 @@ const mockPlans: SubscriptionPlan[] = [
     },
     interval: "monthly",
     features: [
-      "Advanced API Access",
-      "Up to 10000 requests/day",
-      "Priority Support",
-      "Advanced Analytics",
-      "Custom Integrations",
+      "All Basic features",
+      "Priority support",
+      "Advanced analytics",
+      "API access",
+      "Custom integrations",
     ],
+    description: "Best value for most users",
+    icon: "zap",
+    isPopular: true,
   },
   {
-    id: "3",
+    id: "enterprise",
     name: "Enterprise",
     price: "2.0",
     token: {
@@ -52,13 +57,14 @@ const mockPlans: SubscriptionPlan[] = [
     },
     interval: "monthly",
     features: [
-      "Unlimited API Access",
-      "Unlimited requests",
-      "24/7 Support",
-      "Custom Analytics",
-      "Dedicated Account Manager",
-      "SLA Guarantee",
+      "All Pro features",
+      "24/7 dedicated support",
+      "Custom solutions",
+      "SLA guarantee",
+      "Team management",
     ],
+    description: "For large organizations with custom needs",
+    icon: "shield",
   },
 ];
 
