@@ -57,6 +57,13 @@ const pages: DocPage[] = [
     description: "Display detailed statistics and analytics for liquidity pools",
   },
   {
+    title: "Limit Order & Stop-Loss Manager",
+    href: "/docs/components/limit-order-manager",
+    section: "components",
+    description: "Advanced order management for DEX trading with limit orders and stop-loss functionality",
+    isNew: true,
+  },
+  {
     title: "Multisignature Wallets",
     href: "/docs/components/multisig-wallet",
     section: "components",
