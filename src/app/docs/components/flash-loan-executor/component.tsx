@@ -122,12 +122,12 @@ export const FlashLoanExecutor: React.FC<FlashLoanExecutorProps> = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Protocol
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {protocols.map((protocol) => (
               <button
                 key={protocol.address}
                 onClick={() => setSelectedProtocol(protocol)}
-                className={`flex items-center space-x-2 p-2 rounded-lg border transition-colors ${
+                className={`flex items-center space-x-2 p-2 rounded-lg border transition-colors flex-1 min-w-[120px] ${
                   selectedProtocol.address === protocol.address
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                     : "border-gray-200 dark:border-gray-700 hover:border-blue-500"
@@ -155,12 +155,12 @@ export const FlashLoanExecutor: React.FC<FlashLoanExecutorProps> = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Token
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {tokens.map((token) => (
               <button
                 key={token.address}
                 onClick={() => setSelectedToken(token)}
-                className={`flex items-center space-x-2 p-2 rounded-lg border transition-colors ${
+                className={`flex items-center space-x-2 p-2 rounded-lg border transition-colors flex-1 min-w-[120px] ${
                   selectedToken.address === token.address
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                     : "border-gray-200 dark:border-gray-700 hover:border-blue-500"
@@ -214,11 +214,11 @@ export const FlashLoanExecutor: React.FC<FlashLoanExecutorProps> = ({
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Estimated Profit</span>
             <span className="text-sm font-medium text-green-500">+0.05 ETH</span>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Risk Level</span>
             <span className={`text-sm font-medium ${getRiskColor("medium")}`}>Medium</span>
           </div>
@@ -234,23 +234,23 @@ export const FlashLoanExecutor: React.FC<FlashLoanExecutorProps> = ({
           {isExecuting ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Executing Flash Loan...
+              <span className="whitespace-nowrap">Executing Flash Loan...</span>
             </>
           ) : showSuccess ? (
             <>
               <Check className="w-4 h-4 mr-2" />
-              Flash Loan Executed!
+              <span className="whitespace-nowrap">Flash Loan Executed!</span>
             </>
           ) : (
             <>
               <ArrowUpDown className="w-4 h-4 mr-2" />
-              Execute Flash Loan
+              <span className="whitespace-nowrap">Execute Flash Loan</span>
             </>
           )}
         </button>
 
-        <div className="flex items-center text-sm text-yellow-600 dark:text-yellow-400">
-          <AlertCircle className="w-4 h-4 mr-2" />
+        <div className="flex flex-wrap items-center text-sm text-yellow-600 dark:text-yellow-400 gap-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>Make sure you have enough collateral to cover the flash loan fee</span>
         </div>
       </div>
