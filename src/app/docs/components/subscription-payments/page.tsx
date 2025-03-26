@@ -111,15 +111,7 @@ export default function SubscriptionPaymentsPage() {
     setSubscriptions(prev => [...prev, newSubscription]);
   }, []);
 
-  const handleCancel = useCallback((subscriptionId: string) => {
-    setSubscriptions(prev =>
-      prev.map(sub =>
-        sub.id === subscriptionId
-          ? { ...sub, status: "cancelled" }
-          : sub
-      )
-    );
-  }, []);
+  
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4">
@@ -171,7 +163,6 @@ export default function SubscriptionPaymentsPage() {
                 <SubscriptionPayments
                   plans={mockPlans}
                   onSubscribe={handleSubscribe}
-                  onCancel={handleCancel}
                 />
               </div>
             ) : (

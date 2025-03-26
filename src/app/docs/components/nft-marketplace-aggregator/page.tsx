@@ -7,7 +7,6 @@ import { CodeBlock } from "@/components/docs/codeBlock";
 
 export default function NFTMarketplaceAggregatorPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
@@ -66,7 +65,6 @@ export default function NFTMarketplaceAggregatorPage() {
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <NFTMarketplaceAggregator
-                  variant={selectedVariant}
                   onSearch={handleSearch}
                 />
 
@@ -107,7 +105,6 @@ export default function Page() {
 
   return (
     <NFTMarketplaceAggregator
-      variant="default"
       onSearch={handleSearch}
     />
   );
@@ -182,17 +179,7 @@ export default function Page() {
                       code={`// components/ui/nft-marketplace-aggregator/index.tsx
 import { NFTMarketplaceAggregator } from "@/components/ui/nft-marketplace-aggregator/component"
 
-export interface MarketplaceListing {
-  id: string;
-  marketplace: string;
-  price: number;
-  currency: string;
-  seller: string;
-  timestamp: number;
-}
-
 export interface NFTMarketplaceAggregatorProps {
-  variant?: "default" | "compact";
   onSearch?: (query: string) => Promise<void>;
   className?: string;
 }
@@ -228,7 +215,6 @@ export default function Page() {
 
   return (
     <NFTMarketplaceAggregator
-      variant="default"
       onSearch={handleSearch}
     />
   );

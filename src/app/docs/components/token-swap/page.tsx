@@ -19,9 +19,9 @@ export default function TokenSwapPage() {
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
   const [lastSwap, setLastSwap] = useState<SwapParams | null>(null);
 
-  const handleSwap = useCallback(async (params: SwapParams) => {
-    console.log("Swap:", params);
-    setLastSwap(params);
+  const handleSwap = useCallback(async (fromToken: TokenSymbol, toToken: TokenSymbol, amount: string) => {
+    console.log("Swap:", { fromToken, toToken, amount });
+    setLastSwap({ fromToken, toToken, amount, slippage: 0.5 });
     // Simulate swap delay
     await new Promise(resolve => setTimeout(resolve, 1000));
   }, []);
@@ -102,9 +102,9 @@ interface SwapParams {
 export default function Page() {
   const [lastSwap, setLastSwap] = useState<SwapParams | null>(null);
 
-  const handleSwap = useCallback(async (params: SwapParams) => {
-    console.log("Swap:", params);
-    setLastSwap(params);
+  const handleSwap = useCallback(async (fromToken: TokenSymbol, toToken: TokenSymbol, amount: string) => {
+    console.log("Swap:", { fromToken, toToken, amount });
+    setLastSwap({ fromToken, toToken, amount, slippage: 0.5 });
     // Simulate swap delay
     await new Promise(resolve => setTimeout(resolve, 1000));
   }, []);
@@ -237,9 +237,9 @@ interface SwapParams {
 export default function Page() {
   const [lastSwap, setLastSwap] = useState<SwapParams | null>(null);
 
-  const handleSwap = useCallback(async (params: SwapParams) => {
-    console.log("Swap:", params);
-    setLastSwap(params);
+  const handleSwap = useCallback(async (fromToken: TokenSymbol, toToken: TokenSymbol, amount: string) => {
+    console.log("Swap:", { fromToken, toToken, amount });
+    setLastSwap({ fromToken, toToken, amount, slippage: 0.5 });
     // Simulate swap delay
     await new Promise(resolve => setTimeout(resolve, 1000));
   }, []);

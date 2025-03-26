@@ -14,7 +14,7 @@ interface Transaction {
   timestamp: number;
   status: "success" | "pending" | "failed";
   nonce: number;
-  blockNumber: number;
+  blockNumber?: number;
 }
 
 // Mock transactions for preview
@@ -74,7 +74,7 @@ const mockTransactions: Transaction[] = [
 export default function TransactionHistoryPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const transactions = mockTransactions;
 
   const handleTransactionClick = useCallback((tx: Transaction) => {
     console.log("Clicked transaction:", tx);
@@ -148,7 +148,7 @@ interface Transaction {
   timestamp: number;
   status: "success" | "pending" | "failed";
   nonce: number;
-  blockNumber: number;
+  blockNumber?: number;
 }
 
 const transactions = ${JSON.stringify(mockTransactions, null, 2)};
@@ -253,7 +253,7 @@ export interface Transaction {
   timestamp: number;
   status: "success" | "pending" | "failed";
   nonce: number;
-  blockNumber: number;
+  blockNumber?: number;
 }
 
 export interface TransactionHistoryProps {
@@ -284,7 +284,7 @@ interface Transaction {
   timestamp: number;
   status: "success" | "pending" | "failed";
   nonce: number;
-  blockNumber: number;
+  blockNumber?: number;
 }
 
 const transactions = ${JSON.stringify(mockTransactions, null, 2)};

@@ -5,20 +5,7 @@ import { TokenList } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { TOKEN_CONFIGS } from '../../../../config/tokens';
-
-// Define the Token interface
-interface Token {
-  symbol: string;
-  name: string;
-  balance: string;
-  value: number;
-  price: number;
-  change24h: number;
-  logoURI: string;
-  address: string;
-  decimals: number;
-  chainId: number;
-}
+import { Token } from "./types";
 
 // Mock data using TOKEN_CONFIGS
 const mockTokens: Token[] = [
@@ -27,35 +14,35 @@ const mockTokens: Token[] = [
     balance: "1.5",
     price: 1900.50,
     value: 2850.75,
-    change24h: 2.5,
+    chainId: 1
   },
   {
     ...TOKEN_CONFIGS.BTC,
     balance: "0.05",
     price: 35000,
     value: 1750,
-    change24h: -1.2,
+    chainId: 1
   },
   {
     ...TOKEN_CONFIGS.USDC,
     balance: "1000",
     price: 1,
     value: 1000,
-    change24h: 0.1,
+    chainId: 1
   },
   {
     ...TOKEN_CONFIGS.USDT,
     balance: "500",
     price: 1,
     value: 500,
-    change24h: -0.1,
+    chainId: 1
   },
   {
     ...TOKEN_CONFIGS.SOL,
     balance: "25",
     price: 125.75,
     value: 3143.75,
-    change24h: 5.2,
+    chainId: 1
   }
 ];
 
@@ -72,8 +59,8 @@ export default function TokenListPage() {
       t.symbol === token.symbol 
         ? {
             ...t,
-            price: t.price * (1 + (Math.random() - 0.5) * 0.01),
-            change24h: t.change24h + (Math.random() - 0.5) * 0.5
+            price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
+            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -141,7 +128,7 @@ export default function TokenListPage() {
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                  Total Value: ${tokens.reduce((sum, t) => sum + t.value, 0).toFixed(2)}
+                  Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
                 </div>
                 <TokenList
                   tokens={tokens}
@@ -170,8 +157,8 @@ export default function Page() {
       t.symbol === token.symbol 
         ? {
             ...t,
-            price: t.price * (1 + (Math.random() - 0.5) * 0.01),
-            change24h: t.change24h + (Math.random() - 0.5) * 0.5
+            price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
+            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -180,7 +167,7 @@ export default function Page() {
   return (
     <div>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Total Value: ${tokens.reduce((sum, t) => sum + t.value, 0).toFixed(2)}
+        Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
       </div>
       <TokenList
         tokens={tokens}
@@ -269,7 +256,7 @@ export interface Token {
   balance: string;
   value: number;
   price: number;
-  change24h: number;
+  priceChange24h: number;
   logoURI: string;
   address: string;
   decimals: number;
@@ -312,8 +299,8 @@ export default function Page() {
       t.symbol === token.symbol 
         ? {
             ...t,
-            price: t.price * (1 + (Math.random() - 0.5) * 0.01),
-            change24h: t.change24h + (Math.random() - 0.5) * 0.5
+            price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
+            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -322,7 +309,7 @@ export default function Page() {
   return (
     <div>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Total Value: ${tokens.reduce((sum, t) => sum + t.value, 0).toFixed(2)}
+        Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
       </div>
       <TokenList
         tokens={tokens}

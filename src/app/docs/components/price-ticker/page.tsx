@@ -5,13 +5,33 @@ import { PriceTicker } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 
+interface Token {
+  name: string;
+  symbol: string;
+  price: number;
+  priceChange: {
+    "1h": number;
+    "24h": number;
+    "7d": number;
+    "30d": number;
+  };
+  marketCap: number;
+  volume: {
+    "24h": number;
+  };
+  circulatingSupply: number;
+  maxSupply: number | null;
+  logoURI: string;
+  lastUpdated: string;
+}
+
 export default function PriceTickerPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
 
   // Mock data for preview
-  const mockData = [
+  const mockData: Token[] = [
     {
       name: "Bitcoin",
       symbol: "BTC",
@@ -115,6 +135,26 @@ export default function PriceTickerPage() {
               <CodeBlock
                 code={`import { PriceTicker } from "@/components/ui/price-ticker"
 import { useState, useCallback } from "react"
+
+interface Token {
+  name: string;
+  symbol: string;
+  price: number;
+  priceChange: {
+    "1h": number;
+    "24h": number;
+    "7d": number;
+    "30d": number;
+  };
+  marketCap: number;
+  volume: {
+    "24h": number;
+  };
+  circulatingSupply: number;
+  maxSupply: number | null;
+  logoURI: string;
+  lastUpdated: string;
+}
 
 export default function Page() {
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
@@ -259,6 +299,26 @@ export { PriceTicker };`}
                     <CodeBlock
                       code={`import { PriceTicker } from "@/components/ui/price-ticker"
 import { useState, useCallback } from "react"
+
+interface Token {
+  name: string;
+  symbol: string;
+  price: number;
+  priceChange: {
+    "1h": number;
+    "24h": number;
+    "7d": number;
+    "30d": number;
+  };
+  marketCap: number;
+  volume: {
+    "24h": number;
+  };
+  circulatingSupply: number;
+  maxSupply: number | null;
+  logoURI: string;
+  lastUpdated: string;
+}
 
 export default function Page() {
   const [selectedToken, setSelectedToken] = useState<string | null>(null);

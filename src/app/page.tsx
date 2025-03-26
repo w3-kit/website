@@ -94,6 +94,10 @@ export default function Home() {
                   logoURI:
                     "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
                   liquidity: 156.78,
+                  price: 1900.50,
+                  marketCap: 250000000000,
+                  totalSupply: 120000000,
+                  circulatingSupply: 119000000
                 },
                 fee: 500,
                 tvl: 548000,
@@ -102,6 +106,8 @@ export default function Home() {
                 volumeChange24h: -1.2,
                 apr: 12.5,
                 feesEarned24h: 1890,
+                uniqueHolders: 15000,
+                transactions24h: 25000
               }}
               variant="compact"
               className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"

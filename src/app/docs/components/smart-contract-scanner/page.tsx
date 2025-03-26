@@ -29,11 +29,6 @@ export default function SmartContractScannerPage() {
     }, 5000);
   }, []);
 
-  // Handle function calls
-  const handleFunctionCall = useCallback((name: string, inputs: any[]) => {
-    console.log("Calling function:", name, inputs);
-  }, []);
-
   return (
     <div className="w-full max-w-3xl mx-auto px-4">
       <div className="space-y-6 py-4 sm:py-6">
@@ -93,7 +88,6 @@ export default function SmartContractScannerPage() {
                 
                 <SmartContractScanner
                   onScan={handleScan}
-                  onFunctionCall={handleFunctionCall}
                   onError={handleError}
                 />
 
@@ -135,10 +129,6 @@ export default function Page() {
     }, 5000);
   }, []);
 
-  const handleFunctionCall = useCallback((name: string, inputs: any[]) => {
-    console.log("Calling function:", name, inputs);
-  }, []);
-
   return (
     <div>
       {lastError && (
@@ -151,7 +141,6 @@ export default function Page() {
       
       <SmartContractScanner
         onScan={handleScan}
-        onFunctionCall={handleFunctionCall}
         onError={handleError}
       />
 
@@ -302,9 +291,6 @@ export default function Page() {
       
       <SmartContractScanner
         onScan={handleScan}
-        onFunctionCall={(name, inputs) => {
-          console.log("Calling function:", name, inputs);
-        }}
         onError={handleError}
       />
 
@@ -347,9 +333,9 @@ export default function Page() {
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Error Types</h3>
               <div className="bg-white dark:bg-gray-800 rounded-md p-4 text-sm">
                 <ul className="space-y-2">
-                  <li><strong>INVALID_ADDRESS</strong>: The provided address doesn't match the Ethereum address format</li>
-                  <li><strong>NOT_FOUND</strong>: The contract address doesn't exist on the blockchain</li>
-                  <li><strong>NOT_VERIFIED</strong>: The contract exists but isn't verified</li>
+                  <li><strong>INVALID_ADDRESS</strong>: The provided address doesn&apos;t match the Ethereum address format</li>
+                  <li><strong>NOT_FOUND</strong>: The contract address doesn&apos;t exist on the blockchain</li>
+                  <li><strong>NOT_VERIFIED</strong>: The contract exists but isn&apos;t verified</li>
                   <li><strong>NETWORK_ERROR</strong>: Connection issues with the blockchain provider</li>
                   <li><strong>SCAN_FAILED</strong>: General scanning failure</li>
                   <li><strong>RATE_LIMIT</strong>: API rate limit exceeded</li>

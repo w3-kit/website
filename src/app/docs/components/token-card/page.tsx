@@ -4,46 +4,49 @@ import React, { useState, useCallback } from "react";
 import { TokenCard } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
+import { Token } from "../token-list/types";
 
-// Define the Token interface
-interface Token {
-  symbol: string;
-  name: string;
-  balance: string;
-  value: number;
-  price: number;
-  change24h: number;
-  logoURI: string;
-  address: string;
-  decimals: number;
-  chainId: number;
+// Define the ExtendedToken interface
+interface ExtendedToken extends Token {
+  priceChange24h?: number;
+  verified?: boolean;
+  marketCap?: number;
+  volume24h?: number;
+  allTimeHigh?: number;
+  allTimeHighDate?: string;
+  rank?: number;
 }
 
-const mockToken: Token = {
+// Create mock token data
+const mockToken: ExtendedToken = {
   symbol: "ETH",
   name: "Ethereum",
   balance: "1.5",
   value: 2850.75,
   price: 1900.50,
-  change24h: 2.5,
+  priceChange24h: 2.5,
   logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040",
   address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   decimals: 18,
-  chainId: 1
+  chainId: 1,
+  verified: true,
+  marketCap: 250000000000,
+  volume24h: 15000000000,
+  allTimeHigh: 4800.00,
+  allTimeHighDate: "2021-11-10",
+  rank: 1
 };
 
 export default function TokenCardPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [token, setToken] = useState<Token>(mockToken);
+  const [token, setToken] = useState<ExtendedToken>(mockToken);
 
-  const handleTokenClick = useCallback((token: Token) => {
-    console.log("Token clicked:", token);
-    // Simulate price update
+  const handleTokenClick = useCallback((token: ExtendedToken) => {
     setToken(prev => ({
       ...prev,
-      price: prev.price * (1 + (Math.random() - 0.5) * 0.01),
-      change24h: prev.change24h + (Math.random() - 0.5) * 0.5
+      price: prev.price ?? token.price,
+      priceChange24h: prev.priceChange24h ?? token.priceChange24h
     }));
   }, []);
 
@@ -91,15 +94,20 @@ export default function TokenCardPage() {
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                  Current Price: ${token.price.toFixed(2)} ({token.change24h > 0 ? '+' : ''}{token.change24h.toFixed(2)}%)
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Price: {token.price ? `$${token.price.toFixed(2)}` : 'N/A'}
+                  {token.priceChange24h !== undefined && (
+                    <span className={`ml-2 ${token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
+                    </span>
+                  )}
                 </div>
                 <TokenCard
                   token={token}
-                  onTokenClick={handleTokenClick}
                   showPrice={true}
-                  showChange={true}
-                  showValue={true}
+                  showPriceChange={true}
+                  showBalance={true}
+                  onClick={handleTokenClick}
                 />
               </div>
             ) : (
@@ -107,32 +115,45 @@ export default function TokenCardPage() {
                 code={`import { TokenCard } from "@/components/ui/token-card"
 import { useState, useCallback } from "react"
 
-const token = ${JSON.stringify(mockToken, null, 2)};
+interface ExtendedToken extends Token {
+  priceChange24h?: number;
+  verified?: boolean;
+  marketCap?: number;
+  volume24h?: number;
+  allTimeHigh?: number;
+  allTimeHighDate?: string;
+  rank?: number;
+}
+
+const mockToken: ExtendedToken = ${JSON.stringify(mockToken, null, 2)};
 
 export default function Page() {
-  const [token, setToken] = useState(token);
+  const [token, setToken] = useState(mockToken);
 
-  const handleTokenClick = useCallback((token: Token) => {
-    console.log("Token clicked:", token);
-    // Simulate price update
+  const handleTokenClick = useCallback((token: ExtendedToken) => {
     setToken(prev => ({
       ...prev,
-      price: prev.price * (1 + (Math.random() - 0.5) * 0.01),
-      change24h: prev.change24h + (Math.random() - 0.5) * 0.5
+      price: prev.price ?? token.price,
+      priceChange24h: prev.priceChange24h ?? token.priceChange24h
     }));
   }, []);
 
   return (
     <div>
-      <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Current Price: ${token.price.toFixed(2)} ({token.change24h > 0 ? '+' : ''}{token.change24h.toFixed(2)}%)
+      <div className="text-sm text-gray-500 dark:text-gray-400">
+        Price: {token.price ? \`$\${token.price.toFixed(2)}\` : 'N/A'}
+        {token.priceChange24h !== undefined && (
+          <span className={\`ml-2 \${token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'}\`}>
+            {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
+          </span>
+        )}
       </div>
       <TokenCard
         token={token}
-        onTokenClick={handleTokenClick}
         showPrice={true}
-        showChange={true}
-        showValue={true}
+        showPriceChange={true}
+        showBalance={true}
+        onClick={handleTokenClick}
       />
     </div>
   );
@@ -248,37 +269,47 @@ const token = {
   balance: "1.5",
   value: 2850.75,
   price: 1900.50,
-  change24h: 2.5,
+  priceChange24h: 2.5,
   logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040",
   address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   decimals: 18,
-  chainId: 1
+  chainId: 1,
+  verified: true,
+  marketCap: 250000000000,
+  volume24h: 15000000000,
+  allTimeHigh: 4800.00,
+  allTimeHighDate: "2021-11-10",
+  rank: 1
 };
 
 export default function Page() {
   const [token, setToken] = useState(token);
 
-  const handleTokenClick = useCallback((token: Token) => {
+  const handleTokenClick = useCallback((token: ExtendedToken) => {
     console.log("Token clicked:", token);
     // Simulate price update
     setToken(prev => ({
       ...prev,
       price: prev.price * (1 + (Math.random() - 0.5) * 0.01),
-      change24h: prev.change24h + (Math.random() - 0.5) * 0.5
+      priceChange24h: prev.priceChange24h + (Math.random() - 0.5) * 0.5
     }));
   }, []);
 
   return (
     <div>
-      <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Current Price: ${token.price.toFixed(2)} ({token.change24h > 0 ? '+' : ''}{token.change24h.toFixed(2)}%)
+      <div className="text-sm text-gray-500 dark:text-gray-400">
+        Price: {token.price ? \`$\${token.price.toFixed(2)}\` : 'N/A'}
+        {token.priceChange24h !== undefined && (
+          <span className={\`ml-2 \${token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'}\`}>
+            {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
+          </span>
+        )}
       </div>
       <TokenCard
         token={token}
-        onTokenClick={handleTokenClick}
         showPrice={true}
-        showChange={true}
-        showValue={true}
+        showPriceChange={true}
+        showBalance={true}
       />
     </div>
   );

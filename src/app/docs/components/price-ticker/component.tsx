@@ -1,37 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PriceTickerProps, TokenPrice } from './types';
+import { PriceTickerProps, TokenPrice, Token } from './types';
 import Image from 'next/image';
-
-// Define Token type since it's missing from the imports
-interface Token {
-  name: string;
-  symbol: string;
-  price: number;
-  priceChange: {
-    '1h': number;
-    '24h': number;
-    '7d': number;
-    '30d': number;
-  };
-  marketCap: number;
-  volume: {
-    '24h': number;
-  };
-  circulatingSupply: number;
-  maxSupply: number | null;
-  logoURI: string;
-  lastUpdated: string;
-}
 
 export const PriceTicker: React.FC<PriceTickerProps> = ({
   tokens,
   className = '',
   refreshInterval = 10000, // 10 seconds default
   onPriceUpdate,
-  variant = 'detailed'
+  variant = 'detailed',
+  onTokenSelect
 }) => {
-  // Cast tokens to Token[] to fix type error
-  const [prices, setPrices] = useState<Token[]>(tokens as unknown as Token[]);
+  const [prices, setPrices] = useState<Token[]>(tokens);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -211,10 +190,9 @@ export const PriceTicker: React.FC<PriceTickerProps> = ({
   };
 
   const handleTokenClick = (symbol: string) => {
-    if (selectedToken === symbol) {
-      setSelectedToken(null);
-    } else {
-      setSelectedToken(symbol);
+    setSelectedToken(symbol);
+    if (onTokenSelect) {
+      onTokenSelect(symbol);
     }
   };
 

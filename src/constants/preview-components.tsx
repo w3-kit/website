@@ -59,6 +59,16 @@ export const previewComponents = [
             value: 8750,
             change24h: 4.2,
             color: "#627EEA",
+            priceHistory: {
+              '24h': Array.from({ length: 24 }, (_, i) => 3500 + Math.sin(i / 4) * 100),
+              '7d': Array.from({ length: 7 }, (_, i) => 3500 + Math.sin(i / 2) * 200),
+              '30d': Array.from({ length: 30 }, (_, i) => 3500 + Math.sin(i) * 300)
+            },
+            candleData: {
+              '24h': [],
+              '7d': [],
+              '30d': []
+            }
           },
           {
             ...TOKEN_CONFIGS.BTC,
@@ -67,6 +77,16 @@ export const previewComponents = [
             value: 6750,
             change24h: -2.1,
             color: "#F7931A",
+            priceHistory: {
+              '24h': Array.from({ length: 24 }, (_, i) => 45000 + Math.sin(i / 4) * 1000),
+              '7d': Array.from({ length: 7 }, (_, i) => 45000 + Math.sin(i / 2) * 2000),
+              '30d': Array.from({ length: 30 }, (_, i) => 45000 + Math.sin(i) * 3000)
+            },
+            candleData: {
+              '24h': [],
+              '7d': [],
+              '30d': []
+            }
           },
           {
             ...TOKEN_CONFIGS.USDC,
@@ -75,6 +95,16 @@ export const previewComponents = [
             value: 5000,
             change24h: 0.01,
             color: "#2775CA",
+            priceHistory: {
+              '24h': Array.from({ length: 24 }, () => 1),
+              '7d': Array.from({ length: 7 }, () => 1),
+              '30d': Array.from({ length: 30 }, () => 1)
+            },
+            candleData: {
+              '24h': [],
+              '7d': [],
+              '30d': []
+            }
           },
           {
             ...TOKEN_CONFIGS.SOL,
@@ -83,6 +113,16 @@ export const previewComponents = [
             value: 4950,
             change24h: 8.5,
             color: "#00FFA3",
+            priceHistory: {
+              '24h': Array.from({ length: 24 }, (_, i) => 110 + Math.sin(i / 4) * 5),
+              '7d': Array.from({ length: 7 }, (_, i) => 110 + Math.sin(i / 2) * 10),
+              '30d': Array.from({ length: 30 }, (_, i) => 110 + Math.sin(i) * 15)
+            },
+            candleData: {
+              '24h': [],
+              '7d': [],
+              '30d': []
+            }
           },
         ]}
         totalValue={15500}
@@ -107,14 +147,20 @@ export const previewComponents = [
             symbol: "ETH",
             logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
             liquidity: 156.78,
+            price: 1900.50,
+            marketCap: 250000000000,
+            totalSupply: 120000000,
+            circulatingSupply: 119000000
           },
           fee: 500,
           tvl: 548000,
           tvlChange24h: 2.5,
-          volume24h: 1250000,
+          volume24h: 12500000,
           volumeChange24h: -1.2,
           apr: 12.5,
           feesEarned24h: 1890,
+          uniqueHolders: 15000,
+          transactions24h: 25000
         }}
       />
     ),
