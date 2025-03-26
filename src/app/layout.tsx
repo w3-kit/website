@@ -32,9 +32,11 @@ export default function RootLayout({
         className={`${inter.className} antialiased bg-white dark:bg-gray-950`}
       >
         <ThemeProvider>
+
           <Navbar />
           <main className="min-h-screen">{children}</main>
           <Footer />
+
         </ThemeProvider>
         <GoogleAnalytics />
       </body>
