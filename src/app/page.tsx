@@ -40,7 +40,7 @@ export default function Home() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("npm i @w3-kit/ui");
+      await navigator.clipboard.writeText("npx w3-kit@latest init");
       setIsAnimating(true);
       setTimeout(() => {
         setCopied(true);

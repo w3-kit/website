@@ -11,6 +11,14 @@ export const metadata: Metadata = {
     siteName: "W3-Kit",
     locale: "en_US",
   },
+  images: [
+    {
+      url: "/OpenGraphImage.png",
+      width: 1200,
+      height: 628,
+      alt: "W3-Kit Wallet Balance Component"
+    }
+  ]
 };
 
 export default function WalletBalanceLayout({

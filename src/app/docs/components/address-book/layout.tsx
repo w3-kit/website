@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/w3-kit-logo.svg",
-        width: 600,
-        height: 600,
-        alt: "W3-Kit Logo"
+        url: "/OpenGraphImage.png",
+        width: 1200,
+        height: 628,
+        alt: "W3-Kit Address Book Component"
       }
     ]
   },
