@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, Github, Moon, Sun, ChevronDown } from "lucide-react";
 import { useThemeContext } from "@/providers/ThemeProvider";
@@ -24,6 +24,7 @@ function getComponentsMenu() {
             "NFT Collection Grid",
             "Token List",
             "Wallet Balance",
+            "Transaction History",
           ].includes(comp.title)
         )
         .map((comp) => ({
@@ -42,6 +43,26 @@ function getComponentsMenu() {
             "Connect Wallet",
             "Contract Interaction",
             "Address Book",
+            "Token Airdrop",
+            "Subscription Payments",
+          ].includes(comp.title)
+        )
+        .map((comp) => ({
+          name: comp.title,
+          href: comp.href,
+        })),
+    },
+    {
+      title: "DeFi Tools",
+      items: components
+        .filter((comp) =>
+          [
+            "DeFi Position Manager",
+            "Limit Order & Stop-Loss Manager",
+            "Flash Loan Executor",
+            "Token Vesting",
+            "Staking Interface",
+            "Liquidity Pool Stats",
           ].includes(comp.title)
         )
         .map((comp) => ({
@@ -55,10 +76,9 @@ function getComponentsMenu() {
         .filter((comp) =>
           [
             "Asset Portfolio",
-            "Liquidity Pool Stats",
             "Gas Calculator",
-            "Transaction History",
             "Smart Contract Scanner",
+            "NFT Marketplace Aggregator",
           ].includes(comp.title)
         )
         .map((comp) => ({
@@ -73,7 +93,6 @@ function getComponentsMenu() {
           [
             "Multisignature Wallets",
             "ENS Resolver",
-            "Staking Interface",
           ].includes(comp.title)
         )
         .map((comp) => ({
@@ -116,10 +135,6 @@ export function Navbar() {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [activeDropdown, setActiveDropdown] = useState<
-    "docs" | "components" | null
-  >(null);
-  const searchRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -158,7 +173,7 @@ export function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!(event.target as Element).closest(".dropdown-container")) {
-        setActiveDropdown(null);
+        setIsSearchVisible(false);
       }
     };
 
@@ -170,7 +185,6 @@ export function Navbar() {
   useEffect(() => {
     setSearchQuery("");
     setSearchResults([]);
-    setActiveDropdown(null);
   }, [pathname]);
 
   // Search functionality
@@ -272,7 +286,7 @@ export function Navbar() {
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
 
-              <div className="absolute top-full left-0 mt-2 w-[600px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+              <div className="absolute top-full left-0 mt-2 w-[800px] max-w-[90vw] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
                 <div className="pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     Components
@@ -281,22 +295,28 @@ export function Navbar() {
                     Explore our collection of Web3 UI components
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-6">
+                <div className="flex flex-wrap gap-x-8 gap-y-6">
                   {COMPONENTS_MENU.map((section) => (
-                    <div key={section.title}>
+                    <div key={section.title} className="min-w-[200px]">
                       <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                         {section.title}
                       </div>
-                      {section.items.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          onClick={handleMenuItemClick}
-                          className="block py-1 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
+                      <div className="space-y-1">
+                        {section.items.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => {
+                              handleMenuItemClick();
+                              const dropdown = document.querySelector('.dropdown-container');
+                              dropdown?.classList.remove('group-hover:visible', 'group-hover:opacity-100');
+                            }}
+                            className="block py-1 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>

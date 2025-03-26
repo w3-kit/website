@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { DeFiPositionManager, PositionData } from "./component";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import Image from "next/image";
 
 const mockPositions: PositionData[] = [
   {
