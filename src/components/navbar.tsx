@@ -7,6 +7,7 @@ import { useThemeContext } from "@/providers/ThemeProvider";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { getComponentList } from "@/config/docs";
+import { useGitHubStars } from "@/hooks/useGitHubStars";
 
 // Organize components into categories
 function getComponentsMenu() {
@@ -139,6 +140,7 @@ export function Navbar() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isThemeTransitioning, setIsThemeTransitioning] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const { stars } = useGitHubStars("https://github.com/w3-kit/ui");
 
   // Preloaded popular components
   const popularComponents = [
@@ -458,12 +460,15 @@ export function Navbar() {
 
           {/* GitHub and Theme Toggle buttons */}
           <a
-            href="https://github.com/w3-kit"
+            href="https://github.com/w3-kit/ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            className="inline-flex items-center gap-1.5 justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <Github className="h-5 w-5" />
+            {stars !== null && (
+              <span className="text-xs font-medium">{stars}</span>
+            )}
             <span className="sr-only">GitHub</span>
           </a>
           <button
