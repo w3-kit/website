@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AddressBook } from "./component";
+import { AddressBook } from "@/components/w3-kit/address-book";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 
@@ -202,47 +202,47 @@ export default function Page() {
               {installTab === "cli" ? (
                 <>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Run the following command to add the Address Book component to your project:
+                    Run the following command to add the Address Book component to your project using the shadcn CLI:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add address-book" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/address-book.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
                   <ul className="list-disc pl-6 mb-4 text-sm text-gray-600 dark:text-gray-400">
-                    <li>Create the component in your <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components/ui</code> directory</li>
-                    <li>Add all necessary dependencies to your package.json</li>
-                    <li>Set up required configuration files</li>
+                    <li>Create the component in your <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components/w3-kit</code> directory</li>
+                    <li>Add all necessary dependencies (lucide-react) to your package.json</li>
+                    <li>Set up the types and utility files</li>
                   </ul>
                 </>
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      1. Initialize W3-Kit in your project if you haven&apos;t already:
+                      1. Make sure you have a <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components.json</code> file in your project root:
                     </p>
-                    <CodeBlock code="npx w3-kit@latest init" id="init" />
+                    <CodeBlock code={`{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "slate",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  }
+}`} id="init" />
                   </div>
 
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      2. Copy the component to your project:
+                      2. Install the component via shadcn CLI:
                     </p>
-                    <CodeBlock
-                      code={`// components/ui/address-book/index.tsx
-import { AddressBook } from "@/components/ui/address-book/component"
-
-export interface AddressEntry {
-  id: string;
-  name: string;
-  address: string;
-  ensName?: string;
-  avatar?: string;
-  notes?: string;
-}
-
-export { AddressBook };`}
-                      id="component"
-                    />
+                    <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/address-book.json" id="install" />
                   </div>
 
                   <div className="space-y-2">
@@ -250,13 +250,13 @@ export { AddressBook };`}
                       3. Use the component in your code:
                     </p>
                     <CodeBlock
-                      code={`import { AddressBook } from "@/components/ui/address-book"
+                      code={`import { AddressBook } from "@/components/w3-kit/address-book"
 
 const entries = [
   {
     id: '1',
     name: 'Vitalik Buterin',
-    address: '0xd8dA...',
+    address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
     ensName: 'vitalik.eth',
     notes: 'Ethereum Co-founder'
   }
