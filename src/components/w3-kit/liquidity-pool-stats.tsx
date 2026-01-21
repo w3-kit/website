@@ -15,19 +15,18 @@ import {
   formatPercentage,
   getChangeColor,
 } from "./liquidity-pool-stats-utils";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse bg-muted rounded ${className}`}
+      className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`}
     />
   );
 }
 
 function LoadingCard() {
   return (
-    <Card className="bg-muted p-6 relative">
+    <div className="bg-gray-50 dark:bg-gray-750 rounded-lg p-6 relative">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-16" />
@@ -39,7 +38,7 @@ function LoadingCard() {
       <div className="flex items-center mt-2">
         <Skeleton className="h-4 w-20" />
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -138,10 +137,10 @@ export function LiquidityPoolStats({
     icon?: React.ReactNode;
   }) {
     return (
-      <Card className="bg-muted p-6 relative group">
+      <div className="bg-gray-50 dark:bg-gray-750 rounded-lg p-6 relative group">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm sm:text-base font-medium text-foreground">
+            <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
               {title}
             </span>
             <div className="relative">
@@ -183,27 +182,32 @@ export function LiquidityPoolStats({
           {icon}
         </div>
         <div className="transition-all duration-300 ease-out">
-          <p className="text-2xl sm:text-3xl font-bold text-foreground mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-2">
             {value}
           </p>
           {change !== undefined && (
             <div className="flex items-center mt-2">
               <ChangeIndicator value={change} />
-              <span className="ml-2 text-sm text-muted-foreground">24h change</span>
+              <span className="ml-2 text-sm text-gray-500">24h change</span>
             </div>
           )}
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-2">{subtitle}</p>
+            <p className="text-sm text-gray-500 mt-2">{subtitle}</p>
           )}
         </div>
-      </Card>
+      </div>
     );
   }
 
   // Loading State for Compact Variant
   if (isLoading && variant === "compact") {
     return (
-      <Card className={`p-4 ${className}`}>
+      <div
+        className={`
+        bg-white dark:bg-gray-800 rounded-lg border border-gray-200
+        dark:border-gray-700 shadow-sm p-4 ${className}
+      `}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Skeleton className="w-10 h-10 rounded-full" />
@@ -226,15 +230,20 @@ export function LiquidityPoolStats({
             <Skeleton className="h-4 w-16" />
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
   // Loading State for Default Variant
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader className="p-4 border-b">
+      <div
+        className={`
+        bg-white dark:bg-gray-800 rounded-lg border border-gray-200
+        dark:border-gray-700 shadow-sm ${className}
+      `}
+      >
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Skeleton className="w-10 h-10 rounded-full" />
@@ -245,23 +254,27 @@ export function LiquidityPoolStats({
             </div>
             <Skeleton className="w-8 h-8 rounded-full" />
           </div>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
           <LoadingCard />
           <LoadingCard />
           <LoadingCard />
           <LoadingCard />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (variant === "compact") {
     return (
-      <Card
-        className={`hover:shadow-md transition-all duration-300 ease-out ${className}`}
+      <div
+        className={`
+          bg-white dark:bg-gray-800 rounded-lg border border-gray-200
+          dark:border-gray-700 shadow-sm hover:shadow-md
+          transition-all duration-300 ease-out ${className}
+        `}
       >
-        <CardContent className="p-4">
+        <div className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -275,10 +288,10 @@ export function LiquidityPoolStats({
                 />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
                   {poolData.token.symbol}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {poolData.fee / 10000}% Fee Tier
                 </p>
               </div>
@@ -286,8 +299,8 @@ export function LiquidityPoolStats({
             <button
               onClick={() => onTokenClick?.(poolData.token.symbol)}
               className="text-blue-600 dark:text-blue-400 hover:text-blue-700
-                dark:hover:text-blue-300 p-2 rounded-full hover:bg-muted
-                transition-all duration-200
+                dark:hover:text-blue-300 p-2 rounded-full hover:bg-gray-100
+                dark:hover:bg-gray-700 transition-all duration-200
                 hover:scale-110 active:scale-95"
             >
               <TrendingUp className="w-5 h-5" />
@@ -299,7 +312,7 @@ export function LiquidityPoolStats({
             {/* TVL */}
             <div className="relative group">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   TVL
                 </span>
                 <div className="relative">
@@ -331,7 +344,7 @@ export function LiquidityPoolStats({
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-base font-medium text-foreground">
+                <p className="text-base font-medium text-gray-900 dark:text-white">
                   {formatCurrency(poolData.tvl)}
                 </p>
                 <ChangeIndicator value={poolData.tvlChange24h} />
@@ -341,7 +354,7 @@ export function LiquidityPoolStats({
             {/* APR */}
             <div className="relative group">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   APR
                 </span>
                 <div className="relative">
@@ -373,24 +386,31 @@ export function LiquidityPoolStats({
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-base font-medium text-foreground">
+                <p className="text-base font-medium text-gray-900 dark:text-white">
                   {formatPercentage(poolData.apr)}
                 </p>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {formatCurrency(poolData.feesEarned24h)} earned
                 </span>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className={`hover:shadow-md transition-all duration-300 ease-out h-full ${className}`}>
+    <div
+      className={`
+      bg-white dark:bg-gray-800 rounded-lg border border-gray-200
+      dark:border-gray-700 shadow-sm hover:shadow-md
+      transition-all duration-300 ease-out
+      h-full ${className}
+    `}
+    >
       {/* Pool Header */}
-      <CardHeader className="p-4 border-b">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative w-10 h-10 flex-shrink-0 group">
@@ -403,10 +423,10 @@ export function LiquidityPoolStats({
               />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground group-hover:text-blue-500 transition-colors">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-500 transition-colors">
                 {poolData.token.symbol}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {poolData.fee / 10000}% Fee Tier
               </p>
             </div>
@@ -414,17 +434,17 @@ export function LiquidityPoolStats({
           <button
             onClick={() => onTokenClick?.(`${poolData.token.symbol}`)}
             className="text-blue-600 dark:text-blue-400 hover:text-blue-700
-              dark:hover:text-blue-300 p-2 rounded-full hover:bg-muted
-              transition-all duration-200
+              dark:hover:text-blue-300 p-2 rounded-full hover:bg-gray-100
+              dark:hover:bg-gray-700 transition-all duration-200
               hover:scale-110 active:scale-95"
           >
             <TrendingUp className="w-5 h-5" />
           </button>
         </div>
-      </CardHeader>
+      </div>
 
       {/* Main Stats Grid */}
-      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
         <StatCard
           title="TVL"
           value={formatCurrency(poolData.tvl)}
@@ -454,8 +474,8 @@ export function LiquidityPoolStats({
           subtitle={`${poolData.fee / 10000}% fee tier`}
           tooltipKey="fees"
         />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

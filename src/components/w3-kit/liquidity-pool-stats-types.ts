@@ -25,6 +25,12 @@ export interface LiquidityPoolStatsProps {
   poolData: PoolData;
   className?: string;
   onTokenClick?: (symbol: string) => void;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
   isLoading?: boolean;
-} 
+}
+
+export interface TooltipContent {
+  title: string;
+  description: string;
+  stats: { label: string; value: string }[];
+}
