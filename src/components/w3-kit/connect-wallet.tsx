@@ -1,23 +1,20 @@
-'use client';
-
 import React, { useState, useCallback } from 'react';
-import { ConnectWalletButtonProps, CoinbaseWalletProvider, SolanaProvider } from './connect-wallet-types';
-import {
-  variantStyles,
-  DEFAULT_WALLETCONNECT_CONFIG,
-  WALLET_ICONS,
-  getDefaultLabel,
-  buttonAnimation,
-  spinnerAnimation,
-} from './connect-wallet-utils';
+import { MetaMaskInpageProvider } from '@metamask/providers';
+import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
-// Extend window interface for wallet providers
+interface CoinbaseWalletProvider {
+  request: (args: { method: string }) => Promise<string[]>;
+}
+
+interface SolanaProvider {
+  connect(): Promise<{ publicKey: { toString(): string } }>;
+}
+
 declare global {
   interface Window {
-    ethereum?: {
-      isMetaMask?: boolean;
-      request: (args: { method: string }) => Promise<string[]>;
-    };
+    ethereum?: MetaMaskInpageProvider;
     coinbaseWalletExtension?: CoinbaseWalletProvider;
     solana?: SolanaProvider;
     phantom?: {
@@ -26,59 +23,104 @@ declare global {
   }
 }
 
-// Phantom wallet icon as inline SVG
-const PhantomIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 128 128" fill="none">
-    <rect width="128" height="128" rx="64" fill="#AB9FF2"/>
-    <path d="M110.984 64.206C110.984 89.2476 90.7077 109.524 65.666 109.524C40.6244 109.524 20.3477 89.2476 20.3477 64.206C20.3477 39.1644 40.6244 18.8877 65.666 18.8877C90.7077 18.8877 110.984 39.1644 110.984 64.206Z" fill="white"/>
-  </svg>
-);
+type ButtonVariant = 'ghost' | 'outline' | 'default' | 'secondary';
+type WalletType = 'metamask' | 'walletconnect' | 'coinbase' | 'phantom';
 
-// Loading spinner component
-const LoadingSpinner = () => (
-  <svg className={spinnerAnimation} viewBox="0 0 24 24">
-    <circle
-      className="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="4"
-      fill="none"
+interface ConnectWalletButtonProps {
+  onConnect?: (address: string) => void;
+  onError?: (error: Error) => void;
+  className?: string;
+  customLabel?: string;
+  variant?: ButtonVariant;
+  walletType?: WalletType;
+}
+
+const walletConnectConfig = {
+  rpc: {
+    1: 'https://mainnet.infura.io/v3/YOUR_INFURA_ID', // Replace with your Infura ID
+    4: 'https://rinkeby.infura.io/v3/YOUR_INFURA_ID',
+  },
+  bridge: 'https://bridge.walletconnect.org',
+};
+
+const WalletIcons = {
+  metamask: (
+    <Image
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/2048px-MetaMask_Fox.svg.png"
+      alt="MetaMask"
+      width={24}
+      height={24}
+      className="rounded-sm"
     />
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+  ),
+  walletconnect: (
+    <Image
+      src="https://cdn-images-1.medium.com/max/1200/1*fgRGbOjhoJMHqh9czHETZQ.png"
+      alt="WalletConnect"
+      width={24}
+      height={24}
     />
-  </svg>
-);
+  ),
+  coinbase: (
+    <Image
+      src="https://cdn.iconscout.com/icon/free/png-256/free-coinbase-logo-icon-download-in-svg-png-gif-file-formats--web-crypro-trading-platform-logos-pack-icons-7651204.png"
+      alt="Coinbase"
+      width={24}
+      height={24}
+      className="rounded-sm"
+    />
+  ),
+  phantom: (
+    <svg width="24" height="24" viewBox="0 0 128 128" fill="none">
+      <rect width="128" height="128" rx="64" fill="#AB9FF2"/>
+      <path d="M110.984 64.206C110.984 89.2476 90.7077 109.524 65.666 109.524C40.6244 109.524 20.3477 89.2476 20.3477 64.206C20.3477 39.1644 40.6244 18.8877 65.666 18.8877C90.7077 18.8877 110.984 39.1644 110.984 64.206Z" fill="white"/>
+    </svg>
+  )
+};
 
 export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   onConnect,
   onError,
   className = '',
   customLabel,
-  variant = 'dark',
-  walletType = 'metamask',
-  walletConnectConfig = DEFAULT_WALLETCONNECT_CONFIG,
+  variant = 'default',
+  walletType = 'metamask'
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getDefaultLabel = (type: WalletType) => {
+    switch (type) {
+      case 'metamask':
+        return 'Connect MetaMask';
+      case 'walletconnect':
+        return 'WalletConnect';
+      case 'coinbase':
+        return 'Coinbase Wallet';
+      case 'phantom':
+        return 'Phantom Wallet';
+      default:
+        return 'Connect Wallet';
+    }
+  };
 
   const connectMetaMask = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // First check if MetaMask is actually installed
       if (typeof window.ethereum === 'undefined') {
         throw new Error('MetaMask is not installed');
       }
+
+      // Check if the provider is actually MetaMask
 
       if (!window.ethereum.isMetaMask) {
         throw new Error('Please switch to MetaMask');
       }
 
+      // This is the actual connection request to MetaMask
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts'
       });
@@ -102,9 +144,6 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     setError(null);
 
     try {
-      // Dynamic import to avoid bundling issues
-      const { WalletConnectConnector } = await import('@web3-react/walletconnect-connector');
-
       const connector = new WalletConnectConnector({
         rpc: walletConnectConfig.rpc,
         bridge: walletConnectConfig.bridge,
@@ -125,13 +164,14 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [onConnect, onError, walletConnectConfig]);
+  }, [onConnect, onError]);
 
   const connectCoinbase = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // Check specifically for Coinbase Wallet
       if (!window.coinbaseWalletExtension) {
         throw new Error('Coinbase Wallet is not installed');
       }
@@ -190,53 +230,46 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     }
   }, [walletType, connectMetaMask, connectWalletConnect, connectCoinbase, connectPhantom]);
 
-  const renderWalletIcon = () => {
-    if (walletType === 'phantom') {
-      return <PhantomIcon />;
-    }
-
-    const iconUrl = WALLET_ICONS[walletType];
-    return (
-      <img
-        src={iconUrl}
-        alt={walletType}
-        width={24}
-        height={24}
-        className="rounded-sm"
-      />
-    );
-  };
-
   return (
     <div className="flex flex-col items-center">
-      <button
+      <Button
         onClick={handleConnect}
         disabled={isLoading}
-        className={`
-          px-6 py-3 rounded-xl font-medium
-          flex items-center justify-center min-w-[240px]
-          disabled:opacity-50 disabled:cursor-not-allowed
-          ${buttonAnimation}
-          ${variantStyles[variant]}
-          ${className}
-        `}
+        variant={variant}
+        size="lg"
+        className={`min-w-[240px] rounded-xl transform hover:scale-[1.02] active:scale-[0.98] ${className}`}
       >
         {isLoading ? (
           <div className="flex items-center space-x-2">
-            <LoadingSpinner />
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
             <span>Connecting...</span>
           </div>
         ) : (
           <div className="flex items-center space-x-3">
             <div className="w-6 h-6 flex items-center justify-center">
-              {renderWalletIcon()}
+              {WalletIcons[walletType]}
             </div>
             <span className="text-[15px]">{customLabel || getDefaultLabel(walletType)}</span>
           </div>
         )}
-      </button>
+      </Button>
       {error && (
-        <p className="mt-2 text-sm text-red-500 dark:text-red-400">{error}</p>
+        <p className="mt-2 text-sm text-destructive">{error}</p>
       )}
     </div>
   );

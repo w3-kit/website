@@ -1,5 +1,3 @@
-import { TokenSymbol } from '../../../../config/tokens';
-
 export interface Token {
   address: string;
   symbol: string;
@@ -13,15 +11,15 @@ export interface Token {
 }
 
 export interface TokenListProps {
-  tokens: TokenSymbol[] | Token[];  // Allow both symbol array or token array
+  tokens: Token[];
   onTokenSelect?: (token: Token) => void;
   className?: string;
   showBalances?: boolean;
   showPrices?: boolean;
   showValue?: boolean;
-  variant?: 'table' | 'grid' | 'list';
-  selectedToken?: TokenSymbol;
+  variant?: "table" | "grid" | "list";
+  selectedToken?: string;
 }
 
-export type SortField = 'name' | 'balance' | 'value' | 'symbol';
-export type SortDirection = 'asc' | 'desc'; 
+export type SortField = "name" | "balance" | "value" | "symbol";
+export type SortDirection = "asc" | "desc";

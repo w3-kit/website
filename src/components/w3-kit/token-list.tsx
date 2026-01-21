@@ -3,9 +3,6 @@
 import React, { useState, useMemo, useCallback, memo, useEffect } from "react";
 import { Token, TokenListProps, SortField, SortDirection } from "./token-list-types";
 import { formatBalance, formatCurrency, animationStyles } from "./token-list-utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 
 // Memoized token image component with fallback
 const TokenImage = memo(
@@ -41,7 +38,7 @@ const TokenImage = memo(
 
     return (
       <div
-        className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 bg-muted border border-gray-200 dark:border-gray-600 relative`}
+        className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 relative`}
       >
         <img
           src={logoURI}
@@ -54,8 +51,8 @@ const TokenImage = memo(
           style={{ width: "100%", height: "100%" }}
         />
         {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-muted animate-pulse">
-            <span className="text-xs text-muted-foreground">
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 animate-pulse">
+            <span className="text-xs text-gray-400 dark:text-gray-500">
               {symbol.substring(0, 1)}
             </span>
           </div>
@@ -82,79 +79,79 @@ const TokenGridCard = memo(
     showPrices: boolean;
   }) => {
     return (
-      <Card
+      <div
         onClick={onSelect}
-        className={`cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800
+        className={`bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 cursor-pointer
+        border border-gray-200 dark:border-gray-700
+        hover:shadow-md dark:hover:shadow-gray-800 hover:border-blue-200 dark:hover:border-blue-800
         transform transition-all duration-200 hover:-translate-y-1 h-full
         ${isSelected ? "ring-2 ring-blue-500 dark:ring-blue-400 shadow-md" : ""}`}
       >
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center space-x-3">
-            <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="lg" />
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-foreground truncate">
-                {token.name}
-              </h3>
-              <p className="text-sm text-muted-foreground truncate">
-                {token.symbol}
+        <div className="flex items-center space-x-3">
+          <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="lg" />
+          <div className="min-w-0 flex-1">
+            <h3 className="font-medium text-gray-900 dark:text-white truncate">
+              {token.name}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+              {token.symbol}
+            </p>
+          </div>
+          {isSelected && (
+            <div className="flex-shrink-0 text-blue-500 dark:text-blue-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-3 space-y-1">
+          {showBalances && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Balance:
+              </span>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2 truncate">
+                {formatBalance(token.balance || "0", token.decimals)}
               </p>
             </div>
-            {isSelected && (
-              <div className="flex-shrink-0 text-blue-500 dark:text-blue-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
+          )}
 
-          <div className="mt-3 space-y-1">
-            {showBalances && (
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">
-                  Balance:
-                </span>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2 truncate">
-                  {formatBalance(token.balance || "0", token.decimals)}
-                </p>
-              </div>
-            )}
+          {showPrices && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Price:
+              </span>
+              <p className="text-sm font-medium text-gray-900 dark:text-white ml-2 truncate">
+                {formatCurrency(token.price || 0)}
+              </p>
+            </div>
+          )}
 
-            {showPrices && (
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">
-                  Price:
-                </span>
-                <p className="text-sm font-medium text-foreground ml-2 truncate">
-                  {formatCurrency(token.price || 0)}
-                </p>
-              </div>
-            )}
-
-            {showPrices && showBalances && (
-              <div className="flex justify-between items-center pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
-                <span className="text-xs text-muted-foreground">
-                  Value:
-                </span>
-                <p className="text-sm font-semibold text-foreground ml-2 truncate">
-                  {token.price && token.balance
-                    ? formatCurrency(Number(token.balance) * token.price)
-                    : "-"}
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          {showPrices && showBalances && (
+            <div className="flex justify-between items-center pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Value:
+              </span>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white ml-2 truncate">
+                {token.price && token.balance
+                  ? formatCurrency(Number(token.balance) * token.price)
+                  : "-"}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 );
@@ -186,10 +183,10 @@ const TokenListRow = memo(
         <div className="flex items-center space-x-3 min-w-0 flex-1">
           <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="md" />
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-foreground truncate">
+            <div className="font-medium text-gray-900 dark:text-white truncate">
               {token.name}
             </div>
-            <div className="text-sm text-muted-foreground truncate">
+            <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
               {token.symbol}
             </div>
           </div>
@@ -214,7 +211,7 @@ const TokenListRow = memo(
         <div className="flex items-center space-x-4 sm:space-x-6 flex-shrink-0">
           {showBalances && (
             <div className="flex flex-col items-end">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 Balance
               </span>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
@@ -225,10 +222,10 @@ const TokenListRow = memo(
 
           {showPrices && (
             <div className="flex flex-col items-end">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 Value
               </span>
-              <span className="text-sm font-medium text-foreground whitespace-nowrap">
+              <span className="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
                 {token.price && token.balance
                   ? formatCurrency(Number(token.balance) * token.price)
                   : "-"}
@@ -331,14 +328,12 @@ export const TokenList: React.FC<TokenListProps> = ({
           <>
             {tokens.length > 6 && (
               <div className="flex justify-end mb-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={() => setIsCompact(!isCompact)}
-                  className="text-xs"
+                  className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   {isCompact ? "Show All" : "Compact View"}
-                </Button>
+                </button>
               </div>
             )}
             <div className={`grid ${getGridCols()} gap-2 sm:gap-3 md:gap-4`}>
@@ -357,13 +352,13 @@ export const TokenList: React.FC<TokenListProps> = ({
               ))}
             </div>
             {isCompact && filteredAndSortedTokens.length > 6 && (
-              <Button
-                variant="outline"
+              <button
                 onClick={() => setIsCompact(false)}
-                className="w-full mt-3"
+                className="w-full mt-3 py-2 text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300
+                  border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >
                 Show {filteredAndSortedTokens.length - 6} more tokens
-              </Button>
+              </button>
             )}
           </>
         );
@@ -383,7 +378,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                 />
               ))
             ) : (
-              <div className="p-8 text-center text-muted-foreground">
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 No tokens found matching your search.
               </div>
             )}
@@ -399,7 +394,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                   <tr>
                     <th
                       className="px-3 sm:px-6 py-3 text-left text-xs font-medium
-                        text-muted-foreground uppercase tracking-wider cursor-pointer"
+                        text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("name")}
                     >
                       <span className="flex items-center gap-2">
@@ -414,7 +409,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                     {showBalances && (
                       <th
                         className="px-3 sm:px-6 py-3 text-left text-xs font-medium
-                          text-muted-foreground uppercase tracking-wider cursor-pointer"
+                          text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
                         onClick={() => handleSort("balance")}
                       >
                         <span className="flex items-center gap-2">
@@ -429,11 +424,11 @@ export const TokenList: React.FC<TokenListProps> = ({
                     )}
                     {showPrices && (
                       <>
-                        <th className="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        <th className="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Price
                         </th>
                         <th
-                          className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer"
+                          className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                           onClick={() => handleSort("value")}
                         >
                           <span className="flex items-center gap-2">
@@ -469,26 +464,26 @@ export const TokenList: React.FC<TokenListProps> = ({
                             size="sm"
                           />
                           <div className="min-w-0 flex-1">
-                            <div className="font-medium text-sm sm:text-base text-foreground truncate max-w-[150px] sm:max-w-[200px]">
+                            <div className="font-medium text-sm sm:text-base text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-[200px]">
                               {token.name}
                             </div>
-                            <div className="text-xs sm:text-sm text-muted-foreground truncate">
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
                               {token.symbol}
                             </div>
                           </div>
                         </div>
                       </td>
                       {showBalances && (
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-foreground">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900 dark:text-white">
                           {formatBalance(token.balance || "0", token.decimals)}
                         </td>
                       )}
                       {showPrices && (
                         <>
-                          <td className="hidden sm:table-cell px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-foreground">
+                          <td className="hidden sm:table-cell px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900 dark:text-white">
                             {token.price ? formatCurrency(token.price) : "-"}
                           </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-foreground">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900 dark:text-white">
                             {token.price && token.balance
                               ? formatCurrency(
                                   Number(token.balance) * token.price
@@ -524,19 +519,22 @@ export const TokenList: React.FC<TokenListProps> = ({
             />
           </svg>
         </div>
-        <Input
+        <input
           type="text"
           placeholder="Search tokens..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 pr-10"
+          className="w-full pl-10 pr-4 py-2 text-sm sm:text-base
+            border border-gray-200 dark:border-gray-700 rounded-lg
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-white
+            placeholder-gray-500 dark:placeholder-gray-400
+            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
         />
         {search && (
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => setSearch("")}
-            className="absolute inset-y-0 right-0 h-full"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <svg
               className="h-5 w-5"
@@ -550,13 +548,13 @@ export const TokenList: React.FC<TokenListProps> = ({
                 clipRule="evenodd"
               />
             </svg>
-          </Button>
+          </button>
         )}
       </div>
 
       {filteredAndSortedTokens.length === 0 ? (
         <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-muted-foreground">
+          <p className="text-gray-500 dark:text-gray-400">
             No tokens found matching your search.
           </p>
         </div>
