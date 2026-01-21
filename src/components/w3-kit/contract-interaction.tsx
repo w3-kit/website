@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { ChevronRight, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   TabType,
   FunctionType,
@@ -181,22 +184,18 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
   }, [selectedFunction, inputValue, onExecute]);
 
   return (
-    <div className={`
-      bg-white dark:bg-gray-900 rounded-lg border dark:border-gray-800 shadow-sm
-      ${fadeInAnimation}
-      ${className}
-    `}>
+    <Card className={`${fadeInAnimation} ${className}`}>
       {/* Header */}
-      <div className="p-6 border-b dark:border-gray-800">
+      <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold dark:text-white">Contract Interaction</h2>
+            <h2 className="text-xl font-semibold text-foreground">Contract Interaction</h2>
             <div className="flex items-center mt-2 space-x-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Contract:</span>
+              <span className="text-sm text-muted-foreground">Contract:</span>
               <div className="group cursor-pointer transition-transform duration-200 hover:scale-[1.02]">
-                <code className="text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded dark:text-gray-300
+                <code className="text-sm bg-muted px-2 py-1 rounded text-foreground
                   transition-colors duration-200
-                  group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
+                  group-hover:bg-muted/80"
                 >
                   {contractAddress}
                 </code>
@@ -204,14 +203,15 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </CardHeader>
 
       {/* Interactive Tabs */}
-      <div className="border-b dark:border-gray-800">
+      <div className="border-b">
         <div className="flex">
           {(['read', 'write'] as TabType[]).map((tab) => (
-            <button
+            <Button
               key={tab}
+              variant="ghost"
               onClick={() => {
                 setActiveTab(tab);
                 setSelectedFunction(null);
@@ -219,184 +219,165 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 setError(null);
               }}
               className={`
-                flex-1 px-3 py-2 text-sm
+                flex-1 px-3 py-2 text-sm rounded-none
                 transition-all duration-200
-                hover:bg-gray-50 dark:hover:bg-gray-800/50
                 active:scale-[0.98]
                 ${activeTab === tab
-                  ? 'border-b-2 border-black dark:border-white font-medium dark:text-white'
-                  : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-foreground font-medium text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
                 }
               `}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)} Functions
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
-      <div className="p-6">
+      <CardContent className="p-6">
         {/* Interactive Function Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
           {filteredFunctions.map((fn) => (
-            <button
+            <Button
               key={fn.name}
+              variant="outline"
               onClick={() => {
                 setSelectedFunction(fn);
                 setError(null);
                 setInputValue('');
               }}
               className={`
-                p-3 text-left border rounded
+                p-3 text-left h-auto justify-start flex-col items-start
                 transition-all duration-300 ease-in-out
                 ${buttonAnimation}
                 hover:shadow-md
                 ${fadeInAnimation}
-                dark:border-gray-700
                 group
                 ${selectedFunction?.name === fn.name
-                  ? 'border-black dark:border-white bg-gray-50 dark:bg-gray-800'
-                  : 'border-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'border-foreground bg-muted'
+                  : ''
                 }
               `}
             >
-              <div className="font-medium dark:text-white group-hover:text-blue-600
+              <div className="font-medium text-foreground group-hover:text-blue-600
                 dark:group-hover:text-blue-400 transition-colors duration-200">
                 {fn.name}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1
-                group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-200">
+              <div className="text-xs text-muted-foreground mt-1
+                group-hover:text-foreground/70 transition-colors duration-200">
                 {fn.inputs} input(s) • {fn.type}
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 mt-2
-                group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors duration-200">
+              <div className="text-xs text-muted-foreground/70 mt-2
+                group-hover:text-muted-foreground transition-colors duration-200">
                 {getFunctionDescription(fn)}
               </div>
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* Interactive Function Inputs */}
         {selectedFunction && (
-          <div className={`
-            space-y-4 border dark:border-gray-700 rounded-lg p-4
-            bg-gray-50 dark:bg-gray-800
-            ${slideInAnimation}
-          `}>
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium dark:text-white">{selectedFunction.name}</h3>
-              <span className="text-xs text-gray-500 dark:text-gray-400">{selectedFunction.type}</span>
-            </div>
+          <Card className={`bg-muted ${slideInAnimation}`}>
+            <CardContent className="pt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-foreground">{selectedFunction.name}</h3>
+                <span className="text-xs text-muted-foreground">{selectedFunction.type}</span>
+              </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {selectedFunction.inputs > 0 && (
-                <div className="space-y-1">
-                  <label className="text-sm font-medium dark:text-gray-300">
-                    address
-                    <span className="text-gray-500 dark:text-gray-400 ml-1">(address)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Enter address"
-                    className={`
-                      w-full px-3 py-2 text-sm border rounded-md
-                      focus:outline-none focus:ring-1
-                      dark:bg-gray-900 dark:text-gray-300
-                      transition-all duration-200
-                      ${error?.field === 'input'
-                        ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
-                        : 'border-gray-300 dark:border-gray-700 focus:ring-black dark:focus:ring-white'
-                      }
-                    `}
-                  />
-                </div>
-              )}
-
-              {error && <ErrorMessage error={error} />}
-
-              <button
-                type="submit"
-                disabled={isExecuting || !!error}
-                className={`
-                  w-full px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-md text-sm
-                  ${buttonAnimation}
-                  hover:bg-gray-800 dark:hover:bg-gray-100
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  flex items-center justify-center space-x-2
-                `}
-              >
-                {isExecuting ? (
-                  <>
-                    <div className="animate-spin">
-                      <Code className="w-4 h-4" />
-                    </div>
-                    <span>Executing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Execute {selectedFunction.name}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {selectedFunction.inputs > 0 && (
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-foreground">
+                      address
+                      <span className="text-muted-foreground ml-1">(address)</span>
+                    </label>
+                    <Input
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder="Enter address"
+                      className={error?.field === 'input' ? 'border-red-500' : ''}
+                    />
+                  </div>
                 )}
-              </button>
-            </form>
-          </div>
+
+                {error && <ErrorMessage error={error} />}
+
+                <Button
+                  type="submit"
+                  disabled={isExecuting || !!error}
+                  className="w-full"
+                >
+                  {isExecuting ? (
+                    <>
+                      <div className="animate-spin">
+                        <Code className="w-4 h-4" />
+                      </div>
+                      <span>Executing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Execute {selectedFunction.name}</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         )}
 
         {/* Results Display */}
         {results.length > 0 && (
           <div className={`mt-6 space-y-3 ${slideInAnimation}`}>
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium dark:text-white">Recent Results</h3>
+              <h3 className="text-sm font-medium text-foreground">Recent Results</h3>
               <div className="flex items-center space-x-2">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-all duration-200 hover:scale-110 active:scale-95
-                    w-8 h-8 flex items-center justify-center"
+                  className="h-8 w-8"
                 >
                   ←
-                </button>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                </Button>
+                <span className="text-sm text-muted-foreground">
                   {currentPage} / {totalPages}
                 </span>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-all duration-200 hover:scale-110 active:scale-95
-                    w-8 h-8 flex items-center justify-center"
+                  className="h-8 w-8"
                 >
                   →
-                </button>
+                </Button>
               </div>
             </div>
 
             <div className="space-y-2">
               {paginatedResults.map((result) => (
-                <button
+                <Button
                   key={result.id}
+                  variant="outline"
                   onClick={() => setSelectedResult(
                     selectedResult?.id === result.id ? null : result
                   )}
                   className={`
-                    w-full p-3 border dark:border-gray-700 rounded-lg
-                    hover:shadow-sm dark:bg-gray-800
+                    w-full p-3 h-auto flex-col items-start
+                    hover:shadow-sm
                     transition-all duration-200
                     text-left
                     group
                     ${selectedResult?.id === result.id ?
-                      'border-black dark:border-white ring-1 ring-black dark:ring-white' :
-                      'hover:border-gray-300 dark:hover:border-gray-600'
+                      'border-foreground ring-1 ring-foreground' :
+                      ''
                     }
                   `}
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center w-full">
                     <div className="flex items-center space-x-2">
                       {result.status === 'success' ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />
@@ -407,56 +388,56 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                       ) : (
                         <XCircle className="w-4 h-4 text-red-500" />
                       )}
-                      <span className="font-medium dark:text-white">{result.function.name}</span>
+                      <span className="font-medium text-foreground">{result.function.name}</span>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {result.time}
                     </span>
                   </div>
 
-                  <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 font-mono break-all
-                    transition-all duration-200 group-hover:text-gray-900 dark:group-hover:text-gray-300">
+                  <div className="mt-1 text-sm text-muted-foreground font-mono break-all w-full
+                    transition-all duration-200 group-hover:text-foreground">
                     {getResultMessage(result.function.name, result.result)}
                   </div>
 
                   {/* Expanded Details */}
                   <div className={`
-                    mt-2 space-y-1 text-sm
+                    mt-2 space-y-1 text-sm w-full
                     transition-all duration-300 ease-in-out
                     ${selectedResult?.id === result.id
                       ? 'opacity-100 max-h-[200px]'
                       : 'opacity-0 max-h-0 overflow-hidden'
                     }
                   `}>
-                    <div className="grid grid-cols-3 gap-2 pt-2 border-t dark:border-gray-700">
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t">
                       {result.function.type === 'write' ? (
                         <>
                           <div key="hash">
-                            <div className="text-xs text-gray-500 dark:text-gray-400">Hash</div>
-                            <div className="font-mono truncate">{result.hash}</div>
+                            <div className="text-xs text-muted-foreground">Hash</div>
+                            <div className="font-mono truncate text-foreground">{result.hash}</div>
                           </div>
                           <div key="from">
-                            <div className="text-xs text-gray-500 dark:text-gray-400">From</div>
-                            <div className="font-mono truncate">{result.from}</div>
+                            <div className="text-xs text-muted-foreground">From</div>
+                            <div className="font-mono truncate text-foreground">{result.from}</div>
                           </div>
                           <div key="to">
-                            <div className="text-xs text-gray-500 dark:text-gray-400">To</div>
-                            <div className="font-mono truncate">{result.to}</div>
+                            <div className="text-xs text-muted-foreground">To</div>
+                            <div className="font-mono truncate text-foreground">{result.to}</div>
                           </div>
                           <div key="gas">
-                            <div className="text-xs text-gray-500 dark:text-gray-400">Gas Used</div>
-                            <div className="font-mono">{result.gasUsed}</div>
+                            <div className="text-xs text-muted-foreground">Gas Used</div>
+                            <div className="font-mono text-foreground">{result.gasUsed}</div>
                           </div>
                         </>
                       ) : null}
                       <div key="type">
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Type</div>
-                        <div className="font-medium text-gray-600 dark:text-gray-300">
+                        <div className="text-xs text-muted-foreground">Type</div>
+                        <div className="font-medium text-foreground">
                           {result.function.type === 'write' ? 'Transaction' : 'Read Call'}
                         </div>
                       </div>
                       <div key="status">
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Status</div>
+                        <div className="text-xs text-muted-foreground">Status</div>
                         <div className={`font-medium ${
                           result.status === 'success' ? 'text-green-500' :
                           result.status === 'pending' ? 'text-yellow-500' :
@@ -467,12 +448,12 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                       </div>
                     </div>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
