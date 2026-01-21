@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { StakingInterface } from "./component";
+import { StakingInterface } from "@/components/w3-kit/staking-interface";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { TOKEN_CONFIGS } from "@/config/tokens";
@@ -196,7 +196,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Staking Interface component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add staking-interface" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/staking-interface.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
