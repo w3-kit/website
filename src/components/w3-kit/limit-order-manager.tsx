@@ -1,91 +1,54 @@
+"use client";
+
 import React, { useState } from "react";
 import { TrendingDown, TrendingUp, Check, Trash2 } from "lucide-react";
-import Image from "next/image";
+import { OrderData, LimitOrderManagerProps, FormErrors } from "./limit-order-manager-types";
+import {
+  getStatusColor,
+  validateOrderForm,
+  formatStatus,
+  calculateExpiry,
+  DEFAULT_TOKEN,
+} from "./limit-order-manager-utils";
 
-export interface OrderData {
-  id: string;
-  type: "limit" | "stop-loss";
-  token: {
-    symbol: string;
-    logoURI: string;
-    price: number;
-  };
-  amount: string;
-  price: string;
-  status: "active" | "executed" | "cancelled";
-  timestamp: number;
-  expiry?: number;
-}
-
-interface LimitOrderManagerProps {
-  orders: OrderData[];
-  onOrderCreate?: (order: Omit<OrderData, "id" | "timestamp">) => void;
-  onOrderCancel?: (orderId: string) => void;
-  className?: string;
-}
-
-export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
+export function LimitOrderManager({
   orders: initialOrders,
   onOrderCreate,
   onOrderCancel,
   className = "",
-}) => {
+}: LimitOrderManagerProps) {
   const [orders, setOrders] = useState<OrderData[]>(initialOrders);
   const [showCreateOrder, setShowCreateOrder] = useState(false);
   const [orderType, setOrderType] = useState<"limit" | "stop-loss">("limit");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
   const [expiry, setExpiry] = useState("");
-  const [errors, setErrors] = useState<{
-    amount?: string;
-    price?: string;
-    expiry?: string;
-  }>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const validateForm = () => {
-    const newErrors: typeof errors = {};
-    
-    if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = "Amount must be greater than 0";
-    }
-    
-    if (!price || parseFloat(price) <= 0) {
-      newErrors.price = "Price must be greater than 0";
-    }
-    
-    if (expiry && (parseInt(expiry) <= 0 || parseInt(expiry) > 30)) {
-      newErrors.expiry = "Expiry must be between 1 and 30 days";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleCreateOrder = async () => {
-    if (!validateForm()) return;
-    
+    const validationErrors = validateOrderForm(amount, price, expiry);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
     setIsCreating(true);
     try {
       const newOrder: OrderData = {
         id: Date.now().toString(),
         type: orderType,
-        token: {
-          symbol: "ETH",
-          logoURI: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
-          price: 2845.67,
-        },
+        token: DEFAULT_TOKEN,
         amount,
         price,
         status: "active",
         timestamp: Date.now(),
-        expiry: expiry ? Date.now() + parseInt(expiry) * 24 * 60 * 60 * 1000 : undefined,
+        expiry: calculateExpiry(expiry),
       };
 
-      setOrders(prev => [...prev, newOrder]);
+      setOrders((prev) => [...prev, newOrder]);
       await onOrderCreate?.({
         type: orderType,
         token: newOrder.token,
@@ -95,14 +58,11 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
         expiry: newOrder.expiry,
       });
 
-      // Show loading for 1 second before success
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success animation
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
-        // Reset form and close modal
         setAmount("");
         setPrice("");
         setExpiry("");
@@ -121,11 +81,13 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
 
   const handleConfirmCancel = () => {
     if (orderToCancel) {
-      setOrders(prev => prev.map(order => 
-        order.id === orderToCancel 
-          ? { ...order, status: "cancelled" }
-          : order
-      ));
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderToCancel
+            ? { ...order, status: "cancelled" as const }
+            : order
+        )
+      );
       onOrderCancel?.(orderToCancel);
       setShowCancelModal(false);
       setOrderToCancel(null);
@@ -133,24 +95,17 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
   };
 
   const handleDeleteOrder = (orderId: string) => {
-    setOrders(prev => prev.filter(order => order.id !== orderId));
-  };
-
-  const getStatusColor = (status: OrderData["status"]) => {
-    switch (status) {
-      case "active":
-        return "text-green-500 dark:text-green-400";
-      case "executed":
-        return "text-blue-500 dark:text-blue-400";
-      case "cancelled":
-        return "text-red-500 dark:text-red-400";
-    }
+    setOrders((prev) => prev.filter((order) => order.id !== orderId));
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 ${className}`}
+    >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Limit Orders</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Limit Orders
+        </h2>
         <button
           onClick={() => setShowCreateOrder(!showCreateOrder)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -200,8 +155,10 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
-                  errors.amount ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+                  errors.amount
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
                 placeholder="0.0"
               />
@@ -218,8 +175,10 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
-                  errors.price ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+                  errors.price
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
                 placeholder="0.0"
               />
@@ -236,8 +195,10 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 type="number"
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 ${
-                  errors.expiry ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+                  errors.expiry
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
                 placeholder="Optional"
               />
@@ -250,7 +211,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
               onClick={handleCreateOrder}
               disabled={isCreating || showSuccess}
               className={`w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center relative ${
-                (isCreating || showSuccess) ? "opacity-75 cursor-not-allowed" : ""
+                isCreating || showSuccess ? "opacity-75 cursor-not-allowed" : ""
               }`}
             >
               {isCreating ? (
@@ -279,7 +240,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                 </>
               ) : showSuccess ? (
                 <>
-                  <Check className="w-5 h-5 mr-2 animate-scale-in" />
+                  <Check className="w-5 h-5 mr-2" />
                   Order Created!
                 </>
               ) : (
@@ -298,7 +259,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
           >
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <Image
+                <img
                   src={order.token.logoURI}
                   alt={order.token.symbol}
                   width={32}
@@ -316,7 +277,8 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                   {order.amount} {order.token.symbol}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {order.type === "limit" ? "Limit" : "Stop Loss"} @ ${order.price}
+                  {order.type === "limit" ? "Limit" : "Stop Loss"} @ $
+                  {order.price}
                 </div>
               </div>
             </div>
@@ -324,7 +286,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
             <div className="flex items-center space-x-4">
               <div className="text-sm">
                 <span className={`font-medium ${getStatusColor(order.status)}`}>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  {formatStatus(order.status)}
                 </span>
               </div>
               {order.status === "active" ? (
@@ -356,7 +318,8 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
               Confirm Cancellation
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Are you sure you want to cancel this order? This action cannot be undone.
+              Are you sure you want to cancel this order? This action cannot be
+              undone.
             </p>
             <div className="flex justify-end space-x-4">
               <button
@@ -377,4 +340,6 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
       )}
     </div>
   );
-};
+}
+
+export default LimitOrderManager;
