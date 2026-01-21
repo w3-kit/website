@@ -1,37 +1,28 @@
+'use client';
+
 import React, { useState } from "react";
-import { TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight, ArrowDownRight, ChevronRight, Wallet, Activity, Shield, Coins } from "lucide-react";
-import Image from "next/image";
-
-export interface PositionData {
-  id: string;
-  protocol: {
-    name: string;
-    logoURI: string;
-    type: "lending" | "borrowing" | "farming";
-  };
-  token: {
-    symbol: string;
-    logoURI: string;
-    price: number;
-  };
-  amount: string;
-  value: number;
-  healthFactor: number;
-  apy: number;
-  rewards: {
-    token: string;
-    amount: string;
-    value: number;
-  }[];
-  risk: "low" | "medium" | "high";
-  lastUpdate: number;
-}
-
-interface DeFiPositionManagerProps {
-  positions: PositionData[];
-  onAdjustPosition?: (positionId: string, action: "deposit" | "withdraw" | "borrow" | "repay") => void;
-  className?: string;
-}
+import {
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  ArrowUpRight,
+  ArrowDownRight,
+  ChevronRight,
+  Wallet,
+  Activity,
+  Shield,
+  Coins
+} from "lucide-react";
+import { PositionData, AdjustAction, DeFiPositionManagerProps } from './defi-position-manager-types';
+import {
+  getHealthFactorColor,
+  getRiskColor,
+  calculateTotalValue,
+  cardAnimation,
+  buttonAnimation,
+  modalAnimation,
+  modalContentAnimation,
+} from './defi-position-manager-utils';
 
 export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
   positions,
@@ -40,30 +31,13 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
 }) => {
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(null);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
-  const [adjustAction, setAdjustAction] = useState<"deposit" | "withdraw" | "borrow" | "repay">("deposit");
+  const [adjustAction, setAdjustAction] = useState<AdjustAction>("deposit");
   const [amount, setAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const getHealthFactorColor = (healthFactor: number) => {
-    if (healthFactor >= 2) return "text-green-500 dark:text-green-400";
-    if (healthFactor >= 1.5) return "text-yellow-500 dark:text-yellow-400";
-    return "text-red-500 dark:text-red-400";
-  };
-
-  const getRiskColor = (risk: PositionData["risk"]) => {
-    switch (risk) {
-      case "low":
-        return "text-green-500 dark:text-green-400";
-      case "medium":
-        return "text-yellow-500 dark:text-yellow-400";
-      case "high":
-        return "text-red-500 dark:text-red-400";
-    }
-  };
-
   const handleAdjustPosition = async () => {
     if (!selectedPosition || !amount) return;
-    
+
     setIsProcessing(true);
     try {
       await onAdjustPosition?.(selectedPosition.id, adjustAction);
@@ -87,7 +61,7 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">Total Value</span>
             <div className="text-lg font-semibold text-gray-900 dark:text-white">
-              ${positions.reduce((sum, pos) => sum + pos.value, 0).toFixed(2)}
+              ${calculateTotalValue(positions).toFixed(2)}
             </div>
           </div>
         </div>
@@ -98,14 +72,14 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
         {positions.map((position) => (
           <div
             key={position.id}
-            className="group p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+            className={`group p-4 bg-gray-50 dark:bg-gray-700 rounded-xl ${cardAnimation}`}
           >
             {/* Position Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className="relative">
                   <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-sm">
-                    <Image
+                    <img
                       src={position.protocol.logoURI}
                       alt={position.protocol.name}
                       width={32}
@@ -190,7 +164,7 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
                   setAdjustAction("deposit");
                   setShowAdjustModal(true);
                 }}
-                className="flex-1 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-1 min-w-[120px]"
+                className={`flex-1 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 ${buttonAnimation} flex items-center justify-center space-x-1 min-w-[120px]`}
               >
                 <ArrowUpRight className="w-4 h-4" />
                 <span>Deposit</span>
@@ -201,7 +175,7 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
                   setAdjustAction("withdraw");
                   setShowAdjustModal(true);
                 }}
-                className="flex-1 px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center space-x-1 min-w-[120px]"
+                className={`flex-1 px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 ${buttonAnimation} flex items-center justify-center space-x-1 min-w-[120px]`}
               >
                 <ArrowDownRight className="w-4 h-4" />
                 <span>Withdraw</span>
@@ -213,8 +187,8 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
 
       {/* Adjust Position Modal */}
       {showAdjustModal && selectedPosition && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 animate-slideIn">
+        <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${modalAnimation}`}>
+          <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 ${modalContentAnimation}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {adjustAction.charAt(0).toUpperCase() + adjustAction.slice(1)} {selectedPosition.token.symbol}
@@ -226,7 +200,7 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -241,7 +215,7 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
                     placeholder="0.0"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Image
+                    <img
                       src={selectedPosition.token.logoURI}
                       alt={selectedPosition.token.symbol}
                       width={24}
@@ -283,4 +257,4 @@ export const DeFiPositionManager: React.FC<DeFiPositionManagerProps> = ({
       )}
     </div>
   );
-}; 
+};

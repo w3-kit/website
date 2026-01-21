@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { DeFiPositionManager, PositionData } from "./component";
+import { DeFiPositionManager } from "@/components/w3-kit/defi-position-manager";
+import { PositionData } from "@/components/w3-kit/defi-position-manager-types";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 
@@ -274,7 +275,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the DeFi Position Manager component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add defi-position-manager" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/defi-position-manager.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
