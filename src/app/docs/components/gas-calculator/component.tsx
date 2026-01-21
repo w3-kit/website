@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GasCalculatorProps, GasPrice, GasEstimate } from './types';
 import { fetchGasPrice, estimateTransactionCost, formatGwei } from './until';
 import { Zap, Clock, Wallet, RefreshCw, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export const GasCalculator: React.FC<GasCalculatorProps> = ({
   className = '',
@@ -21,7 +24,7 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
     if (showRefreshAnimation) {
       setIsRefreshing(true);
     }
-    
+
     try {
       const price = await fetchGasPrice(chainId);
       setGasPrice(price);
@@ -102,32 +105,30 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
   } as const;
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 
-      dark:border-gray-700 shadow-sm overflow-hidden ${className}`}
-    >
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <Card className={`overflow-hidden ${className}`}>
+      <CardHeader className="border-b">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-foreground">
               Gas Calculator
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Current network gas prices and estimates
             </p>
           </div>
-          <button
+          <Button
             onClick={() => updateGasPrice()}
             disabled={loading || isRefreshing}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 
-              dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700
-              transition-all duration-200 disabled:opacity-50"
+            variant="ghost"
+            size="icon"
+            className="transition-all duration-200"
           >
             <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
+          </Button>
         </div>
 
         <div className="mt-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center gap-2 text-sm">
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-500" />
               Low Traffic
@@ -142,64 +143,60 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="p-6 space-y-6">
+      <CardContent className="p-6 space-y-6">
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="block text-sm font-medium text-foreground">
             Transaction Type
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {Object.entries(gasPresets).map(([name, { value, description }]) => (
-              <button
+              <Button
                 key={name}
                 onClick={() => {
                   setSelectedPreset(name as keyof typeof gasPresets);
                   setGasLimit(value);
                 }}
-                className={`p-3 text-left rounded-lg transition-all duration-200 group
-                  ${selectedPreset === name
-                    ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }
-                `}
+                variant={selectedPreset === name ? "default" : "outline"}
+                className="h-auto p-3 flex flex-col items-start text-left"
               >
                 <div className="font-medium">{name}</div>
                 <div className="text-xs mt-1 opacity-80">{description}</div>
                 <div className="text-xs mt-1 opacity-60">Gas: {value.toLocaleString()}</div>
-              </button>
+              </Button>
             ))}
           </div>
           <div className="relative">
-            <input
+            <Input
               type="number"
               value={gasLimit}
               onChange={(e) => {
                 setGasLimit(Number(e.target.value));
                 setSelectedPreset('' as keyof typeof gasPresets);
               }}
-              className="w-full px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 
-                rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                transition-all duration-200 pr-20
-                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="pr-20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="Custom gas limit"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-4 gap-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Gas units</span>
+              <span className="text-sm text-muted-foreground">Gas units</span>
               <div className="flex flex-col -space-y-1">
-                <button 
+                <Button
                   onClick={() => setGasLimit(gasLimit + 1000)}
-                  className="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  variant="ghost"
+                  size="icon"
+                  className="h-auto p-0.5"
                 >
                   <ChevronUp className="w-3 h-3" />
-                </button>
-                <button 
+                </Button>
+                <Button
                   onClick={() => setGasLimit(Math.max(0, gasLimit - 1000))}
-                  className="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  variant="ghost"
+                  size="icon"
+                  className="h-auto p-0.5"
                 >
                   <ChevronDown className="w-3 h-3" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -207,10 +204,10 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
 
         {loading ? (
           <div className="space-y-4 animate-pulse">
-            <div className="h-[200px] bg-gray-100 dark:bg-gray-700 rounded-xl" />
+            <div className="h-[200px] bg-muted rounded-xl" />
           </div>
         ) : error ? (
-          <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/30 
+          <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/30
             border border-red-100 dark:border-red-800
             flex items-center gap-3 animate-slideIn"
           >
@@ -223,65 +220,62 @@ export const GasCalculator: React.FC<GasCalculatorProps> = ({
               const config = getSpeedConfig(speed);
               const Icon = config.icon;
               return (
-                <button
+                <Button
                   key={speed}
                   onClick={() => handleSpeedSelect(speed)}
-                  className={`w-full p-4 rounded-xl border transition-all duration-200
-                    hover:shadow-md group
-                    ${selectedSpeed === speed
-                      ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-800'
-                      : 'border-gray-200 dark:border-gray-700'
-                    }
-                  `}
+                  variant={selectedSpeed === speed ? "outline" : "ghost"}
+                  className={`w-full h-auto p-4 justify-start hover:shadow-md group ${
+                    selectedSpeed === speed ? 'border-primary bg-accent' : ''
+                  }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between w-full">
                     <div className="flex items-center gap-3">
-                      <div className={`${config.color} transition-transform duration-200 
+                      <div className={`${config.color} transition-transform duration-200
                         group-hover:scale-110`}>
                         <Icon className="w-6 h-6" />
                       </div>
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-white">
+                        <div className="font-medium text-foreground">
                           {config.label}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                           {config.description}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-bold text-gray-900 dark:text-white">
+                      <div className="text-xl font-bold text-foreground">
                         {formatGwei(gasPrice[speed])}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         Gwei • {config.time}
                       </div>
                     </div>
                   </div>
                   {estimate && (
-                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700
-                      text-sm text-gray-500 dark:text-gray-400 text-right"
+                    <div className="mt-3 pt-3 border-t w-full
+                      text-sm text-muted-foreground text-right"
                     >
                       Estimated cost: {estimate.estimatedCost[speed]} ETH
                     </div>
                   )}
-                </button>
+                </Button>
               );
             })}
 
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-6 pt-6 border-t">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground">
                   Base Fee: {formatGwei(gasPrice.baseFee)} Gwei
                 </span>
-                <span className="text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground">
                   Block #{gasPrice.lastBlock}
                 </span>
               </div>
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
-}; 
+};
