@@ -1,4 +1,4 @@
-import { ButtonVariant, WalletType, WalletConnectConfig } from './types';
+import { ButtonVariant, WalletType, WalletConnectConfig } from './connect-wallet-types';
 
 // Variant styles for button appearance
 export const variantStyles: Record<ButtonVariant, string> = {

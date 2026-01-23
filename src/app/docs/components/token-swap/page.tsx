@@ -19,9 +19,9 @@ export default function TokenSwapPage() {
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
   const [lastSwap, setLastSwap] = useState<SwapParams | null>(null);
 
-  const handleSwap = useCallback(async (fromToken: TokenSymbol, toToken: TokenSymbol, amount: string) => {
+  const handleSwap = useCallback(async (fromToken: string, toToken: string, amount: string) => {
     console.log("Swap:", { fromToken, toToken, amount });
-    setLastSwap({ fromToken, toToken, amount, slippage: 0.5 });
+    setLastSwap({ fromToken: fromToken as TokenSymbol, toToken: toToken as TokenSymbol, amount, slippage: 0.5 });
     // Simulate swap delay
     await new Promise(resolve => setTimeout(resolve, 1000));
   }, []);

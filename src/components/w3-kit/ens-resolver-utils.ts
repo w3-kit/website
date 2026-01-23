@@ -1,4 +1,4 @@
-import { ENSResult } from './types';
+import { ENSResult } from './ens-resolver-types';
 
 // Check if input is an ENS name
 export const isENS = (value: string): boolean => value.toLowerCase().endsWith('.eth');

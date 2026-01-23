@@ -1,4 +1,4 @@
-import { RiskLevel } from "./types";
+import { RiskLevel } from "./nft-marketplace-aggregator-types";
 
 export function getRiskColor(level: RiskLevel): string {
   switch (level) {

@@ -1,4 +1,4 @@
-import { Network, Token } from './types';
+import { Network, Token } from './bridge-types';
 
 // Default supported networks
 export const DEFAULT_NETWORKS: Network[] = [

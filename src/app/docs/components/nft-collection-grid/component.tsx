@@ -141,7 +141,7 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
             {/* Chain Filter */}
             <Select
               value={selectedChain?.toString() || 'all'}
-              onValueChange={(value) => setSelectedChain(value === 'all' ? null : Number(value))}
+              onValueChange={(value: string) => setSelectedChain(value === 'all' ? null : Number(value))}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Chains" />
@@ -159,7 +159,7 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
             {/* Sort By */}
             <Select
               value={sortBy}
-              onValueChange={(value) => setSortBy(value as 'name' | 'recent')}
+              onValueChange={(value: string) => setSortBy(value as 'name' | 'recent')}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />

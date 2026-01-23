@@ -105,12 +105,12 @@ export default function ConnectWalletPage() {
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="light"
+                      variant="outline"
                       walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="dark"
+                      variant="default"
                       walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />

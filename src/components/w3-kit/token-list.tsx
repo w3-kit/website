@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback, memo } from "react";
 import Image from "next/image";
-import { TokenListProps, SortField, SortDirection } from "./types";
-import { formatBalance, formatCurrency } from "./utils";
-import { TOKEN_CONFIGS } from "../../../../config/tokens";
+import { TokenListProps, SortField, SortDirection } from "./token-list-types";
+import { formatBalance, formatCurrency } from "./token-list-utils";
+import { TOKEN_CONFIGS } from "@/config/tokens";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -232,14 +232,16 @@ export const TokenList: React.FC<TokenListProps> = ({
   const tokenList = useMemo(() => {
     return tokens.map((token) => {
       if (typeof token === "string") {
+        const config = TOKEN_CONFIGS[token as keyof typeof TOKEN_CONFIGS];
+        if (!config) return null;
         return {
-          ...TOKEN_CONFIGS[token],
+          ...config,
           balance: "0", // This would be fetched from the wallet
           price: 0, // This would be fetched from an API
         };
       }
       return token; // If it's already a Token object, return as is
-    });
+    }).filter((token): token is Token => token !== null);
   }, [tokens]);
 
   const filteredAndSortedTokens = useMemo(() => {

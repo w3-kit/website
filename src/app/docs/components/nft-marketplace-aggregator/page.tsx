@@ -65,22 +65,8 @@ export default function NFTMarketplaceAggregatorPage() {
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <NFTMarketplaceAggregator
-                  onSearch={handleSearch}
+                  onBuy={(listing) => console.log('Buying:', listing)}
                 />
-
-                {/* Search history display */}
-                {searchHistory.length > 0 && (
-                  <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Search History</h3>
-                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 text-sm">
-                      <ul className="space-y-1">
-                        {searchHistory.map((item, index) => (
-                          <li key={index} className="text-gray-700 dark:text-gray-300">{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <CodeBlock

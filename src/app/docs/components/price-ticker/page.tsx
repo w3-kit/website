@@ -123,13 +123,8 @@ export default function PriceTickerPage() {
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <PriceTicker
                   tokens={mockData}
-                  onTokenSelect={handleTokenSelect}
+                  onPriceUpdate={(prices) => console.log('Prices updated:', prices)}
                 />
-                {selectedToken && (
-                  <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    Selected Token: {selectedToken}
-                  </div>
-                )}
               </div>
             ) : (
               <CodeBlock

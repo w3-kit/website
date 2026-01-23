@@ -1,4 +1,4 @@
-import { Network } from "./types";
+import { Network } from "./network-switcher-types";
 
 export async function switchNetwork(network: Network): Promise<void> {
   if (typeof window === "undefined" || !window.ethereum) {
@@ -39,13 +39,5 @@ export async function switchNetwork(network: Network): Promise<void> {
       }
     }
     throw new Error("Failed to switch network");
-  }
-}
-
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-    };
   }
 }

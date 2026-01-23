@@ -593,7 +593,7 @@ export function MultisigWallet({
 interface TransactionCardProps {
   tx: Transaction;
   index: number;
-  lastTransactionRef: React.RefObject<HTMLDivElement>;
+  lastTransactionRef: React.RefObject<HTMLDivElement | null>;
   newTransactions: Set<string>;
   expandedTx: string | null;
   setExpandedTx: (id: string | null) => void;

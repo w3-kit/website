@@ -1,9 +1,9 @@
-import { NFTCard } from "@/app/docs/components/nft-card/component";
-import { SmartContractScanner } from "@/app/docs/components/smart-contract-scanner/component";
-import { AssetPortfolio } from "@/app/docs/components/asset-portfolio/component";
-import { ContractInteraction } from "@/app/docs/components/contract-interaction/component";
-import { LiquidityPoolStats } from "@/app/docs/components/liquidity-pool-stats/component";
-import { NetworkSwitcher } from "@/app/docs/components/network-switcher/component";
+import { NFTCard } from "@/components/w3-kit/nft-card";
+import { SmartContractScanner } from "@/components/w3-kit/smart-contract-scanner";
+import { AssetPortfolio } from "@/components/w3-kit/asset-portfolio";
+import { ContractInteraction } from "@/components/w3-kit/contract-interaction";
+import { LiquidityPoolStats } from "@/components/w3-kit/liquidity-pool-stats";
+import { NetworkSwitcher } from "@/components/w3-kit/network-switcher";
 import { TOKEN_CONFIGS } from "@/config/tokens";
 import { NETWORKS, TEST_NETWORKS } from "@/app/docs/components/network-switcher/networks";
 

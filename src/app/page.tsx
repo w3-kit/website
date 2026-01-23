@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Code, Check, Sparkles } from "lucide-react";
-import { SmartContractScanner } from "@/app/docs/components/smart-contract-scanner/component";
-import { AssetPortfolio } from "@/app/docs/components/asset-portfolio/component";
+import { SmartContractScanner } from "@/components/w3-kit/smart-contract-scanner";
+import { AssetPortfolio } from "@/components/w3-kit/asset-portfolio";
 import { TOKEN_CONFIGS } from "@/config/tokens";
-import { LiquidityPoolStats } from "@/app/docs/components/liquidity-pool-stats/component";
-import { NetworkSwitcher } from "@/app/docs/components/network-switcher/component";
-import { NFTCard } from "@/app/docs/components/nft-card/component";
+import { LiquidityPoolStats } from "@/components/w3-kit/liquidity-pool-stats";
+import { NetworkSwitcher } from "@/components/w3-kit/network-switcher";
+import { NFTCard } from "@/components/w3-kit/nft-card";
 import { NETWORKS } from "./docs/components/network-switcher/networks";
 import { PreviewCard } from "@/components/PreviewCard";
 import { previewComponents } from "@/constants/preview-components";

@@ -1,4 +1,4 @@
-import { SecurityCheck } from "./types";
+import { SecurityCheck } from "./smart-contract-scanner-types";
 
 export function isValidAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);

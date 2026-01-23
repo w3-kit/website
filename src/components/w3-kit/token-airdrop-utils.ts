@@ -1,4 +1,4 @@
-import { AirdropInfo, AirdropStatus } from "./types";
+import { AirdropInfo, AirdropStatus } from "./token-airdrop-types";
 
 export function formatDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString(undefined, {

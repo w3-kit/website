@@ -1,4 +1,4 @@
-import { FunctionType } from './types';
+import { FunctionType } from './contract-interaction-types';
 
 // Default ERC20 functions for demo
 export const DEFAULT_FUNCTIONS: FunctionType[] = [
