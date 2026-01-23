@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AssetPortfolio } from "./component";
+import { AssetPortfolio } from "@/components/w3-kit/asset-portfolio";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { TOKEN_CONFIGS } from "@/config/tokens";

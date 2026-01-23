@@ -1,56 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { ArrowUp, ArrowDown, ChevronDown, ExternalLink } from 'lucide-react';
-import { TOKEN_CONFIGS } from '@/config/tokens';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { Asset, AssetPortfolioProps, Timeframe } from './asset-portfolio-types';
+import {
+  cardAnimation,
+  itemAnimation,
+  formatCurrency,
+  formatPercent,
+  getChainName,
+  getExplorerUrl,
+} from './asset-portfolio-utils';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-// Animation constants
-const cardAnimation = "transition-all duration-300 ease-in-out";
-const itemAnimation = "animate-in fade-in-50 duration-300";
-
-// Add interface for candlestick data
-interface CandleData {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-interface Asset {
-  symbol: keyof typeof TOKEN_CONFIGS;
-  balance: string;
-  price: number;
-  value: number;
-  change24h: number;
-  color: string;
-  priceHistory: {
-    '24h': number[];
-    '7d': number[];
-    '30d': number[];
-  };
-  candleData: {
-    '24h': CandleData[];
-    '7d': CandleData[];
-    '30d': CandleData[];
-  };
-}
-
-interface AssetPortfolioProps {
-  assets: Asset[];
-  totalValue: number;
-  totalChange24h: number;
-  className?: string;
-  variant?: 'default' | 'compact';
-  onAssetClick?: (asset: Asset) => void;
-}
 
 // Simple price chart using div bars
 const PriceChart: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -78,7 +43,7 @@ const PriceChart: React.FC<{ data: number[]; color: string }> = ({ data, color }
   );
 };
 
-// Update the AssetItem expanded view
+// Asset item component with expandable details
 const AssetItem: React.FC<{
   asset: Asset;
   onClick?: () => void;
@@ -86,8 +51,8 @@ const AssetItem: React.FC<{
   isExpanded: boolean;
   onExpand: (symbol: string) => void;
 }> = ({ asset, onClick, compact, isExpanded, onExpand }) => {
-  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
-  const token = TOKEN_CONFIGS[asset.symbol];
+  const [timeframe, setTimeframe] = useState<Timeframe>('24h');
+  const token = asset.tokenConfig;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -99,27 +64,26 @@ const AssetItem: React.FC<{
   };
 
   return (
-    <div className={`${itemAnimation} bg-white dark:bg-gray-800 rounded-lg overflow-hidden 
+    <div className={`${itemAnimation} bg-white dark:bg-gray-800 rounded-lg overflow-hidden
       ${!compact && 'hover:shadow-md transition-shadow duration-200'}`}
     >
       <div
         onClick={handleClick}
-        className={`flex items-center justify-between p-4 cursor-pointer 
+        className={`flex items-center justify-between p-4 cursor-pointer
           hover:bg-gray-50 dark:hover:bg-gray-700/50 ${cardAnimation} group`}
       >
         {/* Token Header Content */}
         <div className="flex items-center space-x-4 flex-1">
           <div className="relative w-10 h-10 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full bg-gray-50 dark:bg-gray-700" />
-            <Image
+            <img
               src={token.logoURI}
               alt={token.symbol}
               width={32}
               height={32}
               className="rounded-full relative z-10 transition-transform group-hover:scale-105"
-              priority
             />
-            <div 
+            <div
               className="absolute inset-0 rounded-full ring-2 opacity-0 group-hover:opacity-100 transition-opacity"
               style={{ borderColor: asset.color }}
             />
@@ -142,23 +106,18 @@ const AssetItem: React.FC<{
         <div className="flex items-center space-x-4">
           <div className="text-right">
             <div className="font-medium text-gray-900 dark:text-white">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(asset.value)}
+              {formatCurrency(asset.value)}
             </div>
             <div className={`text-sm font-medium flex items-center justify-end space-x-1 ${
               asset.change24h >= 0 ? 'text-green-500' : 'text-red-500'
             }`}>
               {asset.change24h >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-              <span>{`${asset.change24h >= 0 ? '+' : ''}${asset.change24h.toFixed(2)}%`}</span>
+              <span>{formatPercent(asset.change24h)}</span>
             </div>
           </div>
           {!compact && (
-            <ChevronDown 
-              className={`w-5 h-5 text-gray-400 transition-transform duration-300 
+            <ChevronDown
+              className={`w-5 h-5 text-gray-400 transition-transform duration-300
                 ${isExpanded ? 'rotate-180' : ''} group-hover:text-gray-600 dark:group-hover:text-gray-300`}
             />
           )}
@@ -184,7 +143,7 @@ const AssetItem: React.FC<{
                     onChange={setTimeframe}
                   />
                 </div>
-                
+
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
                   <PriceChart
                     data={asset.priceHistory[timeframe]}
@@ -205,7 +164,7 @@ const AssetItem: React.FC<{
                     ${asset.price.toLocaleString()}
                   </div>
                 </div>
-                
+
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
                   <div className="text-sm text-gray-500 dark:text-gray-400">24h Change</div>
                   <div className={`font-medium flex items-center ${
@@ -241,7 +200,7 @@ const AssetItem: React.FC<{
                         {token.address}
                       </code>
                       <a
-                        href={`https://etherscan.io/token/${token.address}`}
+                        href={getExplorerUrl(token.address, token.chainId)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:text-blue-600 text-sm flex items-center space-x-1"
@@ -250,11 +209,11 @@ const AssetItem: React.FC<{
                       </a>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">Chain</div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      {token.chainId === 1 ? 'Ethereum Mainnet' : `Chain ID: ${token.chainId}`}
+                      {getChainName(token.chainId)}
                     </div>
                   </div>
                 </div>
@@ -268,8 +227,8 @@ const AssetItem: React.FC<{
 };
 
 const TimeframeSelector: React.FC<{
-  selected: '24h' | '7d' | '30d';
-  onChange: (timeframe: '24h' | '7d' | '30d') => void;
+  selected: Timeframe;
+  onChange: (timeframe: Timeframe) => void;
 }> = ({ selected, onChange }) => {
   const timeframes = [
     { value: '24h', label: '24H' },
@@ -296,7 +255,7 @@ const TimeframeSelector: React.FC<{
   );
 };
 
-// Update the PortfolioDistributionChart component
+// Portfolio distribution doughnut chart
 const PortfolioDistributionChart: React.FC<{
   assets: Asset[];
   totalValue: number;
@@ -311,11 +270,11 @@ const PortfolioDistributionChart: React.FC<{
     datasets: [
       {
         data: assets.map(a => a.value),
-        backgroundColor: assets.map((a, i) => 
+        backgroundColor: assets.map((a, i) =>
           i === activeIndex ? a.color : `${a.color}80`
         ),
         borderColor: '#ffffff',
-        borderWidth: assets.map((_, i) => 
+        borderWidth: assets.map((_, i) =>
           i === activeIndex ? 2 : 1
         ),
         hoverOffset: 15,
@@ -344,7 +303,7 @@ const PortfolioDistributionChart: React.FC<{
         <div className="absolute inset-0">
           <Doughnut data={data} options={options} />
         </div>
-        
+
         {/* Center Content */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center bg-white dark:bg-gray-800 rounded-full p-4 w-36 h-36 flex items-center justify-center shadow-inner">
@@ -385,26 +344,13 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
   variant = 'default',
   onAssetClick
 }) => {
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>('24h');
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleExpand = (symbol: string) => {
     setExpandedAsset(expandedAsset === symbol ? null : symbol);
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
-  const formatPercent = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
   };
 
   const activeIndex = selectedIndex ?? hoveredIndex;
@@ -420,7 +366,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             {formatPercent(totalChange24h)}
           </span>
         </div>
-        
+
         <div className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           {formatCurrency(totalValue)}
         </div>
@@ -437,13 +383,12 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                 <div className="flex items-center space-x-3">
                   <div className="relative w-8 h-8 flex items-center justify-center">
                     <div className="absolute inset-0 rounded-full bg-gray-50 dark:bg-gray-700" />
-                    <Image
-                      src={TOKEN_CONFIGS[asset.symbol].logoURI}
+                    <img
+                      src={asset.tokenConfig.logoURI}
                       alt={asset.symbol}
                       width={24}
                       height={24}
                       className="rounded-full relative z-10 transition-transform group-hover:scale-105"
-                      priority
                     />
                   </div>
                   <div>
@@ -451,7 +396,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                       {asset.symbol}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {Number(asset.balance).toFixed(TOKEN_CONFIGS[asset.symbol].decimals)}
+                      {Number(asset.balance).toFixed(asset.tokenConfig.decimals)}
                     </div>
                   </div>
                 </div>
@@ -468,7 +413,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                       <span>{formatPercent(asset.change24h)}</span>
                     </div>
                   </div>
-                  <ChevronDown 
+                  <ChevronDown
                     className={`w-4 h-4 text-gray-400 transition-transform duration-300
                       ${expandedAsset === asset.symbol ? 'rotate-180' : ''}`}
                   />
@@ -537,13 +482,13 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                   {/* Token Info */}
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                     <a
-                      href={`https://etherscan.io/token/${TOKEN_CONFIGS[asset.symbol].address}`}
+                      href={getExplorerUrl(asset.tokenConfig.address, asset.tokenConfig.chainId)}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       className="text-blue-500 hover:text-blue-600 text-xs flex items-center space-x-1"
                     >
-                      <span>View on Etherscan</span>
+                      <span>View on Explorer</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -584,12 +529,12 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={`w-full flex items-center justify-between p-3 rounded-lg transition-all
-                    ${i === activeIndex 
-                      ? 'bg-gray-100 dark:bg-gray-700 shadow-sm' 
+                    ${i === activeIndex
+                      ? 'bg-gray-100 dark:bg-gray-700 shadow-sm'
                       : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-4 h-4 rounded-full"
                       style={{ backgroundColor: asset.color }}
                     />
@@ -621,7 +566,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
               ))}
             </div>
           </div>
-          
+
           <div className="relative flex items-center justify-center min-h-[320px]">
             <PortfolioDistributionChart
               assets={assets}
