@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { MultisigWallet } from "./component";
+import { MultisigWallet } from "@/components/w3-kit/multisig-wallet";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { Transaction } from './types';
+import { Transaction } from "@/components/w3-kit/multisig-wallet-types";
 
 export default function MultisigWalletPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
@@ -184,7 +184,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Multi-Signature Wallet component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add multisig-wallet" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/multisig-wallet.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
