@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { TokenSwapWidget } from "./component";
+import { TokenSwapWidget } from "@/components/w3-kit/token-swap";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { TokenSymbol } from '../../../../config/tokens';
@@ -171,7 +171,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Token Swap component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add token-swap" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/token-swap.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
