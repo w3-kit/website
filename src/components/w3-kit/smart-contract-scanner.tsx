@@ -12,9 +12,6 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   ContractError,
   ContractInfo,
@@ -227,19 +224,23 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
 
   if (variant === "compact") {
     return (
-      <Card className={className}>
-        <CardContent className="p-4 space-y-4">
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 ${className}`}
+      >
+        <div className="space-y-4">
           <div className="relative">
-            <Input
+            <input
               type="text"
               value={address}
               onChange={handleAddressChange}
               placeholder="Enter contract address"
-              className={`w-full pl-10 text-sm ${
+              className={`w-full px-4 py-2 pl-10 text-sm border ${
                 validationError
                   ? "border-red-300 dark:border-red-700"
-                  : ""
-              }`}
+                  : "border-gray-200 dark:border-gray-700"
+              } rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                placeholder-gray-500 dark:placeholder-gray-400
+                focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400`}
               disabled={isLoading}
             />
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -251,10 +252,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
             </p>
           )}
 
-          <Button
+          <button
             onClick={handleScan}
             disabled={!address || isLoading || !!validationError}
-            className="w-full text-sm"
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
+              disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
           >
             {isLoading ? (
               <div className="flex items-center justify-center space-x-2">
@@ -264,7 +266,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
             ) : (
               "Scan Contract"
             )}
-          </Button>
+          </button>
 
           {error && (
             <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg flex items-start space-x-2">
@@ -276,7 +278,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
           {contractInfo && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
                   Security Score
                 </span>
                 <span
@@ -292,35 +294,39 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                 </span>
               </div>
 
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {contractInfo.checks.length} security checks completed
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className={className}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}
+    >
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-foreground mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Smart Contract Scanner
         </h2>
 
         <div className="space-y-4">
           <div className="relative">
-            <Input
+            <input
               type="text"
               value={address}
               onChange={handleAddressChange}
               placeholder="Enter contract address"
-              className={`w-full pl-11 h-11 text-sm ${
+              className={`w-full px-4 py-3 pl-11 text-sm border ${
                 validationError
                   ? "border-red-300 dark:border-red-700"
-                  : ""
-              }`}
+                  : "border-gray-200 dark:border-gray-700"
+              } rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                placeholder-gray-500 dark:placeholder-gray-400
+                focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400`}
               disabled={isLoading}
             />
             <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -332,10 +338,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
             </p>
           )}
 
-          <Button
+          <button
             onClick={handleScan}
             disabled={!address || isLoading || !!validationError}
-            className="w-full h-11 text-sm font-medium"
+            className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600
+              disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
           >
             {isLoading ? (
               <div className="flex items-center justify-center space-x-2">
@@ -345,7 +352,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
             ) : (
               "Scan Contract"
             )}
-          </Button>
+          </button>
 
           {error && (
             <div
@@ -371,18 +378,17 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
           <div className="border-b border-gray-200 dark:border-gray-700">
             <div className="flex space-x-4 px-6 overflow-x-auto">
               {(["overview", "functions", "code"] as const).map((tab) => (
-                <Button
+                <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  variant="ghost"
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap rounded-none ${
+                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab
                       ? "border-blue-500 text-blue-500"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
+                      : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -393,47 +399,46 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Contract Name
                       </h3>
-                      <p className="mt-1 text-sm text-foreground">
+                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
                         {contractInfo.name}
                       </p>
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Contract Address
                       </h3>
                       <div className="mt-1 flex items-center">
-                        <p className="text-sm text-foreground truncate max-w-[180px] sm:max-w-xs">
+                        <p className="text-sm text-gray-900 dark:text-white truncate max-w-[180px] sm:max-w-xs">
                           {contractInfo.address}
                         </p>
-                        <Button
+                        <button
                           onClick={() =>
                             handleCopyToClipboard(contractInfo.address)
                           }
-                          variant="ghost"
-                          size="icon"
-                          className="ml-2 h-6 w-6"
+                          className="ml-2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400
+                            dark:hover:text-gray-200 transition-colors"
                           title="Copy address"
                         >
                           <Copy className="w-4 h-4" />
-                        </Button>
+                        </button>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Network
                       </h3>
-                      <p className="mt-1 text-sm text-foreground">
+                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
                         {contractInfo.network}
                       </p>
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Compiler Version
                       </h3>
-                      <p className="mt-1 text-sm text-foreground">
+                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
                         {contractInfo.compiler}
                       </p>
                     </div>
@@ -441,7 +446,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Security Score
                       </h3>
                       <div className="mt-1 flex items-center">
@@ -456,13 +461,13 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                         >
                           {contractInfo.securityScore}
                         </span>
-                        <span className="text-sm text-muted-foreground ml-1">
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
                           /100
                         </span>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Verification Status
                       </h3>
                       <div className="mt-1 flex items-center">
@@ -471,7 +476,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                         ) : (
                           <X className="w-4 h-4 text-red-500" />
                         )}
-                        <span className="ml-2 text-sm text-foreground">
+                        <span className="ml-2 text-sm text-gray-900 dark:text-white">
                           {contractInfo.verified ? "Verified" : "Unverified"}
                         </span>
                       </div>
@@ -480,7 +485,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-foreground">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     Security Checks
                   </h3>
                   <div className="space-y-3">
@@ -507,11 +512,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                                   className={`w-4 h-4 ${getStatusColor(check.status)}`}
                                 />
                               )}
-                              <span className="font-medium text-foreground">
+                              <span className="font-medium text-gray-900 dark:text-white">
                                 {check.name}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                               {check.description}
                             </p>
                           </div>
@@ -546,11 +551,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                         >
                           {func.type.toUpperCase()}
                         </span>
-                        <span className="font-medium text-foreground">
+                        <span className="font-medium text-gray-900 dark:text-white">
                           {func.name}
                         </span>
                       </div>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {func.stateMutability}
                       </span>
                     </div>
@@ -558,14 +563,14 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                     <div className="space-y-2">
                       {func.inputs.length > 0 && (
                         <div>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
                             Inputs:
                           </span>
                           <div className="mt-1 space-y-1">
                             {func.inputs.map((input, i) => (
                               <div
                                 key={`${input.name}-${i}`}
-                                className="text-sm text-foreground"
+                                className="text-sm text-gray-900 dark:text-white"
                               >
                                 {input.name}: {input.type}
                               </div>
@@ -575,10 +580,10 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                       )}
 
                       <div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           Returns:
                         </span>
-                        <div className="mt-1 text-sm text-foreground">
+                        <div className="mt-1 text-sm text-gray-900 dark:text-white">
                           {func.outputs.map((output) => output.type).join(", ")}
                         </div>
                       </div>
@@ -592,38 +597,35 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="mb-2 sm:mb-0">
-                    <h3 className="text-sm font-medium text-muted-foreground">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                       Contract Address
                     </h3>
                     <div className="mt-1 flex items-center">
-                      <p className="text-sm text-foreground truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+                      <p className="text-sm text-gray-900 dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-md">
                         {contractInfo.address}
                       </p>
-                      <Button
+                      <button
                         onClick={() =>
                           handleCopyToClipboard(contractInfo.address)
                         }
-                        variant="ghost"
-                        size="icon"
-                        className="ml-2 h-6 w-6"
+                        className="ml-2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400
+                          dark:hover:text-gray-200 transition-colors"
                         title="Copy address"
                       >
                         <Copy className="w-4 h-4" />
-                      </Button>
+                      </button>
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button
+                    <button
                       onClick={() =>
                         handleCopyToClipboard(contractInfo.sourceCode!)
                       }
-                      variant={copySuccess ? "default" : "secondary"}
-                      size="sm"
-                      className={`text-xs font-medium ${
+                      className={`px-3 py-1.5 text-xs font-medium ${
                         copySuccess
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40"
-                          : ""
-                      }`}
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      } rounded-md transition-colors flex items-center`}
                       title="Copy source code"
                     >
                       {copySuccess ? (
@@ -637,13 +639,13 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                           Copy Code
                         </>
                       )}
-                    </Button>
+                    </button>
                     <a
                       href={`https://etherscan.io/address/${contractInfo.address}#code`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300
-                        bg-muted hover:bg-gray-200 dark:hover:bg-gray-700
+                        bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
                         rounded-md transition-colors flex items-center"
                     >
                       <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
@@ -655,14 +657,14 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                 <div className="relative">
                   <div
                     ref={codePreviewRef}
-                    className={`p-4 bg-muted rounded-lg overflow-x-auto text-sm ${
+                    className={`p-4 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-x-auto text-sm ${
                       !expandedCode
                         ? "max-h-[300px] overflow-y-hidden"
                         : "max-h-[800px] overflow-y-auto"
                     }`}
                   >
                     <pre className="whitespace-pre-wrap break-all">
-                      <code className="text-foreground font-mono">
+                      <code className="text-gray-900 dark:text-white font-mono">
                         {expandedCode
                           ? contractInfo.sourceCode
                           : getCodePreview(contractInfo.sourceCode!, 15)}
@@ -676,10 +678,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                     )}
 
                   {contractInfo.sourceCode!.split("\n").length > 15 && (
-                    <Button
+                    <button
                       onClick={() => setExpandedCode(!expandedCode)}
-                      variant="secondary"
-                      className="mt-2 w-full text-sm font-medium"
+                      className="mt-2 w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300
+                        bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                        rounded-md transition-colors"
                     >
                       {expandedCode ? (
                         <>
@@ -694,11 +697,11 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                           lines)
                         </>
                       )}
-                    </Button>
+                    </button>
                   )}
 
                   <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                    <div className="p-3 bg-muted rounded-lg">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                       <h4 className="font-medium text-gray-700 dark:text-gray-300">
                         License
                       </h4>
@@ -706,7 +709,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                         {contractInfo.license}
                       </p>
                     </div>
-                    <div className="p-3 bg-muted rounded-lg">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                       <h4 className="font-medium text-gray-700 dark:text-gray-300">
                         Compiler
                       </h4>
@@ -714,7 +717,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
                         {contractInfo.compiler}
                       </p>
                     </div>
-                    <div className="p-3 bg-muted rounded-lg">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                       <h4 className="font-medium text-gray-700 dark:text-gray-300">
                         Verification
                       </h4>
@@ -739,7 +742,7 @@ export const SmartContractScanner: React.FC<SmartContractScannerProps> = ({
           </div>
         </>
       )}
-    </Card>
+    </div>
   );
 };
 

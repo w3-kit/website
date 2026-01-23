@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { SmartContractScanner } from "./component";
+import { SmartContractScanner } from "@/components/w3-kit/smart-contract-scanner";
 import { Code, Eye, AlertTriangle } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { ContractError } from "./component";
+import { ContractError } from "@/components/w3-kit/smart-contract-scanner-types";
 
 export default function SmartContractScannerPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
@@ -201,7 +201,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Smart Contract Scanner component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add smart-contract-scanner" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/smart-contract-scanner.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
