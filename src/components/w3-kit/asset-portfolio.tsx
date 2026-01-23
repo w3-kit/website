@@ -1,21 +1,58 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { ArrowUp, ArrowDown, ChevronDown, ExternalLink } from 'lucide-react';
+import { TOKEN_CONFIGS } from '@/config/tokens';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Asset, AssetPortfolioProps, Timeframe } from './asset-portfolio-types';
-import {
-  cardAnimation,
-  itemAnimation,
-  formatCurrency,
-  formatPercent,
-  getChainName,
-  getExplorerUrl,
-} from './asset-portfolio-utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Animation constants
+const cardAnimation = "transition-all duration-300 ease-in-out";
+const itemAnimation = "animate-in fade-in-50 duration-300";
+
+// Add interface for candlestick data
+interface CandleData {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface Asset {
+  symbol: keyof typeof TOKEN_CONFIGS;
+  balance: string;
+  price: number;
+  value: number;
+  change24h: number;
+  color: string;
+  priceHistory: {
+    '24h': number[];
+    '7d': number[];
+    '30d': number[];
+  };
+  candleData: {
+    '24h': CandleData[];
+    '7d': CandleData[];
+    '30d': CandleData[];
+  };
+}
+
+interface AssetPortfolioProps {
+  assets: Asset[];
+  totalValue: number;
+  totalChange24h: number;
+  className?: string;
+  variant?: 'default' | 'compact';
+  onAssetClick?: (asset: Asset) => void;
+}
 
 // Simple price chart using div bars
 const PriceChart: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -43,7 +80,7 @@ const PriceChart: React.FC<{ data: number[]; color: string }> = ({ data, color }
   );
 };
 
-// Asset item component with expandable details
+// Update the AssetItem expanded view
 const AssetItem: React.FC<{
   asset: Asset;
   onClick?: () => void;
@@ -51,8 +88,8 @@ const AssetItem: React.FC<{
   isExpanded: boolean;
   onExpand: (symbol: string) => void;
 }> = ({ asset, onClick, compact, isExpanded, onExpand }) => {
-  const [timeframe, setTimeframe] = useState<Timeframe>('24h');
-  const token = asset.tokenConfig;
+  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
+  const token = TOKEN_CONFIGS[asset.symbol];
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,24 +101,23 @@ const AssetItem: React.FC<{
   };
 
   return (
-    <div className={`${itemAnimation} bg-white dark:bg-gray-800 rounded-lg overflow-hidden
-      ${!compact && 'hover:shadow-md transition-shadow duration-200'}`}
-    >
+    <Card className={`${itemAnimation} overflow-hidden ${!compact && 'hover:shadow-md transition-shadow duration-200'}`}>
       <div
         onClick={handleClick}
         className={`flex items-center justify-between p-4 cursor-pointer
-          hover:bg-gray-50 dark:hover:bg-gray-700/50 ${cardAnimation} group`}
+          hover:bg-accent/50 ${cardAnimation} group`}
       >
         {/* Token Header Content */}
         <div className="flex items-center space-x-4 flex-1">
           <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-gray-50 dark:bg-gray-700" />
-            <img
+            <div className="absolute inset-0 rounded-full bg-muted" />
+            <Image
               src={token.logoURI}
               alt={token.symbol}
               width={32}
               height={32}
               className="rounded-full relative z-10 transition-transform group-hover:scale-105"
+              priority
             />
             <div
               className="absolute inset-0 rounded-full ring-2 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -90,14 +126,14 @@ const AssetItem: React.FC<{
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <span className="font-medium text-gray-900 dark:text-white">{token.symbol}</span>
+              <span className="font-medium text-foreground">{token.symbol}</span>
               {!compact && (
-                <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                <span className="text-sm text-muted-foreground truncate">
                   {token.name}
                 </span>
               )}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {Number(asset.balance).toFixed(token.decimals)} {token.symbol}
             </div>
           </div>
@@ -105,20 +141,25 @@ const AssetItem: React.FC<{
 
         <div className="flex items-center space-x-4">
           <div className="text-right">
-            <div className="font-medium text-gray-900 dark:text-white">
-              {formatCurrency(asset.value)}
+            <div className="font-medium text-foreground">
+              {new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(asset.value)}
             </div>
             <div className={`text-sm font-medium flex items-center justify-end space-x-1 ${
               asset.change24h >= 0 ? 'text-green-500' : 'text-red-500'
             }`}>
               {asset.change24h >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-              <span>{formatPercent(asset.change24h)}</span>
+              <span>{`${asset.change24h >= 0 ? '+' : ''}${asset.change24h.toFixed(2)}%`}</span>
             </div>
           </div>
           {!compact && (
             <ChevronDown
-              className={`w-5 h-5 text-gray-400 transition-transform duration-300
-                ${isExpanded ? 'rotate-180' : ''} group-hover:text-gray-600 dark:group-hover:text-gray-300`}
+              className={`w-5 h-5 text-muted-foreground transition-transform duration-300
+                ${isExpanded ? 'rotate-180' : ''} group-hover:text-foreground`}
             />
           )}
         </div>
@@ -130,12 +171,12 @@ const AssetItem: React.FC<{
           className={`overflow-hidden transition-all duration-300 ease-in-out
             ${isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
         >
-          <div className="border-t border-gray-100 dark:border-gray-700">
-            <div className="p-4 bg-gray-50 dark:bg-gray-800/50">
+          <div className="border-t border-border">
+            <div className="p-4 bg-muted/50">
               {/* Token Charts Section */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-medium text-foreground">
                     Price History
                   </h3>
                   <TimeframeSelector
@@ -144,63 +185,63 @@ const AssetItem: React.FC<{
                   />
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                <Card className="p-4">
                   <PriceChart
                     data={asset.priceHistory[timeframe]}
                     color={asset.color}
                   />
-                  <div className="mt-2 flex justify-between text-xs text-gray-500">
+                  <div className="mt-2 flex justify-between text-xs text-muted-foreground">
                     <span>{timeframe === '24h' ? 'Past 24 Hours' : timeframe === '7d' ? 'Past Week' : 'Past Month'}</span>
                     <span>Current: ${asset.price.toLocaleString()}</span>
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Token Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Price</div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+                <Card className="p-4">
+                  <div className="text-sm text-muted-foreground">Price</div>
+                  <div className="font-medium text-foreground">
                     ${asset.price.toLocaleString()}
                   </div>
-                </div>
+                </Card>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">24h Change</div>
+                <Card className="p-4">
+                  <div className="text-sm text-muted-foreground">24h Change</div>
                   <div className={`font-medium flex items-center ${
                     asset.change24h >= 0 ? 'text-green-500' : 'text-red-500'
                   }`}>
                     {asset.change24h >= 0 ? <ArrowUp className="w-3 h-3 mr-1" /> : <ArrowDown className="w-3 h-3 mr-1" />}
                     {asset.change24h.toFixed(2)}%
                   </div>
-                </div>
+                </Card>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Holdings</div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+                <Card className="p-4">
+                  <div className="text-sm text-muted-foreground">Holdings</div>
+                  <div className="font-medium text-foreground">
                     {Number(asset.balance).toFixed(token.decimals)} {token.symbol}
                   </div>
-                </div>
+                </Card>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Value</div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+                <Card className="p-4">
+                  <div className="text-sm text-muted-foreground">Value</div>
+                  <div className="font-medium text-foreground">
                     ${asset.value.toLocaleString()}
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Token Info Section */}
-              <div className="mt-4 bg-white dark:bg-gray-800 rounded-lg p-4">
+              <Card className="mt-4 p-4">
                 <div className="space-y-4">
                   <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Contract Address</div>
+                    <div className="text-sm text-muted-foreground">Contract Address</div>
                     <div className="flex items-center justify-between">
-                      <code className="text-sm text-gray-900 dark:text-white">
+                      <code className="text-sm text-foreground">
                         {token.address}
                       </code>
                       <a
-                        href={getExplorerUrl(token.address, token.chainId)}
+                        href={`https://etherscan.io/token/${token.address}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:text-blue-600 text-sm flex items-center space-x-1"
@@ -211,24 +252,24 @@ const AssetItem: React.FC<{
                   </div>
 
                   <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Chain</div>
-                    <div className="text-sm text-gray-900 dark:text-white">
-                      {getChainName(token.chainId)}
+                    <div className="text-sm text-muted-foreground">Chain</div>
+                    <div className="text-sm text-foreground">
+                      {token.chainId === 1 ? 'Ethereum Mainnet' : `Chain ID: ${token.chainId}`}
                     </div>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 
 const TimeframeSelector: React.FC<{
-  selected: Timeframe;
-  onChange: (timeframe: Timeframe) => void;
+  selected: '24h' | '7d' | '30d';
+  onChange: (timeframe: '24h' | '7d' | '30d') => void;
 }> = ({ selected, onChange }) => {
   const timeframes = [
     { value: '24h', label: '24H' },
@@ -237,25 +278,23 @@ const TimeframeSelector: React.FC<{
   ] as const;
 
   return (
-    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+    <div className="flex bg-muted rounded-lg p-1">
       {timeframes.map(({ value, label }) => (
-        <button
+        <Button
           key={value}
+          variant={selected === value ? "default" : "ghost"}
+          size="sm"
           onClick={() => onChange(value)}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-            selected === value
-              ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-          }`}
+          className="px-4 py-2"
         >
           {label}
-        </button>
+        </Button>
       ))}
     </div>
   );
 };
 
-// Portfolio distribution doughnut chart
+// Update the PortfolioDistributionChart component
 const PortfolioDistributionChart: React.FC<{
   assets: Asset[];
   totalValue: number;
@@ -306,30 +345,30 @@ const PortfolioDistributionChart: React.FC<{
 
         {/* Center Content */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center bg-white dark:bg-gray-800 rounded-full p-4 w-36 h-36 flex items-center justify-center shadow-inner">
+          <Card className="text-center rounded-full p-4 w-36 h-36 flex items-center justify-center shadow-inner">
             {activeAsset ? (
               <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="text-sm font-medium text-foreground">
                   {activeAsset.symbol}
                 </div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <div className="text-lg font-bold text-foreground">
                   ${activeAsset.value.toLocaleString()}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-muted-foreground">
                   {((activeAsset.value / totalValue) * 100).toFixed(1)}%
                 </div>
               </div>
             ) : (
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   Total Value
                 </div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <div className="text-lg font-bold text-foreground">
                   ${totalValue.toLocaleString()}
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         </div>
       </div>
     </div>
@@ -344,7 +383,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
   variant = 'default',
   onAssetClick
 }) => {
-  const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>('24h');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -353,13 +392,26 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
     setExpandedAsset(expandedAsset === symbol ? null : symbol);
   };
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  const formatPercent = (value: number) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+  };
+
   const activeIndex = selectedIndex ?? hoveredIndex;
 
   if (variant === 'compact') {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 ${className}`}>
+      <Card className={`p-4 ${className}`}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Portfolio</h2>
+          <h2 className="text-lg font-semibold text-foreground">Portfolio</h2>
           <span className={`text-sm font-medium ${
             totalChange24h >= 0 ? 'text-green-500' : 'text-red-500'
           }`}>
@@ -367,43 +419,44 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
           </span>
         </div>
 
-        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="text-2xl font-bold text-foreground mb-4">
           {formatCurrency(totalValue)}
         </div>
 
         <div className="space-y-2">
           {assets.map((asset) => (
-            <div key={asset.symbol} className="rounded-lg border border-gray-100 dark:border-gray-700">
+            <div key={asset.symbol} className="rounded-lg border border-border">
               {/* Token Header */}
               <div
                 onClick={() => handleExpand(asset.symbol)}
                 className="flex items-center justify-between p-3 cursor-pointer
-                  hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  hover:bg-accent/50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="relative w-8 h-8 flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full bg-gray-50 dark:bg-gray-700" />
-                    <img
-                      src={asset.tokenConfig.logoURI}
+                    <div className="absolute inset-0 rounded-full bg-muted" />
+                    <Image
+                      src={TOKEN_CONFIGS[asset.symbol].logoURI}
                       alt={asset.symbol}
                       width={24}
                       height={24}
                       className="rounded-full relative z-10 transition-transform group-hover:scale-105"
+                      priority
                     />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
+                    <div className="font-medium text-foreground">
                       {asset.symbol}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {Number(asset.balance).toFixed(asset.tokenConfig.decimals)}
+                    <div className="text-sm text-muted-foreground">
+                      {Number(asset.balance).toFixed(TOKEN_CONFIGS[asset.symbol].decimals)}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <div className="font-medium text-gray-900 dark:text-white">
+                    <div className="font-medium text-foreground">
                       {formatCurrency(asset.value)}
                     </div>
                     <div className={`text-sm font-medium flex items-center justify-end ${
@@ -414,7 +467,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                     </div>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-gray-400 transition-transform duration-300
+                    className={`w-4 h-4 text-muted-foreground transition-transform duration-300
                       ${expandedAsset === asset.symbol ? 'rotate-180' : ''}`}
                   />
                 </div>
@@ -425,70 +478,68 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                 className={`overflow-hidden transition-all duration-300 ease-in-out
                   ${expandedAsset === asset.symbol ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
-                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700">
+                <div className="p-3 bg-muted/50 border-t border-border">
                   {/* Price Chart - Only render if priceHistory exists */}
                   {asset.priceHistory && (
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-foreground">
                           Price History
                         </div>
                         <div className="flex items-center space-x-1">
                           {(['24h', '7d', '30d'] as const).map((t) => (
-                            <button
+                            <Button
                               key={t}
+                              variant={selectedTimeframe === t ? "default" : "ghost"}
+                              size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedTimeframe(t);
                               }}
-                              className={`px-2 py-1 text-xs font-medium rounded ${
-                                selectedTimeframe === t
-                                  ? 'bg-blue-500 text-white'
-                                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-                              }`}
+                              className="px-2 py-1 text-xs h-auto"
                             >
                               {t.toUpperCase()}
-                            </button>
+                            </Button>
                           ))}
                         </div>
                       </div>
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
+                      <Card className="p-2">
                         {asset.priceHistory[selectedTimeframe] && (
                           <PriceChart
                             data={asset.priceHistory[selectedTimeframe]}
                             color={asset.color}
                           />
                         )}
-                      </div>
+                      </Card>
                     </div>
                   )}
 
                   {/* Token Stats */}
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Price</div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <Card className="p-2">
+                      <div className="text-xs text-muted-foreground">Price</div>
+                      <div className="text-sm font-medium text-foreground">
                         {formatCurrency(asset.price)}
                       </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-2">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Value</div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    </Card>
+                    <Card className="p-2">
+                      <div className="text-xs text-muted-foreground">Value</div>
+                      <div className="text-sm font-medium text-foreground">
                         {formatCurrency(asset.value)}
                       </div>
-                    </div>
+                    </Card>
                   </div>
 
                   {/* Token Info */}
-                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="mt-3 pt-3 border-t border-border">
                     <a
-                      href={getExplorerUrl(asset.tokenConfig.address, asset.tokenConfig.chainId)}
+                      href={`https://etherscan.io/token/${TOKEN_CONFIGS[asset.symbol].address}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       className="text-blue-500 hover:text-blue-600 text-xs flex items-center space-x-1"
                     >
-                      <span>View on Explorer</span>
+                      <span>View on Etherscan</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -497,20 +548,20 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             </div>
           ))}
         </div>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <Card className={`shadow-lg ${className}`}>
+      <CardHeader className="border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Portfolio Value</h2>
+          <h2 className="text-xl font-semibold text-foreground">Portfolio Value</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="text-3xl font-bold text-foreground mb-2">
               {formatCurrency(totalValue)}
             </div>
             <div className={`flex items-center text-sm font-medium mb-4 ${
@@ -523,15 +574,15 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             {/* Single Column Interactive Legend */}
             <div className="space-y-2">
               {assets.map((asset, i) => (
-                <button
+                <Button
                   key={asset.symbol}
+                  variant="ghost"
+                  className={`w-full justify-between p-3 h-auto ${
+                    i === activeIndex ? 'bg-muted shadow-sm' : ''
+                  }`}
                   onClick={() => setSelectedIndex(selectedIndex === i ? null : i)}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-all
-                    ${i === activeIndex
-                      ? 'bg-gray-100 dark:bg-gray-700 shadow-sm'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                 >
                   <div className="flex items-center space-x-3">
                     <div
@@ -539,30 +590,24 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
                       style={{ backgroundColor: asset.color }}
                     />
                     <span className={`text-sm ${
-                      i === activeIndex
-                        ? 'text-gray-900 dark:text-white font-medium'
-                        : 'text-gray-600 dark:text-gray-400'
+                      i === activeIndex ? 'text-foreground font-medium' : 'text-muted-foreground'
                     }`}>
                       {asset.symbol}
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
                     <span className={`text-sm ${
-                      i === activeIndex
-                        ? 'text-gray-900 dark:text-white font-medium'
-                        : 'text-gray-500 dark:text-gray-400'
+                      i === activeIndex ? 'text-foreground font-medium' : 'text-muted-foreground'
                     }`}>
                       ${asset.value.toLocaleString()}
                     </span>
                     <span className={`text-xs ${
-                      i === activeIndex
-                        ? 'text-gray-700 dark:text-gray-300'
-                        : 'text-gray-500 dark:text-gray-400'
+                      i === activeIndex ? 'text-muted-foreground' : 'text-muted-foreground'
                     }`}>
                       {((asset.value / totalValue) * 100).toFixed(1)}%
                     </span>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -576,9 +621,9 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             />
           </div>
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="p-6">
+      <CardContent className="p-6">
         <div className="space-y-4">
           {assets.map((asset) => (
             <AssetItem
@@ -590,7 +635,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({
             />
           ))}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

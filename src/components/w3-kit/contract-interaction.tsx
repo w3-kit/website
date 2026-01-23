@@ -1,87 +1,56 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { ChevronRight, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+import {
+  TabType,
+  FunctionType,
+  ResultType,
+  ErrorState,
+  ContractInteractionProps,
+} from './contract-interaction-types';
+import {
+  DEFAULT_FUNCTIONS,
+  getFunctionDescription,
+  getResultMessage,
+  validateAddress,
+  fadeInAnimation,
+  slideInAnimation,
+  buttonAnimation,
+} from './contract-interaction-utils';
 
-interface ContractInteractionProps {
-  className?: string;
-}
-
-type TabType = 'read' | 'write';
-type FunctionType = {
-  name: string;
-  inputs: number;
-  type: 'view' | 'write';
-};
-
-interface ResultType {
-  id: string;
-  function: {
-    name: string;
-    type: 'view' | 'write';
-  };
-  result: string;
-  time: string;
-  hash: string;
-  from: string;
-  to: string;
-  gasUsed: string;
-  status: 'success' | 'pending' | 'failed';
-}
-
-interface ErrorState {
-  message: string;
-  type: 'error' | 'warning' | 'info';
-  field?: string;
-}
-
-const FUNCTIONS: FunctionType[] = [
-  { name: 'balanceOf', inputs: 1, type: 'view' },
-  { name: 'transfer', inputs: 2, type: 'write' },
-  { name: 'approve', inputs: 2, type: 'write' },
-  { name: 'allowance', inputs: 2, type: 'view' },
-  { name: 'totalSupply', inputs: 0, type: 'view' },
-  { name: 'name', inputs: 0, type: 'view' },
-];
-
-const getFunctionDescription = (fn: FunctionType): string => {
-  switch (fn.name) {
-    case 'balanceOf':
-      return 'Get the token balance of an account';
-    case 'transfer':
-      return 'Transfer tokens to another address';
-    case 'approve':
-      return 'Approve an address to spend your tokens';
-    case 'allowance':
-      return 'Check how many tokens an address can spend';
-    case 'totalSupply':
-      return 'Get the total supply of tokens';
-    case 'name':
-      return 'Get the name of the token';
-    default:
-      return 'Interact with contract function';
-  }
-};
-
-const getResultMessage = (fn: string, result: string): string => {
-  switch (fn) {
-    case 'balanceOf':
-      return `Balance: ${result} tokens`;
-    case 'transfer':
-      return `Successfully transferred ${result} tokens`;
-    case 'approve':
-      return `Successfully approved ${result} tokens`;
-    case 'allowance':
-      return `Allowance: ${result} tokens`;
-    case 'totalSupply':
-      return `Total Supply: ${result} tokens`;
-    case 'name':
-      return `Token Name: ${result}`;
-    default:
-      return result;
-  }
-};
+// Error message component
+const ErrorMessage = ({ error }: { error: ErrorState }) => (
+  <div className={`
+    mt-4 p-3 rounded-lg text-sm
+    transition-all duration-300
+    ${slideInAnimation}
+    ${error.type === 'error'
+      ? 'bg-red-50 dark:bg-red-900/10 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800'
+      : error.type === 'warning'
+      ? 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
+      : 'bg-blue-50 dark:bg-blue-900/10 text-blue-500 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+    }
+  `}>
+    <div className="flex items-center space-x-2">
+      {error.type === 'error' ? (
+        <XCircle className="w-4 h-4" />
+      ) : error.type === 'warning' ? (
+        <AlertTriangle className="w-4 h-4" />
+      ) : (
+        <Info className="w-4 h-4" />
+      )}
+      <span>{error.message}</span>
+    </div>
+  </div>
+);
 
 export const ContractInteraction: React.FC<ContractInteractionProps> = ({
-  className = ''
+  className = '',
+  contractAddress = '0x1234...5678',
+  functions = DEFAULT_FUNCTIONS,
+  onExecute,
+  resultsPerPage = 6,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('read');
   const [selectedFunction, setSelectedFunction] = useState<FunctionType | null>(null);
@@ -89,11 +58,10 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
   const [results, setResults] = useState<ResultType[]>([]);
   const [selectedResult, setSelectedResult] = useState<ResultType | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 6;
   const [isExecuting, setIsExecuting] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
 
-  const filteredFunctions = FUNCTIONS.filter(fn => 
+  const filteredFunctions = functions.filter(fn =>
     activeTab === 'read' ? fn.type === 'view' : fn.type === 'write'
   );
 
@@ -102,16 +70,6 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
   );
-
-  const validateInput = (value: string, type: 'address' | 'amount'): boolean => {
-    if (type === 'address') {
-      return /^0x[a-fA-F0-9]{40}$/.test(value);
-    }
-    if (type === 'amount') {
-      return !isNaN(Number(value)) && Number(value) > 0;
-    }
-    return true;
-  };
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +86,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
         } as ErrorState;
       }
 
-      if (selectedFunction.inputs > 0 && !validateInput(inputValue, 'address')) {
+      if (selectedFunction.inputs > 0 && !validateAddress(inputValue)) {
         throw {
           message: 'Invalid Ethereum address format',
           type: 'error',
@@ -138,44 +96,51 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
 
       setIsExecuting(true);
 
-      if (Math.random() < 0.2) {
-        throw {
-          message: 'Network error: Please try again',
-          type: 'error'
-        } as ErrorState;
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       let mockValue = '';
-      switch (selectedFunction.name) {
-        case 'balanceOf':
-          mockValue = (Math.random() * 1000).toFixed(2);
-          break;
-        case 'transfer':
-          if (Number(inputValue) > 1000) {
-            throw {
-              message: 'Insufficient balance for transfer',
-              type: 'error',
-              field: 'input'
-            } as ErrorState;
-          }
-          mockValue = inputValue || '100';
-          break;
-        case 'approve':
-          mockValue = inputValue || '1000';
-          break;
-        case 'allowance':
-          mockValue = (Math.random() * 500).toFixed(2);
-          break;
-        case 'totalSupply':
-          mockValue = '1000000';
-          break;
-        case 'name':
-          mockValue = 'Example Token';
-          break;
-        default:
-          mockValue = '0';
+
+      if (onExecute) {
+        // Use custom execute handler if provided
+        mockValue = await onExecute(selectedFunction.name, inputValue ? [inputValue] : []);
+      } else {
+        // Simulate execution with mock data
+        if (Math.random() < 0.2) {
+          throw {
+            message: 'Network error: Please try again',
+            type: 'error'
+          } as ErrorState;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        switch (selectedFunction.name) {
+          case 'balanceOf':
+            mockValue = (Math.random() * 1000).toFixed(2);
+            break;
+          case 'transfer':
+            if (Number(inputValue) > 1000) {
+              throw {
+                message: 'Insufficient balance for transfer',
+                type: 'error',
+                field: 'input'
+              } as ErrorState;
+            }
+            mockValue = inputValue || '100';
+            break;
+          case 'approve':
+            mockValue = inputValue || '1000';
+            break;
+          case 'allowance':
+            mockValue = (Math.random() * 500).toFixed(2);
+            break;
+          case 'totalSupply':
+            mockValue = '1000000';
+            break;
+          case 'name':
+            mockValue = 'Example Token';
+            break;
+          default:
+            mockValue = '0';
+        }
       }
 
       const mockResult: ResultType = {
@@ -190,8 +155,8 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
         from: selectedFunction.type === 'write' ? '0x' + Math.random().toString(16).slice(2, 42) : '',
         to: selectedFunction.type === 'write' ? '0x' + Math.random().toString(16).slice(2, 42) : '',
         gasUsed: selectedFunction.type === 'write' ? Math.floor(Math.random() * 100000).toString() : '0',
-        status: selectedFunction.type === 'write' ? 
-          (Math.random() > 0.1 ? 'success' : 'failed') : 
+        status: selectedFunction.type === 'write' ?
+          (Math.random() > 0.1 ? 'success' : 'failed') :
           'success'
       };
 
@@ -208,42 +173,17 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
     } catch (err) {
       const errorState = err as ErrorState;
       setError(errorState);
-      
+
       setTimeout(() => setError(null), 5000);
     } finally {
       setIsExecuting(false);
     }
-  }, [selectedFunction, inputValue]);
-
-  const ErrorMessage = ({ error }: { error: ErrorState }) => (
-    <div className={`
-      mt-4 p-3 rounded-lg text-sm
-      transition-all duration-300
-      animate-slideIn
-      ${error.type === 'error' 
-        ? 'bg-red-50 dark:bg-red-900/10 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800'
-        : error.type === 'warning'
-        ? 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-        : 'bg-blue-50 dark:bg-blue-900/10 text-blue-500 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-      }
-    `}>
-      <div className="flex items-center space-x-2">
-        {error.type === 'error' ? (
-          <XCircle className="w-4 h-4" />
-        ) : error.type === 'warning' ? (
-          <AlertTriangle className="w-4 h-4" />
-        ) : (
-          <Info className="w-4 h-4" />
-        )}
-        <span>{error.message}</span>
-      </div>
-    </div>
-  );
+  }, [selectedFunction, inputValue, onExecute]);
 
   return (
     <div className={`
       bg-white dark:bg-gray-900 rounded-lg border dark:border-gray-800 shadow-sm
-      animate-fadeIn
+      ${fadeInAnimation}
       ${className}
     `}>
       {/* Header */}
@@ -258,7 +198,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                   transition-colors duration-200
                   group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
                 >
-                  0x1234...5678
+                  {contractAddress}
                 </code>
               </div>
             </div>
@@ -309,9 +249,9 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
               className={`
                 p-3 text-left border rounded
                 transition-all duration-300 ease-in-out
-                hover:scale-[1.02] active:scale-[0.98]
+                ${buttonAnimation}
                 hover:shadow-md
-                animate-fadeIn
+                ${fadeInAnimation}
                 dark:border-gray-700
                 group
                 ${selectedFunction?.name === fn.name
@@ -320,15 +260,15 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 }
               `}
             >
-              <div className="font-medium dark:text-white group-hover:text-blue-600 
+              <div className="font-medium dark:text-white group-hover:text-blue-600
                 dark:group-hover:text-blue-400 transition-colors duration-200">
                 {fn.name}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1
                 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-200">
                 {fn.inputs} input(s) • {fn.type}
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 mt-2 
+              <div className="text-xs text-gray-400 dark:text-gray-500 mt-2
                 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors duration-200">
                 {getFunctionDescription(fn)}
               </div>
@@ -338,11 +278,11 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
 
         {/* Interactive Function Inputs */}
         {selectedFunction && (
-          <div className="
-            space-y-4 border dark:border-gray-700 rounded-lg p-4 
+          <div className={`
+            space-y-4 border dark:border-gray-700 rounded-lg p-4
             bg-gray-50 dark:bg-gray-800
-            animate-slideIn
-          ">
+            ${slideInAnimation}
+          `}>
             <div className="flex items-center justify-between">
               <h3 className="font-medium dark:text-white">{selectedFunction.name}</h3>
               <span className="text-xs text-gray-500 dark:text-gray-400">{selectedFunction.type}</span>
@@ -363,7 +303,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                     className={`
                       w-full px-3 py-2 text-sm border rounded-md
                       focus:outline-none focus:ring-1
-                      dark:bg-gray-900 dark:text-gray-300 
+                      dark:bg-gray-900 dark:text-gray-300
                       transition-all duration-200
                       ${error?.field === 'input'
                         ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
@@ -381,8 +321,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 disabled={isExecuting || !!error}
                 className={`
                   w-full px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-md text-sm
-                  transition-all duration-200
-                  hover:scale-[1.02] active:scale-[0.98]
+                  ${buttonAnimation}
                   hover:bg-gray-800 dark:hover:bg-gray-100
                   disabled:opacity-50 disabled:cursor-not-allowed
                   flex items-center justify-center space-x-2
@@ -408,14 +347,14 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
 
         {/* Results Display */}
         {results.length > 0 && (
-          <div className="mt-6 space-y-3 animate-slideIn">
+          <div className={`mt-6 space-y-3 ${slideInAnimation}`}>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium dark:text-white">Recent Results</h3>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
                     disabled:opacity-50 disabled:cursor-not-allowed
                     transition-all duration-200 hover:scale-110 active:scale-95
                     w-8 h-8 flex items-center justify-center"
@@ -428,7 +367,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
                     disabled:opacity-50 disabled:cursor-not-allowed
                     transition-all duration-200 hover:scale-110 active:scale-95
                     w-8 h-8 flex items-center justify-center"
@@ -449,11 +388,10 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                     w-full p-3 border dark:border-gray-700 rounded-lg
                     hover:shadow-sm dark:bg-gray-800
                     transition-all duration-200
-                    animate-slideInFromLeft
                     text-left
                     group
-                    ${selectedResult?.id === result.id ? 
-                      'border-black dark:border-white ring-1 ring-black dark:ring-white' : 
+                    ${selectedResult?.id === result.id ?
+                      'border-black dark:border-white ring-1 ring-black dark:ring-white' :
                       'hover:border-gray-300 dark:hover:border-gray-600'
                     }
                   `}
@@ -485,8 +423,8 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                   <div className={`
                     mt-2 space-y-1 text-sm
                     transition-all duration-300 ease-in-out
-                    ${selectedResult?.id === result.id 
-                      ? 'opacity-100 max-h-[200px]' 
+                    ${selectedResult?.id === result.id
+                      ? 'opacity-100 max-h-[200px]'
                       : 'opacity-0 max-h-0 overflow-hidden'
                     }
                   `}>
@@ -537,4 +475,4 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
       </div>
     </div>
   );
-}; 
+};
