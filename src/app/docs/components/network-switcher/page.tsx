@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { NetworkSwitcher } from "./component";
+import { NetworkSwitcher } from "@/components/w3-kit/network-switcher";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { NETWORKS } from './networks';
@@ -165,7 +165,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Network Switcher component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add network-switcher" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/network-switcher.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
