@@ -159,7 +159,7 @@ export default function Page() {
                     Run the following command to add the Bridge component to
                     your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add bridge" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/bridge.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>

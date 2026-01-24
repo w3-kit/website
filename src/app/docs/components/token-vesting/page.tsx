@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { TokenVesting } from "./component";
+import { TokenVesting } from "@/components/w3-kit/token-vesting";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 
@@ -225,7 +225,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Run the following command to add the Token Vesting component to your project:
                   </p>
-                  <CodeBlock code="npx w3-kit@latest add token-vesting" id="cli" />
+                  <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/token-vesting.json" id="cli" />
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
                     This will:
                   </p>
