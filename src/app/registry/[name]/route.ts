@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+
+// GitHub raw content base URL for the public ui repo
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/w3-kit/ui/main";
 
 // Component metadata for all available components
 const COMPONENT_METADATA: Record<
@@ -121,6 +122,32 @@ const COMPONENT_METADATA: Record<
   },
 };
 
+// Standard files that most components have
+const STANDARD_FILES = [
+  { name: "{component}.tsx", isMain: true },
+  { name: "types.ts", isMain: false },
+  { name: "utils.ts", isMain: false },
+];
+
+async function fetchFileFromGitHub(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: "text/plain",
+      },
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.text();
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ name: string }> }
@@ -140,65 +167,59 @@ export async function GET(
       );
     }
 
-    // Define the registry path - adjust based on your deployment
-    // In production, you might want to fetch from GitHub raw content or bundle these files
-    const registryBasePath = path.join(
-      process.cwd(),
-      "..",
-      "ui",
-      "registry",
-      "w3-kit",
-      componentName
-    );
+    // Fetch files from GitHub
+    const filesWithContent: Array<{
+      path: string;
+      type: "registry:component";
+      target: string;
+      content: string;
+    }> = [];
 
-    // Get list of files in the component directory
-    let files: string[];
-    try {
-      files = await fs.readdir(registryBasePath);
-    } catch {
-      // If local files not found, return a minimal registry entry
-      // This allows the endpoint to work even without local files
-      return NextResponse.json({
-        $schema: "https://ui.shadcn.com/schema/registry-item.json",
-        name: componentName,
-        type: "registry:component",
-        title: metadata.title,
-        description: metadata.description,
-        dependencies: metadata.dependencies || [],
-        files: [
-          {
-            path: `registry/w3-kit/${componentName}/${componentName}.tsx`,
-            type: "registry:component",
-            target: `components/w3-kit/${componentName}.tsx`,
-          },
-        ],
-      });
+    // Try to fetch each standard file
+    for (const fileTemplate of STANDARD_FILES) {
+      const fileName = fileTemplate.name.replace("{component}", componentName);
+      const githubUrl = `${GITHUB_RAW_BASE}/registry/w3-kit/${componentName}/${fileName}`;
+
+      const content = await fetchFileFromGitHub(githubUrl);
+
+      if (content) {
+        // Determine target filename
+        let targetName = fileName;
+        if (fileName === "types.ts") {
+          targetName = `${componentName}-types.ts`;
+        } else if (fileName === "utils.ts") {
+          targetName = `${componentName}-utils.ts`;
+        }
+
+        // Transform imports in the content to use the new file paths
+        let transformedContent = content;
+
+        // Replace relative imports for types and utils
+        transformedContent = transformedContent.replace(
+          /from ['"]\.\/types['"]/g,
+          `from './${componentName}-types'`
+        );
+        transformedContent = transformedContent.replace(
+          /from ['"]\.\/utils['"]/g,
+          `from './${componentName}-utils'`
+        );
+
+        filesWithContent.push({
+          path: `registry/w3-kit/${componentName}/${fileName}`,
+          type: "registry:component",
+          target: `components/w3-kit/${targetName}`,
+          content: transformedContent,
+        });
+      }
     }
 
-    // Build files array with content
-    const filesWithContent = await Promise.all(
-      files
-        .filter((file) => file.endsWith(".ts") || file.endsWith(".tsx"))
-        .map(async (file) => {
-          const filePath = path.join(registryBasePath, file);
-          const content = await fs.readFile(filePath, "utf-8");
-
-          // Determine target filename
-          let targetName = file;
-          if (file === "types.ts") {
-            targetName = `${componentName}-types.ts`;
-          } else if (file === "utils.ts") {
-            targetName = `${componentName}-utils.ts`;
-          }
-
-          return {
-            path: `registry/w3-kit/${componentName}/${file}`,
-            type: "registry:component" as const,
-            target: `components/w3-kit/${targetName}`,
-            content,
-          };
-        })
-    );
+    // If no files were found, return an error
+    if (filesWithContent.length === 0) {
+      return NextResponse.json(
+        { error: `No files found for component '${componentName}'` },
+        { status: 404 }
+      );
+    }
 
     // Build the registry item response
     const registryItem = {
