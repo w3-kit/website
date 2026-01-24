@@ -342,5 +342,5 @@ export function LimitOrderManager({
   );
 }
 
-export { OrderData, LimitOrderManagerProps } from "./limit-order-manager-types";
+export type { OrderData, LimitOrderManagerProps } from "./limit-order-manager-types";
 export default LimitOrderManager;

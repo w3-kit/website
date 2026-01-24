@@ -181,5 +181,5 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
   );
 }
 
-export { VestingSchedule, TokenVestingProps } from './token-vesting-types';
+export type { VestingSchedule, TokenVestingProps } from './token-vesting-types';
 export default TokenVesting;
