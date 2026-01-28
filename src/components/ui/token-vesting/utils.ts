@@ -1,4 +1,4 @@
-import { VestingSchedule } from './token-vesting-types';
+import { VestingSchedule } from './types';
 
 export function calculateProgress(schedule: VestingSchedule): number {
   const now = Date.now();
