@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { TokenVesting } from "@/components/w3-kit/token-vesting";
+import { TokenVesting } from "@/components/ui/token-vesting/token-vesting";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 

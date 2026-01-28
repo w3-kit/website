@@ -3,8 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { VestingSchedule, TokenVestingProps } from './token-vesting-types';
-import { calculateProgress, formatDate, isClaimable, statusConfig } from './token-vesting-utils';
+import { VestingSchedule, TokenVestingProps } from './types';
+import { calculateProgress, formatDate, isClaimable, statusConfig } from './utils';
 
 const StatusBadge: React.FC<{ status: VestingSchedule['status'] }> = ({ status }) => {
   const config = statusConfig[status];
@@ -181,5 +181,5 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
   );
 }
 
-export type { VestingSchedule, TokenVestingProps } from './token-vesting-types';
+export type { VestingSchedule, TokenVestingProps } from './types';
 export default TokenVesting;
