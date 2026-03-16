@@ -1,19 +1,16 @@
-export function formatNumber(
-  value: string | number,
-  decimals: number = 2
-): string {
+export const formatNumber = (value: string | number, decimals: number = 2) => {
   const num = typeof value === "string" ? parseFloat(value) : value;
   return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 0,
     maximumFractionDigits: decimals,
   }).format(num);
-}
+};
 
-export function getAPRColorClass(apr: number): string {
-  if (apr >= 20) return "text-green-600 dark:text-green-400";
-  if (apr >= 10) return "text-emerald-600 dark:text-emerald-400";
-  return "text-blue-600 dark:text-blue-400";
-}
+export const getAPRColorClass = (apr: number) => {
+  if (apr >= 20) return "text-success";
+  if (apr >= 10) return "text-success";
+  return "text-primary";
+};
 
 export const keyframes = `
 @keyframes fadeIn {

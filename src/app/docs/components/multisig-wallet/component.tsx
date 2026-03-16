@@ -307,13 +307,13 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 )}
                 <div className="flex items-center gap-2">
                   <code className="text-xs text-muted-foreground truncate
-                    group-hover:text-blue-500 transition-colors cursor-pointer"
+                    group-hover:text-primary transition-colors cursor-pointer"
                     onClick={() => handleCopyAddress(signer.address)}
                   >
                     {formatAddress(signer.address)}
                   </code>
                   {copiedAddress === signer.address && (
-                    <span className="text-xs text-green-500">Copied!</span>
+                    <span className="text-xs text-success">Copied!</span>
                   )}
                 </div>
               </div>
@@ -388,7 +388,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             handleCopyAddress(tx.to);
                           }}
                           className="text-sm text-muted-foreground cursor-pointer
-                            hover:text-blue-500 transition-colors truncate block"
+                            hover:text-primary transition-colors truncate block"
                         >
                           To: {formatAddress(tx.to)}
                         </code>
@@ -401,9 +401,9 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 text-xs rounded-full whitespace-nowrap
                       ${tx.status === 'executed'
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                        ? 'bg-success-muted text-success'
                         : tx.status === 'rejected'
-                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                        ? 'bg-destructive/10 text-destructive'
                         : 'bg-muted text-foreground'}`}
                     >
                       {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
@@ -464,7 +464,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             <div className="w-4 h-4 border-2 border-green-500
                               border-t-transparent rounded-full animate-spin" />
                           ) : (
-                            <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24"
+                            <svg className="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24"
                               stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M5 13l4 4L19 7" />
@@ -490,7 +490,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             <div className="w-4 h-4 border-2 border-red-500
                               border-t-transparent rounded-full animate-spin" />
                           ) : (
-                            <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24"
+                            <svg className="w-4 h-4 text-destructive" fill="none" viewBox="0 0 24 24"
                               stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M6 18L18 6M6 6l12 12" />
@@ -522,11 +522,11 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             <div className={`w-4 h-4 rounded-full flex items-center justify-center
                               transition-colors duration-200
                               ${signer.hasApproved
-                                ? 'bg-green-100 dark:bg-green-900/30'
+                                ? 'bg-success-muted'
                                 : 'bg-muted'}`}
                             >
                               {signer.hasApproved && (
-                                <svg className="w-3 h-3 text-green-700 dark:text-green-400"
+                                <svg className="w-3 h-3 text-success"
                                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round"
                                     strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -535,9 +535,9 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                             </div>
                             <span className={`text-sm transition-colors duration-200
                               ${tx.status === 'rejected'
-                                ? 'text-red-700 dark:text-red-400'
+                                ? 'text-destructive'
                                 : signer.hasApproved
-                                  ? 'text-green-700 dark:text-green-400'
+                                  ? 'text-success'
                                   : 'text-muted-foreground'}`}
                             >
                               {tx.status === 'rejected'
@@ -627,7 +627,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 placeholder="Enter transaction description"
               />
               {formErrors.description && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.description}</p>
+                <p className="text-xs text-destructive mt-1">{formErrors.description}</p>
               )}
             </div>
 
@@ -648,7 +648,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 placeholder="0x..."
               />
               {formErrors.to && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.to}</p>
+                <p className="text-xs text-destructive mt-1">{formErrors.to}</p>
               )}
             </div>
 
@@ -671,7 +671,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 min="0"
               />
               {formErrors.value && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.value}</p>
+                <p className="text-xs text-destructive mt-1">{formErrors.value}</p>
               )}
             </div>
 
@@ -692,7 +692,7 @@ export const MultisigWallet: React.FC<MultisigWalletProps> = ({
                 placeholder="0x"
               />
               {formErrors.data && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.data}</p>
+                <p className="text-xs text-destructive mt-1">{formErrors.data}</p>
               )}
             </div>
           </div>

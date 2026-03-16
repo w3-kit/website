@@ -1,4 +1,4 @@
-import { SecurityCheck } from "./smart-contract-scanner-types";
+import { SecurityCheck } from './smart-contract-scanner-types';
 
 export function isValidAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -7,13 +7,13 @@ export function isValidAddress(address: string): boolean {
 export function getStatusColor(status: SecurityCheck["status"]): string {
   switch (status) {
     case "safe":
-      return "text-green-500 dark:text-green-400";
+      return "text-success";
     case "warning":
-      return "text-yellow-500 dark:text-yellow-400";
+      return "text-warning";
     case "danger":
-      return "text-red-500 dark:text-red-400";
+      return "text-destructive";
     default:
-      return "text-gray-500 dark:text-gray-400";
+      return "text-muted-foreground";
   }
 }
 

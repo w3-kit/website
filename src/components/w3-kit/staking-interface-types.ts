@@ -8,9 +8,9 @@ export interface StakingPool {
   };
   apr: number;
   minStake: string;
-  lockPeriod: number;
+  lockPeriod: number; // in days
   totalStaked: string;
-  isStaked?: boolean;
+  isStaked?: boolean; // Track if user has staked this token
 }
 
 export interface StakingInterfaceProps {

@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { ChevronRight, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   TabType,
   FunctionType,
@@ -29,10 +29,10 @@ const ErrorMessage = ({ error }: { error: ErrorState }) => (
     transition-all duration-300
     ${slideInAnimation}
     ${error.type === 'error'
-      ? 'bg-red-50 dark:bg-red-900/10 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800'
+      ? 'bg-destructive/10 text-destructive border border-destructive/20'
       : error.type === 'warning'
-      ? 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-      : 'bg-blue-50 dark:bg-blue-900/10 text-blue-500 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+      ? 'bg-warning/10 text-warning border border-warning/20'
+      : 'bg-primary/10 text-primary border border-primary/20'
     }
   `}>
     <div className="flex items-center space-x-2">
@@ -186,10 +186,10 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
   return (
     <Card className={`${fadeInAnimation} ${className}`}>
       {/* Header */}
-      <CardHeader className="border-b">
+      <CardHeader className="border-b border-border">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Contract Interaction</h2>
+            <CardTitle>Contract Interaction</CardTitle>
             <div className="flex items-center mt-2 space-x-2">
               <span className="text-sm text-muted-foreground">Contract:</span>
               <div className="group cursor-pointer transition-transform duration-200 hover:scale-[1.02]">
@@ -206,7 +206,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
       </CardHeader>
 
       {/* Interactive Tabs */}
-      <div className="border-b">
+      <div className="border-b border-border">
         <div className="flex">
           {(['read', 'write'] as TabType[]).map((tab) => (
             <Button
@@ -223,8 +223,8 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 transition-all duration-200
                 active:scale-[0.98]
                 ${activeTab === tab
-                  ? 'border-b-2 border-foreground font-medium text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'border-b-2 border-primary font-medium'
+                  : 'text-muted-foreground'
                 }
               `}
             >
@@ -247,29 +247,30 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 setInputValue('');
               }}
               className={`
-                p-3 text-left h-auto justify-start flex-col items-start
+                p-3 text-left h-auto justify-start
                 transition-all duration-300 ease-in-out
                 ${buttonAnimation}
                 hover:shadow-md
                 ${fadeInAnimation}
                 group
                 ${selectedFunction?.name === fn.name
-                  ? 'border-foreground bg-muted'
+                  ? 'border-primary bg-muted'
                   : ''
                 }
               `}
             >
-              <div className="font-medium text-foreground group-hover:text-blue-600
-                dark:group-hover:text-blue-400 transition-colors duration-200">
-                {fn.name}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1
-                group-hover:text-foreground/70 transition-colors duration-200">
-                {fn.inputs} input(s) • {fn.type}
-              </div>
-              <div className="text-xs text-muted-foreground/70 mt-2
-                group-hover:text-muted-foreground transition-colors duration-200">
-                {getFunctionDescription(fn)}
+              <div className="w-full">
+                <div className="font-medium group-hover:text-primary transition-colors duration-200">
+                  {fn.name}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1
+                  group-hover:text-foreground/70 transition-colors duration-200">
+                  {fn.inputs} input(s) • {fn.type}
+                </div>
+                <div className="text-xs text-muted-foreground mt-2
+                  group-hover:text-foreground/60 transition-colors duration-200">
+                  {getFunctionDescription(fn)}
+                </div>
               </div>
             </Button>
           ))}
@@ -278,16 +279,16 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
         {/* Interactive Function Inputs */}
         {selectedFunction && (
           <Card className={`bg-muted ${slideInAnimation}`}>
-            <CardContent className="pt-4 space-y-4">
+            <CardContent className="p-4 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground">{selectedFunction.name}</h3>
+                <h3 className="font-medium">{selectedFunction.name}</h3>
                 <span className="text-xs text-muted-foreground">{selectedFunction.type}</span>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {selectedFunction.inputs > 0 && (
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-foreground">
+                    <label className="text-sm font-medium">
                       address
                       <span className="text-muted-foreground ml-1">(address)</span>
                     </label>
@@ -296,7 +297,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Enter address"
-                      className={error?.field === 'input' ? 'border-red-500' : ''}
+                      className={error?.field === 'input' ? 'border-destructive' : ''}
                     />
                   </div>
                 )}
@@ -310,7 +311,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                 >
                   {isExecuting ? (
                     <>
-                      <div className="animate-spin">
+                      <div className="animate-spin mr-2">
                         <Code className="w-4 h-4" />
                       </div>
                       <span>Executing...</span>
@@ -318,7 +319,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                   ) : (
                     <>
                       <span>Execute {selectedFunction.name}</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 ml-2" />
                     </>
                   )}
                 </Button>
@@ -331,7 +332,7 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
         {results.length > 0 && (
           <div className={`mt-6 space-y-3 ${slideInAnimation}`}>
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-foreground">Recent Results</h3>
+              <h3 className="text-sm font-medium">Recent Results</h3>
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
@@ -366,84 +367,85 @@ export const ContractInteraction: React.FC<ContractInteractionProps> = ({
                     selectedResult?.id === result.id ? null : result
                   )}
                   className={`
-                    w-full p-3 h-auto flex-col items-start
-                    hover:shadow-sm
+                    w-full p-3 h-auto
                     transition-all duration-200
-                    text-left
+                    text-left justify-start
                     group
                     ${selectedResult?.id === result.id ?
-                      'border-foreground ring-1 ring-foreground' :
+                      'border-primary ring-1 ring-primary' :
                       ''
                     }
                   `}
                 >
-                  <div className="flex justify-between items-center w-full">
-                    <div className="flex items-center space-x-2">
-                      {result.status === 'success' ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : result.status === 'pending' ? (
-                        <div className="w-4 h-4">
-                          <Code className="w-4 h-4 text-yellow-500 animate-spin" />
-                        </div>
-                      ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
-                      )}
-                      <span className="font-medium text-foreground">{result.function.name}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {result.time}
-                    </span>
-                  </div>
-
-                  <div className="mt-1 text-sm text-muted-foreground font-mono break-all w-full
-                    transition-all duration-200 group-hover:text-foreground">
-                    {getResultMessage(result.function.name, result.result)}
-                  </div>
-
-                  {/* Expanded Details */}
-                  <div className={`
-                    mt-2 space-y-1 text-sm w-full
-                    transition-all duration-300 ease-in-out
-                    ${selectedResult?.id === result.id
-                      ? 'opacity-100 max-h-[200px]'
-                      : 'opacity-0 max-h-0 overflow-hidden'
-                    }
-                  `}>
-                    <div className="grid grid-cols-3 gap-2 pt-2 border-t">
-                      {result.function.type === 'write' ? (
-                        <>
-                          <div key="hash">
-                            <div className="text-xs text-muted-foreground">Hash</div>
-                            <div className="font-mono truncate text-foreground">{result.hash}</div>
+                  <div className="w-full">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        {result.status === 'success' ? (
+                          <CheckCircle className="w-4 h-4 text-success" />
+                        ) : result.status === 'pending' ? (
+                          <div className="w-4 h-4">
+                            <Code className="w-4 h-4 text-warning animate-spin" />
                           </div>
-                          <div key="from">
-                            <div className="text-xs text-muted-foreground">From</div>
-                            <div className="font-mono truncate text-foreground">{result.from}</div>
-                          </div>
-                          <div key="to">
-                            <div className="text-xs text-muted-foreground">To</div>
-                            <div className="font-mono truncate text-foreground">{result.to}</div>
-                          </div>
-                          <div key="gas">
-                            <div className="text-xs text-muted-foreground">Gas Used</div>
-                            <div className="font-mono text-foreground">{result.gasUsed}</div>
-                          </div>
-                        </>
-                      ) : null}
-                      <div key="type">
-                        <div className="text-xs text-muted-foreground">Type</div>
-                        <div className="font-medium text-foreground">
-                          {result.function.type === 'write' ? 'Transaction' : 'Read Call'}
-                        </div>
+                        ) : (
+                          <XCircle className="w-4 h-4 text-destructive" />
+                        )}
+                        <span className="font-medium">{result.function.name}</span>
                       </div>
-                      <div key="status">
-                        <div className="text-xs text-muted-foreground">Status</div>
-                        <div className={`font-medium ${
-                          result.status === 'success' ? 'text-green-500' :
-                          result.status === 'pending' ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`}>
-                          {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
+                      <span className="text-xs text-muted-foreground">
+                        {result.time}
+                      </span>
+                    </div>
+
+                    <div className="mt-1 text-sm text-muted-foreground font-mono break-all
+                      transition-all duration-200 group-hover:text-foreground">
+                      {getResultMessage(result.function.name, result.result)}
+                    </div>
+
+                    {/* Expanded Details */}
+                    <div className={`
+                      mt-2 space-y-1 text-sm
+                      transition-all duration-300 ease-in-out
+                      ${selectedResult?.id === result.id
+                        ? 'opacity-100 max-h-[200px]'
+                        : 'opacity-0 max-h-0 overflow-hidden'
+                      }
+                    `}>
+                      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border">
+                        {result.function.type === 'write' ? (
+                          <>
+                            <div key="hash">
+                              <div className="text-xs text-muted-foreground">Hash</div>
+                              <div className="font-mono truncate">{result.hash}</div>
+                            </div>
+                            <div key="from">
+                              <div className="text-xs text-muted-foreground">From</div>
+                              <div className="font-mono truncate">{result.from}</div>
+                            </div>
+                            <div key="to">
+                              <div className="text-xs text-muted-foreground">To</div>
+                              <div className="font-mono truncate">{result.to}</div>
+                            </div>
+                            <div key="gas">
+                              <div className="text-xs text-muted-foreground">Gas Used</div>
+                              <div className="font-mono">{result.gasUsed}</div>
+                            </div>
+                          </>
+                        ) : null}
+                        <div key="type">
+                          <div className="text-xs text-muted-foreground">Type</div>
+                          <div className="font-medium text-foreground">
+                            {result.function.type === 'write' ? 'Transaction' : 'Read Call'}
+                          </div>
+                        </div>
+                        <div key="status">
+                          <div className="text-xs text-muted-foreground">Status</div>
+                          <div className={`font-medium ${
+                            result.status === 'success' ? 'text-success' :
+                            result.status === 'pending' ? 'text-warning' :
+                            'text-destructive'
+                          }`}>
+                            {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
+                          </div>
                         </div>
                       </div>
                     </div>

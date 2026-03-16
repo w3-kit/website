@@ -184,7 +184,7 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
             {/* Show active filters as tags */}
             <div className="flex flex-wrap gap-2">
               {debouncedSearchTerm && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                   Search: {debouncedSearchTerm}
                   <button
                     onClick={() => {
@@ -192,7 +192,7 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
                       const searchInput = document.getElementById('nft-search') as HTMLInputElement;
                       if (searchInput) searchInput.value = '';
                     }}
-                    className="ml-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                    className="ml-1.5 text-primary hover:text-primary/80"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -202,11 +202,11 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
               )}
 
               {selectedChain !== null && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground">
                   Chain: {getChainName(selectedChain)}
                   <button
                     onClick={() => setSelectedChain(null)}
-                    className="ml-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
+                    className="ml-1.5 text-muted-foreground hover:text-foreground"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -216,11 +216,11 @@ export const NFTCollectionGrid: React.FC<NFTCollectionGridProps> = ({
               )}
 
               {sortBy !== 'recent' && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-success-muted text-success">
                   Sort: {sortBy === 'name' ? 'Name (A-Z)' : 'Most Recent'}
                   <button
                     onClick={() => setSortBy('recent')}
-                    className="ml-1.5 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300"
+                    className="ml-1.5 text-success hover:text-success/80"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

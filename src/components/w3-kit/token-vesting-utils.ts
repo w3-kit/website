@@ -9,16 +9,16 @@ export function calculateProgress(schedule: VestingSchedule): number {
 
 export function formatDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
 export function isClaimable(schedule: VestingSchedule): boolean {
   const now = Date.now();
   return (
-    schedule.status === 'active' &&
+    schedule.status === "active" &&
     now >= schedule.cliffDate &&
     parseFloat(schedule.vestedAmount) < parseFloat(schedule.totalAmount)
   );
@@ -26,18 +26,29 @@ export function isClaimable(schedule: VestingSchedule): boolean {
 
 export const statusConfig = {
   active: {
-    bg: 'bg-green-100 dark:bg-green-900/30',
-    text: 'text-green-800 dark:text-green-400',
-    label: 'Active'
+    bg: "bg-success-muted",
+    text: "text-success",
+    label: "Active",
   },
   completed: {
-    bg: 'bg-muted',
-    text: 'text-muted-foreground',
-    label: 'Completed'
+    bg: "bg-muted",
+    text: "text-muted-foreground",
+    label: "Completed",
   },
   pending: {
-    bg: 'bg-yellow-100 dark:bg-yellow-900/30',
-    text: 'text-yellow-800 dark:text-yellow-400',
-    label: 'Pending'
-  }
+    bg: "bg-warning-muted",
+    text: "text-warning",
+    label: "Pending",
+  },
 };
+
+export const animationStyles = `
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+`;

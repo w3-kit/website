@@ -16,23 +16,23 @@ export default function ConnectWalletPage() {
     <div className="w-full max-w-3xl mx-auto px-4">
       <div className="space-y-6 py-4 sm:py-6">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Connect Wallet
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-base sm:text-lg text-muted-foreground">
             A customizable button component that handles wallet connections with built-in support for multiple providers.
           </p>
         </div>
 
-        <div className="border rounded-lg overflow-hidden dark:border-gray-800">
-          <div className="border-b dark:border-gray-800">
+        <div className="border border-border rounded-lg overflow-hidden">
+          <div className="border-b border-border">
             <div className="flex">
               <button
                 onClick={() => setActiveTab("preview")}
                 className={`px-4 py-2 flex items-center gap-2 ${
                   activeTab === "preview"
-                    ? "text-blue-500 border-b-2 border-blue-500"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
                 }`}
               >
                 <Eye size={20} />
@@ -42,8 +42,8 @@ export default function ConnectWalletPage() {
                 onClick={() => setActiveTab("code")}
                 className={`px-4 py-2 flex items-center gap-2 ${
                   activeTab === "code"
-                    ? "text-blue-500 border-b-2 border-blue-500"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
                 }`}
               >
                 <Code size={20} />
@@ -56,13 +56,13 @@ export default function ConnectWalletPage() {
             {activeTab === "preview" ? (
               <div className="space-y-6">
                 {/* Wallet Type Tabs */}
-                <div className="flex gap-2 border-b dark:border-gray-800">
+                <div className="flex gap-2 border-b border-border">
                   <button
                     onClick={() => setWalletTab("metamask")}
                     className={`px-4 py-2 text-sm font-medium ${
                       walletTab === "metamask"
-                        ? "text-blue-500 border-b-2 border-blue-500"
-                        : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
+                        ? "text-primary border-b-2 border-primary"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     MetaMask
@@ -71,8 +71,8 @@ export default function ConnectWalletPage() {
                     onClick={() => setWalletTab("walletconnect")}
                     className={`px-4 py-2 text-sm font-medium ${
                       walletTab === "walletconnect"
-                        ? "text-blue-500 border-b-2 border-blue-500"
-                        : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
+                        ? "text-primary border-b-2 border-primary"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     WalletConnect
@@ -81,8 +81,8 @@ export default function ConnectWalletPage() {
                     onClick={() => setWalletTab("coinbase")}
                     className={`px-4 py-2 text-sm font-medium ${
                       walletTab === "coinbase"
-                        ? "text-blue-500 border-b-2 border-blue-500"
-                        : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
+                        ? "text-primary border-b-2 border-primary"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     Coinbase
@@ -91,7 +91,7 @@ export default function ConnectWalletPage() {
 
                 {/* Button Variants */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-medium text-foreground">
                     {walletTab === "metamask" 
                       ? "MetaMask" 
                       : walletTab === "walletconnect" 
@@ -105,12 +105,12 @@ export default function ConnectWalletPage() {
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="outline"
+                      variant="light"
                       walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="default"
+                      variant="dark"
                       walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
@@ -143,16 +143,16 @@ const config = {
   },
   variants: {
     ghost: {
-      className: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
-      textColor: "text-gray-900 dark:text-white"
+      className: "bg-transparent hover:bg-accent",
+      textColor: "text-foreground"
     },
     light: {
-      className: "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
-      textColor: "text-gray-900 dark:text-white"
+      className: "bg-card hover:bg-accent",
+      textColor: "text-foreground"
     },
     dark: {
-      className: "bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100",
-      textColor: "text-white dark:text-gray-900"
+      className: "bg-foreground hover:bg-foreground/90",
+      textColor: "text-background"
     }
   }
 };
@@ -196,18 +196,18 @@ export default function Page() {
 
         {/* Installation Section */}
         <div className="space-y-4 mt-8 sm:mt-12">
-          <h2 className="text-xl sm:text-2xl font-semibold border-b border-gray-200 dark:border-gray-800 pb-2 text-gray-900 dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-semibold border-b border-border pb-2 text-foreground">
             Installation
           </h2>
 
           <div className="space-y-4">
-            <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
+            <div className="flex space-x-2 border-b border-border">
               <button
                 onClick={() => setInstallTab("cli")}
                 className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                   installTab === "cli"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 CLI
@@ -216,8 +216,8 @@ export default function Page() {
                 onClick={() => setInstallTab("manual")}
                 className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                   installTab === "manual"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Manual
@@ -227,15 +227,15 @@ export default function Page() {
             <div className="mt-4">
               {installTab === "cli" ? (
                 <>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Run the following command to add the Connect Wallet component to your project:
                   </p>
                   <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/connect-wallet.json" id="cli" />
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                  <p className="text-sm text-muted-foreground mt-4">
                     This will:
                   </p>
-                  <ul className="list-disc pl-6 mb-4 text-sm text-gray-600 dark:text-gray-400">
-                    <li>Create the component in your <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components/ui</code> directory</li>
+                  <ul className="list-disc pl-6 mb-4 text-sm text-muted-foreground">
+                    <li>Create the component in your <code className="bg-muted px-2 py-1 rounded">components/ui</code> directory</li>
                     <li>Add all necessary dependencies to your package.json</li>
                     <li>Set up required configuration files</li>
                     <li>Add wallet provider configurations to your project</li>
@@ -244,14 +244,14 @@ export default function Page() {
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       1. Initialize W3-Kit in your project if you haven&apos;t already:
                     </p>
                     <CodeBlock code="npx w3-kit@latest init" id="init" />
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       2. Copy the component to your project:
                     </p>
                     <CodeBlock
@@ -284,7 +284,7 @@ export { ConnectWalletButton };`}
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       3. Use the component in your code:
                     </p>
                     <CodeBlock

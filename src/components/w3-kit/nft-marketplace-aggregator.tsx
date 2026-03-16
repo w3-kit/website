@@ -20,20 +20,22 @@ import {
   ShoppingCart,
   X,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   RiskLevel,
   ProtocolRisk,
   NFTListing,
   ProtocolRiskScannerProps,
   NFTMarketplaceAggregatorProps,
-} from "./nft-marketplace-aggregator-types";
+} from './nft-marketplace-aggregator-types';
 import {
   getRiskColor,
   getRiskBgColor,
   formatPrice,
   formatUSD,
   formatDate,
-} from "./nft-marketplace-aggregator-utils";
+} from './nft-marketplace-aggregator-utils';
 
 const mockProtocolData: ProtocolRisk[] = [
   {
@@ -146,134 +148,139 @@ export function ProtocolRiskScanner({
   const getRiskIcon = (level: RiskLevel) => {
     switch (level) {
       case RiskLevel.LOW:
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
+        return <CheckCircle className="w-5 h-5 text-success" />;
       case RiskLevel.MEDIUM:
-        return <AlertTriangle className="w-5 h-5 text-yellow-400" />;
+        return <AlertTriangle className="w-5 h-5 text-warning" />;
       case RiskLevel.HIGH:
-        return <AlertTriangle className="w-5 h-5 text-orange-400" />;
+        return <AlertTriangle className="w-5 h-5 text-warning" />;
       case RiskLevel.CRITICAL:
-        return <XCircle className="w-5 h-5 text-red-400" />;
+        return <XCircle className="w-5 h-5 text-destructive" />;
     }
   };
 
   return (
-    <div
-      className={`bg-gray-900 rounded-2xl border border-gray-800 p-6 ${className}`}
-    >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-purple-500/20 rounded-lg">
-          <Shield className="w-6 h-6 text-purple-400" />
+    <Card className={`border-border ${className}`}>
+      <CardContent className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-info/20 rounded-lg">
+            <Shield className="w-6 h-6 text-info" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Protocol Risk Scanner</h2>
+            <p className="text-sm text-muted-foreground">
+              Security analysis of NFT marketplaces
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-white">Protocol Risk Scanner</h2>
-          <p className="text-sm text-gray-400">
-            Security analysis of NFT marketplaces
-          </p>
-        </div>
-      </div>
 
-      <div className="space-y-3">
-        {protocols.map((protocol) => (
-          <div
-            key={protocol.protocol}
-            className="bg-gray-800/50 rounded-xl overflow-hidden"
-          >
-            <button
-              onClick={() =>
-                setExpandedProtocol(
-                  expandedProtocol === protocol.protocol
-                    ? null
-                    : protocol.protocol
-                )
-              }
-              className="w-full p-4 flex items-center justify-between hover:bg-gray-800 transition-colors"
+        <div className="space-y-3">
+          {protocols.map((protocol) => (
+            <Card
+              key={protocol.protocol}
+              className="border-border/50 overflow-hidden"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
-                  <span className="text-lg font-bold text-white">
-                    {protocol.protocol.charAt(0)}
-                  </span>
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-white">
-                    {protocol.protocol}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    Last audit: {protocol.lastAudit}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="flex items-center gap-2">
-                    {getRiskIcon(protocol.riskLevel)}
-                    <span
-                      className={`font-semibold ${getRiskColor(protocol.riskLevel)}`}
-                    >
-                      {protocol.overallScore}/100
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  setExpandedProtocol(
+                    expandedProtocol === protocol.protocol
+                      ? null
+                      : protocol.protocol
+                  )
+                }
+                className="w-full p-4 flex items-center justify-between hover:bg-accent h-auto"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-lg font-bold">
+                      {protocol.protocol.charAt(0)}
                     </span>
                   </div>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${getRiskBgColor(protocol.riskLevel)} ${getRiskColor(protocol.riskLevel)}`}
-                  >
-                    {protocol.riskLevel.toUpperCase()} RISK
-                  </span>
+                  <div className="text-left">
+                    <h3 className="font-semibold">
+                      {protocol.protocol}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Last audit: {protocol.lastAudit}
+                    </p>
+                  </div>
                 </div>
-                {expandedProtocol === protocol.protocol ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedProtocol === protocol.protocol && (
-              <div className="p-4 pt-0 border-t border-gray-700">
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  {protocol.metrics.map((metric) => (
-                    <div key={metric.name} className="bg-gray-900/50 rounded-lg p-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-400">
-                          {metric.name}
-                        </span>
-                        <span className="text-sm font-semibold text-white">
-                          {metric.score}/{metric.maxScore}
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${
-                            metric.score >= 80
-                              ? "bg-green-400"
-                              : metric.score >= 60
-                                ? "bg-yellow-400"
-                                : "bg-red-400"
-                          }`}
-                          style={{
-                            width: `${(metric.score / metric.maxScore) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {metric.description}
-                      </p>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <div className="flex items-center gap-2">
+                      {getRiskIcon(protocol.riskLevel)}
+                      <span
+                        className={`font-semibold ${getRiskColor(protocol.riskLevel)}`}
+                      >
+                        {protocol.overallScore}/100
+                      </span>
                     </div>
-                  ))}
-                </div>
-                <div className="mt-4 p-3 bg-gray-900/50 rounded-lg">
-                  <p className="text-sm text-gray-400">
-                    Audited by:{" "}
-                    <span className="text-white font-medium">
-                      {protocol.auditor}
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getRiskBgColor(protocol.riskLevel)} ${getRiskColor(protocol.riskLevel)}`}
+                    >
+                      {protocol.riskLevel.toUpperCase()} RISK
                     </span>
-                  </p>
+                  </div>
+                  {expandedProtocol === protocol.protocol ? (
+                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+              </Button>
+
+              {expandedProtocol === protocol.protocol && (
+                <CardContent className="p-4 pt-0 border-t border-border">
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    {protocol.metrics.map((metric) => (
+                      <Card key={metric.name} className="bg-muted/50 border-border/50">
+                        <CardContent className="p-3">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-muted-foreground">
+                              {metric.name}
+                            </span>
+                            <span className="text-sm font-semibold">
+                              {metric.score}/{metric.maxScore}
+                            </span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${
+                                metric.score >= 80
+                                  ? "bg-success"
+                                  : metric.score >= 60
+                                    ? "bg-warning"
+                                    : "bg-destructive"
+                              }`}
+                              style={{
+                                width: `${(metric.score / metric.maxScore) * 100}%`,
+                              }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {metric.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  <Card className="mt-4 bg-muted/50 border-border/50">
+                    <CardContent className="p-3">
+                      <p className="text-sm text-muted-foreground">
+                        Audited by:{" "}
+                        <span className="text-foreground font-medium">
+                          {protocol.auditor}
+                        </span>
+                      </p>
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -475,225 +482,225 @@ export function NFTMarketplaceAggregator({
   };
 
   return (
-    <div
-      className={`bg-gray-900 rounded-2xl border border-gray-800 p-6 ${className}`}
-    >
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg">
-            <Sparkles className="w-6 h-6 text-purple-400" />
+    <Card className={`border-border ${className}`}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/20 rounded-lg">
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">
+                NFT Marketplace Aggregator
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Best prices across all marketplaces
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">
-              NFT Marketplace Aggregator
-            </h2>
-            <p className="text-sm text-gray-400">
-              Best prices across all marketplaces
-            </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => setViewMode("grid")}
+              className={viewMode === "grid" ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}
+            >
+              <Grid className="w-5 h-5" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => setViewMode("list")}
+              className={viewMode === "list" ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}
+            >
+              <List className="w-5 h-5" />
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-2 rounded-lg transition-colors ${
-              viewMode === "grid"
-                ? "bg-purple-500/20 text-purple-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            <Grid className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={`p-2 rounded-lg transition-colors ${
-              viewMode === "list"
-                ? "bg-purple-500/20 text-purple-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            <List className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
 
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search NFTs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
-          />
-        </div>
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="flex flex-wrap gap-3 mb-6">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search NFTs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
+            />
+          </div>
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <select
+              value={selectedMarketplace}
+              onChange={(e) => setSelectedMarketplace(e.target.value)}
+              className="pl-9 pr-8 py-2 bg-background border border-input rounded-lg text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
+            >
+              {marketplaces.map((m) => (
+                <option key={m} value={m}>
+                  {m === "all" ? "All Marketplaces" : m}
+                </option>
+              ))}
+            </select>
+          </div>
           <select
-            value={selectedMarketplace}
-            onChange={(e) => setSelectedMarketplace(e.target.value)}
-            className="pl-9 pr-8 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white appearance-none focus:outline-none focus:border-purple-500"
+            value={sortBy}
+            onChange={(e) =>
+              setSortBy(e.target.value as "price" | "rarity" | "recent")
+            }
+            className="px-4 py-2 bg-background border border-input rounded-lg text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
           >
-            {marketplaces.map((m) => (
-              <option key={m} value={m}>
-                {m === "all" ? "All Marketplaces" : m}
-              </option>
-            ))}
+            <option value="price">Price: Low to High</option>
+            <option value="rarity">Rarity: Rare First</option>
+            <option value="recent">Recently Listed</option>
           </select>
         </div>
-        <select
-          value={sortBy}
-          onChange={(e) =>
-            setSortBy(e.target.value as "price" | "rarity" | "recent")
+
+        <div
+          className={
+            viewMode === "grid"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              : "space-y-3"
           }
-          className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white appearance-none focus:outline-none focus:border-purple-500"
         >
-          <option value="price">Price: Low to High</option>
-          <option value="rarity">Rarity: Rare First</option>
-          <option value="recent">Recently Listed</option>
-        </select>
-      </div>
-
-      <div
-        className={
-          viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            : "space-y-3"
-        }
-      >
-        {filteredListings.map((listing) => (
-          <div
-            key={listing.id}
-            onClick={() => setSelectedNFT(listing)}
-            className={`bg-gray-800/50 rounded-xl overflow-hidden hover:bg-gray-800 transition-all cursor-pointer group ${
-              viewMode === "list" ? "flex items-center p-3" : ""
-            }`}
-          >
-            <div
-              className={`relative ${viewMode === "list" ? "w-16 h-16 flex-shrink-0" : "aspect-square"}`}
+          {filteredListings.map((listing) => (
+            <Card
+              key={listing.id}
+              onClick={() => setSelectedNFT(listing)}
+              className={`border-border/50 overflow-hidden hover:bg-accent transition-all duration-200 cursor-pointer group ${
+                viewMode === "list" ? "flex items-center" : ""
+              }`}
             >
-              <img
-                src={listing.image}
-                alt={listing.name}
-                className={`object-cover ${viewMode === "list" ? "w-16 h-16 rounded-lg" : "w-full h-full"}`}
-              />
-              {listing.verified && (
-                <div className="absolute top-2 left-2 p-1 bg-blue-500 rounded-full">
-                  <CheckCircle className="w-3 h-3 text-white" />
-                </div>
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFavorite(listing.id);
-                }}
-                className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
-                  favorites.has(listing.id)
-                    ? "bg-red-500 text-white"
-                    : "bg-black/50 text-gray-300 opacity-0 group-hover:opacity-100"
-                }`}
+              <div
+                className={`relative overflow-hidden ${viewMode === "list" ? "w-16 h-16 flex-shrink-0" : "aspect-square"}`}
               >
-                <Heart
-                  className="w-4 h-4"
-                  fill={favorites.has(listing.id) ? "currentColor" : "none"}
+                <img
+                  src={listing.image}
+                  alt={listing.name}
+                  className={`object-cover group-hover:scale-105 transition-transform duration-300 ${viewMode === "list" ? "w-16 h-16 rounded-lg" : "w-full h-full"}`}
                 />
-              </button>
-              {listing.endTime && (
-                <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 bg-black/70 rounded-full text-xs text-white">
-                  <Clock className="w-3 h-3" />
-                  {formatDate(listing.endTime)}
-                </div>
-              )}
-            </div>
-            <div className={viewMode === "list" ? "flex-1 ml-4" : "p-4"}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-400">
-                  {listing.collection}
-                </span>
-                <div className="flex items-center gap-1">
-                  <img
-                    src={listing.marketplaceLogo}
-                    alt={listing.marketplace}
-                    className="w-4 h-4 rounded-full"
-                  />
-                </div>
-              </div>
-              <h3 className="font-semibold text-white truncate">
-                {listing.name}
-              </h3>
-              <div className="flex items-center justify-between mt-2">
-                <div>
-                  <p className="text-lg font-bold text-white">
-                    {formatPrice(listing.price, listing.currency)}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {formatUSD(listing.usdPrice)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 text-xs">
-                    {listing.price < listing.lastSale ? (
-                      <TrendingUp className="w-3 h-3 text-green-400" />
-                    ) : (
-                      <TrendingUp className="w-3 h-3 text-red-400 rotate-180" />
-                    )}
-                    <span
-                      className={
-                        listing.price < listing.lastSale
-                          ? "text-green-400"
-                          : "text-red-400"
-                      }
-                    >
-                      {(
-                        ((listing.price - listing.lastSale) / listing.lastSale) *
-                        100
-                      ).toFixed(1)}
-                      %
-                    </span>
+                {listing.verified && (
+                  <div className="absolute top-2 left-2 p-1 bg-primary rounded-full">
+                    <CheckCircle className="w-3 h-3 text-primary-foreground" />
                   </div>
-                  <p className="text-xs text-gray-500">
-                    Rank #{listing.rarity}
-                  </p>
-                </div>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(listing.id);
+                  }}
+                  className={`absolute top-2 right-2 h-7 w-7 rounded-full transition-all duration-200 ${
+                    favorites.has(listing.id)
+                      ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      : "bg-overlay/50 text-muted-foreground opacity-0 group-hover:opacity-100"
+                  }`}
+                >
+                  <Heart
+                    className="w-4 h-4"
+                    fill={favorites.has(listing.id) ? "currentColor" : "none"}
+                  />
+                </Button>
+                {listing.endTime && (
+                  <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 bg-overlay/70 rounded-full text-xs text-overlay-foreground">
+                    <Clock className="w-3 h-3" />
+                    {formatDate(listing.endTime)}
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+              <CardContent className={viewMode === "list" ? "flex-1 ml-4 p-3" : "p-4"}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">
+                    {listing.collection}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <img
+                      src={listing.marketplaceLogo}
+                      alt={listing.marketplace}
+                      className="w-4 h-4 rounded-full"
+                    />
+                  </div>
+                </div>
+                <h3 className="font-semibold truncate">
+                  {listing.name}
+                </h3>
+                <div className="flex items-center justify-between mt-2">
+                  <div>
+                    <p className="text-lg font-bold">
+                      {formatPrice(listing.price, listing.currency)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatUSD(listing.usdPrice)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 text-xs">
+                      {listing.price < listing.lastSale ? (
+                        <TrendingUp className="w-3 h-3 text-success" />
+                      ) : (
+                        <TrendingUp className="w-3 h-3 text-destructive rotate-180" />
+                      )}
+                      <span
+                        className={
+                          listing.price < listing.lastSale
+                            ? "text-success"
+                            : "text-destructive"
+                        }
+                      >
+                        {(
+                          ((listing.price - listing.lastSale) / listing.lastSale) *
+                          100
+                        ).toFixed(1)}
+                        %
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Rank #{listing.rarity}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-      {listings.length < allListings.length && (
-        <button
-          onClick={loadMore}
-          disabled={isLoading}
-          className="w-full mt-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {isLoading ? "Loading..." : "Load More NFTs"}
-        </button>
-      )}
+        {listings.length < allListings.length && (
+          <Button
+            onClick={loadMore}
+            disabled={isLoading}
+            className="w-full mt-6 bg-primary hover:bg-primary/90 transition-opacity"
+          >
+            {isLoading ? "Loading..." : "Load More NFTs"}
+          </Button>
+        )}
+      </CardContent>
 
       {selectedNFT && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="relative">
+        <div className="fixed inset-0 bg-overlay/80 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative overflow-hidden">
               <img
                 src={selectedNFT.image}
                 alt={selectedNFT.name}
-                className="w-full aspect-square object-cover"
+                className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setSelectedNFT(null)}
-                className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                className="absolute top-4 right-4 bg-overlay/50 rounded-full text-overlay-foreground hover:bg-overlay/70 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
-            <div className="p-6">
+            <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {selectedNFT.collection}
                   </p>
-                  <h2 className="text-2xl font-bold text-white">
+                  <h2 className="text-2xl font-bold">
                     {selectedNFT.name}
                   </h2>
                 </div>
@@ -703,79 +710,85 @@ export function NFTMarketplaceAggregator({
                     alt={selectedNFT.marketplace}
                     className="w-6 h-6 rounded-full"
                   />
-                  <span className="text-gray-400">{selectedNFT.marketplace}</span>
+                  <span className="text-muted-foreground">{selectedNFT.marketplace}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-800 rounded-xl p-4">
-                  <p className="text-sm text-gray-400 mb-1">Current Price</p>
-                  <p className="text-2xl font-bold text-white">
-                    {formatPrice(selectedNFT.price, selectedNFT.currency)}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {formatUSD(selectedNFT.usdPrice)}
-                  </p>
-                </div>
-                <div className="bg-gray-800 rounded-xl p-4">
-                  <p className="text-sm text-gray-400 mb-1">Last Sale</p>
-                  <p className="text-2xl font-bold text-white">
-                    {formatPrice(selectedNFT.lastSale, selectedNFT.currency)}
-                  </p>
-                  <p
-                    className={`text-sm ${selectedNFT.price < selectedNFT.lastSale ? "text-green-400" : "text-red-400"}`}
-                  >
-                    {selectedNFT.price < selectedNFT.lastSale ? "▼" : "▲"}{" "}
-                    {Math.abs(
-                      ((selectedNFT.price - selectedNFT.lastSale) /
-                        selectedNFT.lastSale) *
-                        100
-                    ).toFixed(1)}
-                    % from last
-                  </p>
-                </div>
+                <Card className="border-border">
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Current Price</p>
+                    <p className="text-2xl font-bold">
+                      {formatPrice(selectedNFT.price, selectedNFT.currency)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatUSD(selectedNFT.usdPrice)}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border">
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Last Sale</p>
+                    <p className="text-2xl font-bold">
+                      {formatPrice(selectedNFT.lastSale, selectedNFT.currency)}
+                    </p>
+                    <p
+                      className={`text-sm ${selectedNFT.price < selectedNFT.lastSale ? "text-success" : "text-destructive"}`}
+                    >
+                      {selectedNFT.price < selectedNFT.lastSale ? "▼" : "▲"}{" "}
+                      {Math.abs(
+                        ((selectedNFT.price - selectedNFT.lastSale) /
+                          selectedNFT.lastSale) *
+                          100
+                      ).toFixed(1)}
+                      % from last
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-white mb-3">Traits</h3>
+                <h3 className="text-lg font-semibold mb-3">Traits</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {selectedNFT.traits.map((trait) => (
-                    <div
+                    <Card
                       key={trait.trait}
-                      className="bg-gray-800 rounded-lg p-3 text-center"
+                      className="border-border text-center"
                     >
-                      <p className="text-xs text-purple-400 uppercase">
-                        {trait.trait}
-                      </p>
-                      <p className="text-sm font-semibold text-white">
-                        {trait.value}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {trait.rarity}% have this
-                      </p>
-                    </div>
+                      <CardContent className="p-3">
+                        <p className="text-xs text-primary uppercase">
+                          {trait.trait}
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {trait.value}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {trait.rarity}% have this
+                        </p>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button
+                <Button
                   onClick={() => handleBuy(selectedNFT)}
-                  className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                  className="flex-1 bg-primary hover:bg-primary/90 transition-opacity"
                 >
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5 mr-2" />
                   Buy Now
-                </button>
-                <button className="px-6 py-3 bg-gray-800 rounded-lg text-white font-semibold flex items-center gap-2 hover:bg-gray-700 transition-colors">
-                  <ExternalLink className="w-5 h-5" />
+                </Button>
+                <Button variant="secondary">
+                  <ExternalLink className="w-5 h-5 mr-2" />
                   View on {selectedNFT.marketplace}
-                </button>
+                </Button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 

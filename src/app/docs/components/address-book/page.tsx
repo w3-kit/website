@@ -75,24 +75,24 @@ export default function AddressBookPage() {
     <div className="w-full max-w-3xl mx-auto px-4">
       <div className="space-y-6 py-4 sm:py-6">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Address Book
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-base sm:text-lg text-muted-foreground">
             A component for managing Ethereum addresses and ENS names with notes and avatars.
           </p>
         </div>
 
         {/* Variant Selector */}
-        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex space-x-2 border-b border-border">
           {(['default', 'compact'] as const).map((variant) => (
             <button
               key={variant}
               onClick={() => setSelectedVariant(variant)}
               className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                 selectedVariant === variant
-                  ? "border-b-2 border-blue-500 text-blue-500"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {variant.charAt(0).toUpperCase() + variant.slice(1)}
@@ -107,8 +107,8 @@ export default function AddressBookPage() {
               onClick={() => setActiveTab("preview")}
               className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
                 activeTab === "preview"
-                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-accent"
               }`}
             >
               <Eye className="mr-2 h-4 w-4" />
@@ -118,8 +118,8 @@ export default function AddressBookPage() {
               onClick={() => setActiveTab("code")}
               className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
                 activeTab === "code"
-                  ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-accent"
               }`}
             >
               <Code className="mr-2 h-4 w-4" />
@@ -129,7 +129,7 @@ export default function AddressBookPage() {
 
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
-              <div className="p-4 bg-gray-50 dark:bg-gray-900">
+              <div className="p-4 bg-muted">
                 <AddressBook
                   entries={addresses}
                   onAdd={handleAdd}
@@ -170,18 +170,18 @@ export default function Page() {
 
         {/* Installation Section */}
         <div className="space-y-4 mt-8 sm:mt-12">
-          <h2 className="text-xl sm:text-2xl font-semibold border-b border-gray-200 dark:border-gray-800 pb-2 text-gray-900 dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-semibold border-b border-border pb-2 text-foreground">
             Installation
           </h2>
 
           <div className="space-y-4">
-            <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
+            <div className="flex space-x-2 border-b border-border">
               <button
                 onClick={() => setInstallTab("cli")}
                 className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                   installTab === "cli"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 CLI
@@ -190,8 +190,8 @@ export default function Page() {
                 onClick={() => setInstallTab("manual")}
                 className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                   installTab === "manual"
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Manual
@@ -201,15 +201,15 @@ export default function Page() {
             <div className="mt-4">
               {installTab === "cli" ? (
                 <>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Run the following command to add the Address Book component to your project using the shadcn CLI:
                   </p>
                   <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/address-book.json" id="cli" />
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                  <p className="text-sm text-muted-foreground mt-4">
                     This will:
                   </p>
-                  <ul className="list-disc pl-6 mb-4 text-sm text-gray-600 dark:text-gray-400">
-                    <li>Create the component in your <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components/w3-kit</code> directory</li>
+                  <ul className="list-disc pl-6 mb-4 text-sm text-muted-foreground">
+                    <li>Create the component in your <code className="bg-muted px-2 py-1 rounded">components/w3-kit</code> directory</li>
                     <li>Add all necessary dependencies (lucide-react) to your package.json</li>
                     <li>Set up the types and utility files</li>
                   </ul>
@@ -217,8 +217,8 @@ export default function Page() {
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      1. Make sure you have a <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">components.json</code> file in your project root:
+                    <p className="text-sm text-muted-foreground">
+                      1. Make sure you have a <code className="bg-muted px-2 py-1 rounded">components.json</code> file in your project root:
                     </p>
                     <CodeBlock code={`{
   "$schema": "https://ui.shadcn.com/schema.json",
@@ -239,14 +239,14 @@ export default function Page() {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       2. Install the component via shadcn CLI:
                     </p>
                     <CodeBlock code="npx shadcn@latest add https://w3-kit.com/registry/address-book.json" id="install" />
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       3. Use the component in your code:
                     </p>
                     <CodeBlock

@@ -1,4 +1,4 @@
-import { GasPrice, GasEstimate } from "./gas-calculator-types";
+import { GasPrice, GasEstimate } from './gas-calculator-types';
 
 export async function fetchGasPrice(chainId: number): Promise<GasPrice> {
   // Simulated gas price fetch - replace with actual API call

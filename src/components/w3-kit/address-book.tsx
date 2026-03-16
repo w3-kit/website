@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Search, Plus, Trash2, Edit2, Image as ImageIcon, AlertCircle, ChevronDown, ExternalLink } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Image as ImageIcon, AlertCircle, ChevronDown, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -14,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import {
   AddressEntry,
   NewEntry,
@@ -28,7 +28,6 @@ import {
   listItemAnimation,
   iconButtonAnimation,
   deleteIconAnimation,
-  textButtonAnimation,
   dropdownAnimation,
   searchBarAnimation,
 } from './address-book-utils';
@@ -36,7 +35,7 @@ import {
 const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, onConfirm, name }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3 text-destructive">
             <AlertCircle className="w-6 h-6" />
@@ -48,7 +47,7 @@ const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, 
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button variant="destructive" onClick={onConfirm}>
@@ -63,7 +62,7 @@ const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, 
 const EditConfirmationModal: React.FC<EditModalProps> = ({ isOpen, onClose, onConfirm, name }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3 text-primary">
             <Edit2 className="w-6 h-6" />
@@ -74,7 +73,7 @@ const EditConfirmationModal: React.FC<EditModalProps> = ({ isOpen, onClose, onCo
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={onConfirm}>
@@ -338,26 +337,27 @@ export const AddressBook: React.FC<AddressBookProps> = ({
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <div
-              className={`relative ${searchBarAnimation}`}
-              style={{
-                maxHeight: isAdding ? '0' : '40px',
-                opacity: isAdding ? 0 : 1,
-                visibility: isAdding ? 'hidden' : 'visible',
-                marginBottom: isAdding ? '0' : '1rem',
-                overflow: 'hidden'
-              }}
-            >
-              <Input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search addresses..."
-                className="pl-9"
-              />
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            </div>
+          <CardContent className="p-3 sm:p-4 pt-4">
+
+          <div
+            className={`relative ${searchBarAnimation}`}
+            style={{
+              maxHeight: isAdding ? '0' : '40px',
+              opacity: isAdding ? 0 : 1,
+              visibility: isAdding ? 'hidden' : 'visible',
+              marginBottom: isAdding ? '0' : '1rem',
+              overflow: 'hidden'
+            }}
+          >
+            <Input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search addresses..."
+              className="pl-9"
+            />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+          </div>
 
           <div
             className={`space-y-4 ${formAnimation}`}
@@ -380,19 +380,18 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                     height={48}
                     className="rounded-full object-cover w-12 h-12"
                   />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full"
+                  <button
                     onClick={() => setNewEntry(prev => ({ ...prev, avatar: '' }))}
+                    className="absolute -top-1 -right-1 p-0.5 bg-destructive text-primary-foreground rounded-full
+                      hover:bg-destructive-hover transition-all duration-200"
                   >
                     <Trash2 className="w-3 h-3" />
-                  </Button>
+                  </button>
                 </div>
               ) : (
                 <label className="cursor-pointer group">
                   <div className="w-12 h-12 rounded-full bg-muted
-                    flex items-center justify-center hover:bg-muted/80 transition-colors">
+                    flex items-center justify-center group-hover:bg-muted/80 transition-colors">
                     <ImageIcon className="w-6 h-6 text-muted-foreground" />
                   </div>
                   <input
@@ -418,31 +417,17 @@ export const AddressBook: React.FC<AddressBookProps> = ({
             />
 
             <div className="flex justify-end space-x-2">
-              <Button variant="ghost" onClick={handleCancel}>
+              <Button variant="ghost" size="sm" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button
+                size="sm"
                 onClick={handleSubmit}
                 disabled={!newEntry.name || !newEntry.address || isLoading('add') || isLoading('edit')}
                 className="min-w-[60px]"
               >
                 {(isLoading('add') || isLoading('edit')) ? (
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (isSuccess('add') || isSuccess('edit')) ? (
                   <svg className="h-4 w-4 animate-in zoom-in duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path
@@ -486,7 +471,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7"
+                        className={`h-8 w-8 ${iconButtonAnimation}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           startEdit(entry);
@@ -497,7 +482,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-destructive hover:text-destructive"
+                        className={`h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 ${deleteIconAnimation}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(entry.id, entry.name);
@@ -525,12 +510,12 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   <div className="flex flex-col space-y-1">
                     <label className="text-xs text-muted-foreground">Address</label>
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm text-foreground font-mono">{entry.address}</p>
+                      <p className="text-sm font-mono">{entry.address}</p>
                       <a
                         href={`https://etherscan.io/address/${entry.address}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80"
+                        className={`text-primary hover:text-primary/80 ${iconButtonAnimation}`}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -540,7 +525,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   {entry.ensName && (
                     <div className="flex flex-col space-y-1">
                       <label className="text-xs text-muted-foreground">ENS Name</label>
-                      <p className="text-sm text-foreground">{entry.ensName}</p>
+                      <p className="text-sm">{entry.ensName}</p>
                     </div>
                   )}
 
@@ -577,35 +562,36 @@ export const AddressBook: React.FC<AddressBookProps> = ({
   return (
     <>
       <Card className={`w-full ${className}`}>
-        <CardHeader className="p-4 sm:p-6 pb-0">
+        <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Address Book</CardTitle>
+            <CardTitle>Address Book</CardTitle>
             <Button onClick={() => setIsAdding(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Address
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-          <div
-            className={`relative ${searchBarAnimation}`}
-            style={{
-              maxHeight: isAdding ? '0' : '40px',
-              opacity: isAdding ? 0 : 1,
-              visibility: isAdding ? 'hidden' : 'visible',
-              marginBottom: isAdding ? '0' : '1rem',
-              overflow: 'hidden'
-            }}
-          >
-            <Input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search addresses..."
-              className="pl-9"
-            />
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-          </div>
+        <CardContent>
+
+        <div
+          className={`relative ${searchBarAnimation}`}
+          style={{
+            maxHeight: isAdding ? '0' : '40px',
+            opacity: isAdding ? 0 : 1,
+            visibility: isAdding ? 'hidden' : 'visible',
+            marginBottom: isAdding ? '0' : '1rem',
+            overflow: 'hidden'
+          }}
+        >
+          <Input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search addresses..."
+            className="pl-9"
+          />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+        </div>
 
         <div className="divide-y divide-border">
           <div
@@ -629,19 +615,18 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                     height={48}
                     className="rounded-full object-cover w-12 h-12"
                   />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full"
+                  <button
                     onClick={() => setNewEntry(prev => ({ ...prev, avatar: '' }))}
+                    className="absolute -top-1 -right-1 p-0.5 bg-destructive text-primary-foreground rounded-full
+                      hover:bg-destructive-hover transition-all duration-200"
                   >
                     <Trash2 className="w-3 h-3" />
-                  </Button>
+                  </button>
                 </div>
               ) : (
                 <label className="cursor-pointer group">
                   <div className="w-12 h-12 rounded-full bg-muted
-                    flex items-center justify-center hover:bg-muted/80 transition-colors">
+                    flex items-center justify-center group-hover:bg-muted/80 transition-colors">
                     <ImageIcon className="w-6 h-6 text-muted-foreground" />
                   </div>
                   <input
@@ -675,22 +660,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                 disabled={!newEntry.name || !newEntry.address || isLoading('add') || isLoading('edit')}
               >
                 {(isLoading('add') || isLoading('edit')) ? (
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (isSuccess('add') || isSuccess('edit')) ? (
                   <svg className="h-4 w-4 animate-in zoom-in duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path
@@ -720,7 +690,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                 <div className="flex items-center space-x-4 min-w-0">
                   {renderAvatar(entry.avatar, entry.name, 'md')}
                   <div className="min-w-0">
-                    <p className="font-medium text-foreground">{entry.name}</p>
+                    <p className="font-medium">{entry.name}</p>
                     <p className="text-sm text-muted-foreground truncate">
                       {entry.ensName || entry.address}
                     </p>
@@ -730,7 +700,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className={`h-8 w-8 ${iconButtonAnimation}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       startEdit(entry);
@@ -741,7 +711,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    className={`h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 ${deleteIconAnimation}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(entry.id, entry.name);
@@ -767,12 +737,12 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                 <div className="flex flex-col space-y-1">
                   <label className="text-sm text-muted-foreground">Address</label>
                   <div className="flex items-center space-x-2">
-                    <p className="text-foreground font-mono">{entry.address}</p>
+                    <p className="font-mono">{entry.address}</p>
                     <a
                       href={`https://etherscan.io/address/${entry.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary/80"
+                      className={`text-primary hover:text-primary/80 ${iconButtonAnimation}`}
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
@@ -782,7 +752,7 @@ export const AddressBook: React.FC<AddressBookProps> = ({
                 {entry.ensName && (
                   <div className="flex flex-col space-y-1">
                     <label className="text-sm text-muted-foreground">ENS Name</label>
-                    <p className="text-foreground">{entry.ensName}</p>
+                    <p>{entry.ensName}</p>
                   </div>
                 )}
 

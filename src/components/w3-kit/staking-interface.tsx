@@ -16,8 +16,11 @@ import {
   TrendingUp,
   Clock,
 } from "lucide-react";
-import { StakingPool, StakingInterfaceProps } from "./staking-interface-types";
-import { formatNumber, getAPRColorClass, keyframes } from "./staking-interface-utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StakingPool, StakingInterfaceProps } from './staking-interface-types';
+import { formatNumber, getAPRColorClass, keyframes } from './staking-interface-utils';
 
 export const StakingInterface: React.FC<StakingInterfaceProps> = ({
   pools,
@@ -135,17 +138,17 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
     if (pool.isStaked) {
       return (
         <div
-          className={`absolute -top-1 -right-1 ${bgSize} bg-green-500 rounded-full flex items-center justify-center`}
+          className={`absolute -top-1 -right-1 ${bgSize} bg-success rounded-full flex items-center justify-center`}
         >
-          <Check className={`${iconSize} text-white`} />
+          <Check className={`${iconSize} text-success-foreground`} />
         </div>
       );
     } else if (pool.lockPeriod > 0) {
       return (
         <div
-          className={`absolute -top-1 -right-1 ${bgSize} bg-amber-500 rounded-full flex items-center justify-center`}
+          className={`absolute -top-1 -right-1 ${bgSize} bg-warning rounded-full flex items-center justify-center`}
         >
-          <Clock className={`${iconSize} text-white`} />
+          <Clock className={`${iconSize} text-warning-foreground`} />
         </div>
       );
     }
@@ -167,8 +170,8 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
         key={pool.id}
         className={`border rounded-lg transition-all duration-300 overflow-hidden ${
           selectedPool?.id === pool.id && !isCompact
-            ? "border-blue-500 dark:border-blue-400 ring-1 ring-blue-500 dark:ring-blue-400"
-            : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md"
+            ? "border-primary ring-1 ring-primary"
+            : "border-border hover:border-primary/50 hover:shadow-md"
         }`}
       >
         <div
@@ -192,12 +195,12 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
             </div>
             <div>
               <h3
-                className={`font-medium text-gray-900 dark:text-white ${isCompact ? "text-sm" : ""}`}
+                className={`font-medium text-foreground ${isCompact ? "text-sm" : ""}`}
               >
                 {pool.name}
               </h3>
               <p
-                className={`${isCompact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex items-center`}
+                className={`${isCompact ? "text-xs" : "text-sm"} text-muted-foreground flex items-center`}
               >
                 <Percent
                   className={`${isCompact ? "w-3 h-3 mr-1" : "w-3.5 h-3.5 mr-1"}`}
@@ -217,14 +220,16 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
                 {formatNumber(pool.apr)}%
               </span>
               <span
-                className={`${isCompact ? "text-xs" : "text-xs"} text-gray-500 dark:text-gray-400`}
+                className={`${isCompact ? "text-xs" : "text-xs"} text-muted-foreground`}
               >
                 APR
               </span>
             </div>
 
-            <button
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-1 h-auto rounded-full"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleFunction(pool.id);
@@ -236,10 +241,10 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
                 className={`transform transition-transform duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}
               >
                 <ChevronDown
-                  className={`${isCompact ? "w-4 h-4" : "w-5 h-5"} text-gray-500 dark:text-gray-400`}
+                  className={`${isCompact ? "w-4 h-4" : "w-5 h-5"} text-muted-foreground`}
                 />
               </div>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -253,23 +258,19 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
             }
           }}
         >
-          <div className="px-3 pb-3 pt-0 border-t border-gray-100 dark:border-gray-700">
+          <div className="px-3 pb-3 pt-0 border-t border-border">
             {isCompact ? (
               <>
                 <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                  <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Lock Period:
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
+                  <div className="flex items-center justify-between bg-muted p-2 rounded">
+                    <span className="text-muted-foreground">Lock Period:</span>
+                    <span className="font-medium text-foreground">
                       {pool.lockPeriod} days
                     </span>
                   </div>
-                  <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Min Stake:
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
+                  <div className="flex items-center justify-between bg-muted p-2 rounded">
+                    <span className="text-muted-foreground">Min Stake:</span>
+                    <span className="font-medium text-foreground">
                       {formatNumber(pool.minStake)}
                     </span>
                   </div>
@@ -277,58 +278,48 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
 
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Your Balance:
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
+                    <span className="text-muted-foreground">Your Balance:</span>
+                    <span className="font-medium text-foreground">
                       {formatNumber(userBalance)} {pool.token.symbol}
                     </span>
                   </div>
 
                   <div className="relative">
-                    <input
+                    <Input
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="Enter amount to stake"
-                      className={`w-full px-3 py-2 text-xs border rounded-lg
-                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                        placeholder-gray-500 dark:placeholder-gray-400
-                        focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400
-                        transition-all duration-200 ${
-                          error
-                            ? "border-red-300 dark:border-red-700"
-                            : "border-gray-200 dark:border-gray-700"
-                        }`}
+                      className={`pr-14 text-xs ${
+                        error ? "border-destructive" : ""
+                      }`}
                     />
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setAmount(userBalance)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-xs
-                        bg-gray-100 dark:bg-gray-700 text-blue-500 hover:text-blue-600
-                        dark:text-blue-400 dark:hover:text-blue-300 rounded
-                        hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-auto px-1.5 py-0.5 text-xs text-primary hover:text-primary/80"
                     >
                       MAX
-                    </button>
+                    </Button>
                   </div>
 
                   {error && (
-                    <div className="flex items-center space-x-1 text-red-500 dark:text-red-400 text-xs animate-[fadeIn_0.3s_ease-in-out]">
+                    <div className="flex items-center space-x-1 text-destructive text-xs animate-[fadeIn_0.3s_ease-in-out]">
                       <AlertCircle className="w-3 h-3 flex-shrink-0" />
                       <span>{error}</span>
                     </div>
                   )}
 
-                  <button
+                  <Button
                     onClick={handleAction}
                     disabled={!amount || Number(amount) <= 0 || isLoading}
-                    className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
-                      disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200
-                      text-xs font-medium transform hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full text-xs"
+                    size="sm"
                   >
                     {isLoading ? (
                       <div className="flex items-center justify-center space-x-2">
-                        <div className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                        <div className="animate-spin w-3 h-3 border-2 border-current border-t-transparent rounded-full" />
                         <span>Processing...</span>
                       </div>
                     ) : (
@@ -347,44 +338,44 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
                         {pool.token.symbol}
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-3">
                   <div className="flex flex-col">
-                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mb-1">
+                    <div className="flex items-center text-muted-foreground text-xs mb-1">
                       <Calendar className="w-3.5 h-3.5 mr-1" />
                       Lock Period
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-foreground">
                       {pool.lockPeriod} days
                     </span>
                   </div>
 
                   <div className="flex flex-col">
-                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mb-1">
+                    <div className="flex items-center text-muted-foreground text-xs mb-1">
                       <ArrowRight className="w-3.5 h-3.5 mr-1" />
                       Min. Stake
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-foreground">
                       {formatNumber(pool.minStake)} {pool.token.symbol}
                     </span>
                   </div>
 
                   <div className="flex flex-col col-span-2 sm:col-span-1">
-                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mb-1">
+                    <div className="flex items-center text-muted-foreground text-xs mb-1">
                       <TrendingUp className="w-3.5 h-3.5 mr-1" />
                       Total Staked
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-foreground">
                       {formatNumber(pool.totalStaked)} {pool.token.symbol}
                     </span>
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedPool(pool);
@@ -393,13 +384,12 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
                       .getElementById("staking-action-section")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className={`w-full mt-4 px-4 py-2 ${
+                  className={`w-full mt-4 ${
                     pool.isStaked
-                      ? "bg-amber-500 hover:bg-amber-600"
-                      : "bg-blue-500 hover:bg-blue-600"
-                  } text-white rounded-lg
-                    transition-all duration-200 text-sm font-medium flex items-center justify-center
-                    hover:shadow-md active:scale-[0.98]`}
+                      ? "bg-warning hover:bg-warning/80"
+                      : ""
+                  }`}
+                  variant={pool.isStaked ? "default" : "default"}
                 >
                   {pool.isStaked ? (
                     <>
@@ -411,7 +401,7 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
                       <Lock className="w-4 h-4 mr-2" /> Stake {pool.token.symbol}
                     </>
                   )}
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -424,111 +414,107 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
     const displayPools = showAllCompactPools ? pools : pools.slice(0, 3);
 
     return (
-      <div
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 ${className}`}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-          <Coins className="w-5 h-5 mr-2 text-blue-500" />
-          Staking Pools
-        </h2>
-
-        {success && (
-          <div
-            className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <Coins className="w-5 h-5 mr-2 text-primary" />
+            Staking Pools
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {success && (
+            <div
+              className="mb-4 p-3 bg-success-muted border border-success/30
             rounded-lg flex items-start space-x-2 animate-[fadeIn_0.3s_ease-in-out]"
-          >
-            <Check className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-green-700 dark:text-green-400">
-              {success}
-            </p>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {displayPools.map((pool) => renderPoolItem(pool, true))}
-
-          {pools.length > 3 && (
-            <button
-              className="w-full text-center text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400
-                dark:hover:text-blue-300 py-2 transition-all duration-200 border border-gray-200 dark:border-gray-700
-                rounded-lg hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
-              onClick={() => setShowAllCompactPools(!showAllCompactPools)}
             >
-              {showAllCompactPools ? (
-                <span className="flex items-center justify-center">
-                  Show Less{" "}
-                  <ChevronUp className="w-4 h-4 ml-1 transition-transform duration-300" />
-                </span>
-              ) : (
-                <span className="flex items-center justify-center">
-                  View {pools.length - 3} More Pools{" "}
-                  <ChevronDown className="w-4 h-4 ml-1 transition-transform duration-300" />
-                </span>
-              )}
-            </button>
+              <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-success">
+                {success}
+              </p>
+            </div>
           )}
-        </div>
-      </div>
+
+          <div className="space-y-3">
+            {displayPools.map((pool) => renderPoolItem(pool, true))}
+
+            {pools.length > 3 && (
+              <Button
+                variant="outline"
+                className="w-full text-sm"
+                onClick={() => setShowAllCompactPools(!showAllCompactPools)}
+              >
+                {showAllCompactPools ? (
+                  <span className="flex items-center justify-center">
+                    Show Less{" "}
+                    <ChevronUp className="w-4 h-4 ml-1 transition-transform duration-300" />
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    View {pools.length - 3} More Pools{" "}
+                    <ChevronDown className="w-4 h-4 ml-1 transition-transform duration-300" />
+                  </span>
+                )}
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}
-    >
-      <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-          <Coins className="w-5 h-5 mr-2 text-blue-500" />
+    <Card className={className}>
+      <CardHeader className="border-b">
+        <CardTitle className="text-xl flex items-center">
+          <Coins className="w-5 h-5 mr-2 text-primary" />
           Staking Pools
-        </h2>
+        </CardTitle>
 
         {success && (
           <div
-            className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800
+            className="mt-4 p-3 bg-success-muted border border-success/30
             rounded-lg flex items-start space-x-2 animate-[fadeIn_0.3s_ease-in-out]"
           >
-            <Check className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-green-700 dark:text-green-400">
+            <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-success">
               {success}
             </p>
           </div>
         )}
+      </CardHeader>
 
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-3">{pools.map((pool) => renderPoolItem(pool))}</div>
-      </div>
+      </CardContent>
 
       {selectedPool && (
-        <div
+        <CardContent
           id="staking-action-section"
-          className="p-4 sm:p-6 animate-[fadeIn_0.3s_ease-in-out]"
+          className="animate-[fadeIn_0.3s_ease-in-out] border-t"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
             <div className="flex items-center space-x-2">
-              <button
+              <Button
                 onClick={() => setIsStaking(true)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  isStaking
-                    ? "bg-blue-500 text-white shadow-md transform scale-105"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                variant={isStaking ? "default" : "ghost"}
+                size="sm"
+                className={isStaking ? "shadow-md" : ""}
               >
-                <Lock className="w-4 h-4 inline-block mr-2" />
+                <Lock className="w-4 h-4 mr-2" />
                 Stake
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setIsStaking(false)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  !isStaking
-                    ? "bg-blue-500 text-white shadow-md transform scale-105"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                variant={!isStaking ? "default" : "ghost"}
+                size="sm"
+                className={!isStaking ? "shadow-md" : ""}
               >
-                <Unlock className="w-4 h-4 inline-block mr-2" />
+                <Unlock className="w-4 h-4 mr-2" />
                 Unstake
-              </button>
+              </Button>
             </div>
-            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-3 py-1.5 rounded-lg">
-              <Coins className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" />
+            <div className="flex items-center text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-lg">
+              <Coins className="w-4 h-4 mr-2" />
               Balance:{" "}
               <span className="font-medium ml-1">
                 {formatNumber(userBalance)} {selectedPool.token.symbol}
@@ -538,40 +524,31 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
 
           <div className="space-y-4">
             <div className="relative">
-              <input
+              <Input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder={`Enter amount to ${isStaking ? "stake" : "unstake"}`}
-                className={`w-full px-4 py-3 text-sm border rounded-lg
-                  bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                  placeholder-gray-500 dark:placeholder-gray-400
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                  transition-all duration-200 ${
-                    error
-                      ? "border-red-300 dark:border-red-700"
-                      : "border-gray-200 dark:border-gray-700"
-                  }`}
+                className={`pr-16 ${error ? "border-destructive" : ""}`}
               />
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setAmount(userBalance)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs
-                  bg-gray-100 dark:bg-gray-700 text-blue-500 hover:text-blue-600
-                  dark:text-blue-400 dark:hover:text-blue-300 rounded-md
-                  hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-auto px-2 py-1 text-xs text-primary hover:text-primary/80"
               >
                 MAX
-              </button>
+              </Button>
             </div>
 
             {error && (
-              <div className="flex items-center space-x-2 text-red-500 dark:text-red-400 text-sm animate-[fadeIn_0.3s_ease-in-out]">
+              <div className="flex items-center space-x-2 text-destructive text-sm animate-[fadeIn_0.3s_ease-in-out]">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
+            <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
               <div className="flex items-center">
                 <Info className="w-3.5 h-3.5 mr-1" />
                 <span>
@@ -583,41 +560,40 @@ export const StakingInterface: React.FC<StakingInterfaceProps> = ({
               <div>Lock period: {selectedPool.lockPeriod} days</div>
             </div>
 
-            <button
+            <Button
               onClick={handleAction}
               disabled={!amount || Number(amount) <= 0 || isLoading}
-              className={`w-full px-4 py-3 ${
+              className={`w-full ${
                 isStaking
-                  ? "bg-blue-500 hover:bg-blue-600"
-                  : "bg-amber-500 hover:bg-amber-600"
-              } text-white rounded-lg
-                disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
-                text-sm font-medium transform hover:scale-[1.02] active:scale-[0.98] hover:shadow-md`}
+                  ? ""
+                  : "bg-warning hover:bg-warning/80"
+              }`}
+              variant={isStaking ? "default" : "default"}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                  <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
                   <span>Processing...</span>
                 </div>
               ) : (
                 <>
                   {isStaking ? (
                     <>
-                      <Lock className="w-4 h-4 inline-block mr-2" /> Stake
+                      <Lock className="w-4 h-4 mr-2" /> Stake
                     </>
                   ) : (
                     <>
-                      <Unlock className="w-4 h-4 inline-block mr-2" /> Unstake
+                      <Unlock className="w-4 h-4 mr-2" /> Unstake
                     </>
                   )}{" "}
                   {selectedPool.token.symbol}
                 </>
               )}
-            </button>
+            </Button>
           </div>
-        </div>
+        </CardContent>
       )}
-    </div>
+    </Card>
   );
 };
 

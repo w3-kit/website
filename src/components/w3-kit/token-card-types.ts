@@ -1,3 +1,5 @@
+import { TokenSymbol } from '../../config/tokens';
+
 export interface Token {
   address: string;
   symbol: string;
@@ -10,22 +12,16 @@ export interface Token {
   chainId: number;
 }
 
-export interface ExtendedToken extends Token {
-  priceChange24h?: number;
-  verified?: boolean;
-  marketCap?: number;
-  volume24h?: number;
-  allTimeHigh?: number;
-  allTimeHighDate?: string;
-  rank?: number;
+export interface TokenListProps {
+  tokens: TokenSymbol[] | Token[];  // Allow both symbol array or token array
+  onTokenSelect?: (token: Token) => void;
+  className?: string;
+  showBalances?: boolean;
+  showPrices?: boolean;
+  showValue?: boolean;
+  variant?: 'table' | 'grid' | 'list';
+  selectedToken?: TokenSymbol;
 }
 
-export interface TokenCardProps {
-  token: ExtendedToken;
-  variant?: "default" | "compact" | "expanded" | "minimal";
-  onClick?: (token: ExtendedToken) => void;
-  showBalance?: boolean;
-  showPrice?: boolean;
-  showPriceChange?: boolean;
-  onFavoriteToggle?: (token: ExtendedToken, isFavorite: boolean) => void;
-}
+export type SortField = 'name' | 'balance' | 'value' | 'symbol';
+export type SortDirection = 'asc' | 'desc'; 

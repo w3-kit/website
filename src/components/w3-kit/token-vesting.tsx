@@ -1,23 +1,46 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import React, { useState, useMemo, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VestingSchedule, TokenVestingProps } from './token-vesting-types';
-import { calculateProgress, formatDate, isClaimable, statusConfig } from './token-vesting-utils';
+import {
+  calculateProgress,
+  formatDate,
+  isClaimable,
+  statusConfig,
+  animationStyles,
+} from './token-vesting-utils';
 
-const StatusBadge: React.FC<{ status: VestingSchedule['status'] }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: VestingSchedule["status"] }> = ({
+  status,
+}) => {
   const config = statusConfig[status];
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
+    >
       {config.label}
     </span>
   );
 };
 
-export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingProps) {
+export const TokenVesting: React.FC<TokenVestingProps> = ({
+  vestingSchedules,
+  onClaimTokens,
+}) => {
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = animationStyles;
+    document.head.appendChild(styleTag);
+
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
 
   const handleClaim = async (e: React.MouseEvent, scheduleId: string) => {
     e.stopPropagation();
@@ -43,82 +66,102 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
           key={schedule.id}
           className="group cursor-pointer transition-all duration-200 ease-out
             hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
-          onClick={() => setExpandedId(expandedId === schedule.id ? null : schedule.id)}
+          onClick={() =>
+            setExpandedId(expandedId === schedule.id ? null : schedule.id)
+          }
           style={{ animationDelay: `${index * 100}ms` }}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <h3 className="text-lg font-semibold text-foreground">
+                <CardTitle className="text-lg">
                   {schedule.tokenSymbol} Vesting
-                </h3>
+                </CardTitle>
                 <StatusBadge status={schedule.status} />
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 className={`rounded-full transition-transform duration-200
-                  ${expandedId === schedule.id ? 'rotate-180' : ''}`}
+                  ${expandedId === schedule.id ? "rotate-180" : ""}`}
               >
-                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className="w-5 h-5 text-muted-foreground"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </Button>
             </div>
           </CardHeader>
 
-          <CardContent>
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-muted-foreground">Progress</span>
-                <span className="text-foreground font-medium">
-                  {calculateProgress(schedule).toFixed(1)}%
-                </span>
-              </div>
-              <div className="relative w-full bg-muted rounded-full h-2 overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-                    animate-shimmer"
-                  style={{ '--tw-translate-x': '-100%' } as React.CSSProperties}
-                />
-                <div
-                  className="bg-blue-500 dark:bg-blue-400 h-full rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${calculateProgress(schedule)}%` }}
-                />
-              </div>
+          <CardContent className="pt-0">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="text-foreground font-medium">
+                {calculateProgress(schedule).toFixed(1)}%
+              </span>
+            </div>
+            <div className="relative w-full bg-secondary rounded-full h-2 overflow-hidden">
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                  animate-shimmer"
+                style={{ "--tw-translate-x": "-100%" } as React.CSSProperties}
+              />
+              <div
+                className="bg-primary h-full rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${calculateProgress(schedule)}%` }}
+              />
             </div>
 
             <div
               className={`mt-4 transition-all duration-300 ease-out overflow-hidden
-                ${expandedId === schedule.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+                ${expandedId === schedule.id ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
             >
               <p className="text-sm text-muted-foreground mb-4">
                 {formatDate(schedule.startDate)} - {formatDate(schedule.endDate)}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-muted p-4 rounded-lg transition-colors duration-200 hover:bg-muted/80">
-                  <span className="text-muted-foreground text-sm">Total Amount</span>
+                <div className="bg-secondary p-4 rounded-lg transition-colors duration-200 hover:bg-secondary/80">
+                  <span className="text-muted-foreground text-sm">
+                    Total Amount
+                  </span>
                   <p className="font-medium text-foreground mt-1">
                     {schedule.totalAmount} {schedule.tokenSymbol}
                   </p>
                 </div>
-                <div className="bg-muted p-4 rounded-lg transition-colors duration-200 hover:bg-muted/80">
-                  <span className="text-muted-foreground text-sm">Vested Amount</span>
+                <div className="bg-secondary p-4 rounded-lg transition-colors duration-200 hover:bg-secondary/80">
+                  <span className="text-muted-foreground text-sm">
+                    Vested Amount
+                  </span>
                   <p className="font-medium text-foreground mt-1">
                     {schedule.vestedAmount} {schedule.tokenSymbol}
                   </p>
                 </div>
-                <div className="bg-muted p-4 rounded-lg transition-colors duration-200 hover:bg-muted/80">
-                  <span className="text-muted-foreground text-sm">Cliff Date</span>
+                <div className="bg-secondary p-4 rounded-lg transition-colors duration-200 hover:bg-secondary/80">
+                  <span className="text-muted-foreground text-sm">
+                    Cliff Date
+                  </span>
                   <p className="font-medium text-foreground mt-1">
                     {formatDate(schedule.cliffDate)}
                   </p>
                 </div>
-                <div className="bg-muted p-4 rounded-lg transition-colors duration-200 hover:bg-muted/80">
-                  <span className="text-muted-foreground text-sm">Last Claimed</span>
+                <div className="bg-secondary p-4 rounded-lg transition-colors duration-200 hover:bg-secondary/80">
+                  <span className="text-muted-foreground text-sm">
+                    Last Claimed
+                  </span>
                   <p className="font-medium text-foreground mt-1">
-                    {schedule.lastClaimDate ? formatDate(schedule.lastClaimDate) : 'Never'}
+                    {schedule.lastClaimDate
+                      ? formatDate(schedule.lastClaimDate)
+                      : "Never"}
                   </p>
                 </div>
               </div>
@@ -127,12 +170,12 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
                 <Button
                   onClick={(e) => handleClaim(e, schedule.id)}
                   disabled={claimingId === schedule.id}
-                  className="w-full mt-4 transition-all duration-200 ease-out active:translate-y-0.5"
+                  className="w-full mt-4"
                 >
                   {claimingId === schedule.id ? (
                     <>
                       <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        className="animate-spin -ml-1 mr-2 h-4 w-4"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -179,7 +222,6 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
       ))}
     </div>
   );
-}
+};
 
-export { VestingSchedule, TokenVestingProps } from './token-vesting-types';
 export default TokenVesting;

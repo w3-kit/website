@@ -15,12 +15,12 @@ export function formatAddress(address: string): string {
   export function getStatusColor(status: 'pending' | 'success' | 'failed'): string {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning-muted text-warning';
       case 'success':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-muted text-success';
       case 'failed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/10 text-destructive';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-foreground';
     }
   } 

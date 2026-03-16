@@ -23,8 +23,8 @@ interface TokenVestingProps {
 const StatusBadge: React.FC<{ status: VestingSchedule['status'] }> = ({ status }) => {
   const statusConfig = {
     active: {
-      bg: 'bg-green-100 dark:bg-green-900/30',
-      text: 'text-green-800 dark:text-green-400',
+      bg: 'bg-success-muted',
+      text: 'text-success',
       label: 'Active'
     },
     completed: {
@@ -33,8 +33,8 @@ const StatusBadge: React.FC<{ status: VestingSchedule['status'] }> = ({ status }
       label: 'Completed'
     },
     pending: {
-      bg: 'bg-yellow-100 dark:bg-yellow-900/30',
-      text: 'text-yellow-800 dark:text-yellow-400',
+      bg: 'bg-warning-muted',
+      text: 'text-warning',
       label: 'Pending'
     }
   };
@@ -116,7 +116,7 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
                 className={`rounded-full transition-transform duration-200
                   ${expandedId === schedule.id ? 'rotate-180' : ''}`}
               >
-                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </Button>
@@ -138,7 +138,7 @@ export function TokenVesting({ vestingSchedules, onClaimTokens }: TokenVestingPr
                   style={{ '--tw-translate-x': '-100%' } as React.CSSProperties}
                 />
                 <div
-                  className="bg-blue-500 dark:bg-blue-400 h-full rounded-full transition-all duration-700 ease-out"
+                  className="bg-primary h-full rounded-full transition-all duration-700 ease-out"
                   style={{ width: `${calculateProgress(schedule)}%` }}
                 />
               </div>

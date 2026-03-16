@@ -23,10 +23,10 @@ export default function ComponentsPage() {
     <div className="py-8 px-4">
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-foreground">
             Components
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+          <p className="text-muted-foreground max-w-3xl">
             A comprehensive collection of Web3 UI components built with React and Tailwind CSS.
             Each component is designed to be accessible, customizable, and easy to integrate.
           </p>
@@ -38,20 +38,20 @@ export default function ComponentsPage() {
             <Link
               key={component.href}
               href={component.href}
-              className="group relative rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
+              className="group relative rounded-lg border border-border bg-card p-4 hover:border-accent-foreground/20 transition-colors duration-200"
             >
               <div className="space-y-2">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                <h3 className="text-base font-semibold text-foreground group-hover:text-primary">
                   {component.title}
                 </h3>
                 {component.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {component.description}
                   </p>
                 )}
               </div>
-              <div className="absolute top-4 right-4 text-gray-400 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                →
+              <div className="absolute top-4 right-4 text-muted-foreground/50 group-hover:text-primary">
+                &rarr;
               </div>
             </Link>
           ))}
@@ -60,4 +60,3 @@ export default function ComponentsPage() {
     </div>
   );
 }
-

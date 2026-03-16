@@ -53,7 +53,8 @@ export const previewComponents = [
         variant="compact"
         assets={[
           {
-            ...TOKEN_CONFIGS.ETH,
+            symbol: TOKEN_CONFIGS.ETH.symbol,
+            tokenConfig: TOKEN_CONFIGS.ETH,
             balance: "2.5",
             price: 3500,
             value: 8750,
@@ -71,7 +72,8 @@ export const previewComponents = [
             }
           },
           {
-            ...TOKEN_CONFIGS.BTC,
+            symbol: TOKEN_CONFIGS.BTC.symbol,
+            tokenConfig: TOKEN_CONFIGS.BTC,
             balance: "0.15",
             price: 45000,
             value: 6750,
@@ -89,7 +91,8 @@ export const previewComponents = [
             }
           },
           {
-            ...TOKEN_CONFIGS.USDC,
+            symbol: TOKEN_CONFIGS.USDC.symbol,
+            tokenConfig: TOKEN_CONFIGS.USDC,
             balance: "5000",
             price: 1,
             value: 5000,
@@ -107,7 +110,8 @@ export const previewComponents = [
             }
           },
           {
-            ...TOKEN_CONFIGS.SOL,
+            symbol: TOKEN_CONFIGS.SOL.symbol,
+            tokenConfig: TOKEN_CONFIGS.SOL,
             balance: "45",
             price: 110,
             value: 4950,

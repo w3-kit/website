@@ -142,11 +142,11 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
   const getStatusColor = (status: OrderData["status"]) => {
     switch (status) {
       case "active":
-        return "text-green-500 dark:text-green-400";
+        return "text-success";
       case "executed":
-        return "text-blue-500 dark:text-blue-400";
+        return "text-primary";
       case "cancelled":
-        return "text-red-500 dark:text-red-400";
+        return "text-destructive";
     }
   };
 
@@ -198,7 +198,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                     placeholder="0.0"
                   />
                   {errors.amount && (
-                    <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+                    <p className="mt-1 text-sm text-destructive">{errors.amount}</p>
                   )}
                 </div>
 
@@ -214,7 +214,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                     placeholder="0.0"
                   />
                   {errors.price && (
-                    <p className="mt-1 text-sm text-red-500">{errors.price}</p>
+                    <p className="mt-1 text-sm text-destructive">{errors.price}</p>
                   )}
                 </div>
 
@@ -230,7 +230,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                     placeholder="Optional"
                   />
                   {errors.expiry && (
-                    <p className="mt-1 text-sm text-red-500">{errors.expiry}</p>
+                    <p className="mt-1 text-sm text-destructive">{errors.expiry}</p>
                   )}
                 </div>
 
@@ -291,9 +291,9 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                       className="rounded-full"
                     />
                     {order.type === "stop-loss" ? (
-                      <TrendingDown className="absolute -top-1 -right-1 w-4 h-4 text-red-500" />
+                      <TrendingDown className="absolute -top-1 -right-1 w-4 h-4 text-destructive" />
                     ) : (
-                      <TrendingUp className="absolute -top-1 -right-1 w-4 h-4 text-green-500" />
+                      <TrendingUp className="absolute -top-1 -right-1 w-4 h-4 text-success" />
                     )}
                   </div>
                   <div>
@@ -316,7 +316,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                     <Button
                       onClick={() => handleCancelClick(order.id)}
                       variant="ghost"
-                      className="text-red-500 hover:text-red-600"
+                      className="text-destructive hover:text-destructive"
                     >
                       Cancel
                     </Button>
@@ -325,7 +325,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
                       onClick={() => handleDeleteOrder(order.id)}
                       variant="ghost"
                       size="icon"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                       title="Delete order"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -340,7 +340,7 @@ export const LimitOrderManager: React.FC<LimitOrderManagerProps> = ({
 
       {/* Cancel Confirmation Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay/50 flex items-center justify-center z-50">
           <Card className="max-w-md w-full mx-4">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">

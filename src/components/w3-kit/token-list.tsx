@@ -1,86 +1,92 @@
-import React, { useState, useMemo, useCallback, memo } from "react";
-import Image from "next/image";
-import { TokenListProps, SortField, SortDirection } from "./token-list-types";
-import { formatBalance, formatCurrency } from "./token-list-utils";
-import { TOKEN_CONFIGS } from "@/config/tokens";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+"use client";
 
-interface Token {
-  name: string;
-  symbol: string;
-  logoURI?: string;
-  balance?: string;
-  price?: number;
-  decimals: number;
-  chainId: number;
-  address: string;
-}
+import React, { useState, useMemo, useCallback, memo, useEffect } from "react";
+import { Token, TokenListProps, SortField, SortDirection } from './token-list-types';
+import { formatBalance, formatCurrency, animationStyles } from './token-list-utils';
 
 // Memoized token image component with fallback
-const TokenImage = memo(({ logoURI, symbol, size = "md" }: { logoURI?: string; symbol: string; size?: "sm" | "md" | "lg" }) => {
-  const [hasError, setHasError] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+const TokenImage = memo(
+  ({
+    logoURI,
+    symbol,
+    size = "md",
+  }: {
+    logoURI?: string;
+    symbol: string;
+    size?: "sm" | "md" | "lg";
+  }) => {
+    const [hasError, setHasError] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-  const sizeClasses = {
-    sm: "w-6 h-6 min-w-[1.5rem]",
-    md: "w-8 h-8 min-w-[2rem]",
-    lg: "w-10 h-10 min-w-[2.5rem]"
-  };
+    const sizeClasses = {
+      sm: "w-6 h-6 min-w-[1.5rem]",
+      md: "w-8 h-8 min-w-[2rem]",
+      lg: "w-10 h-10 min-w-[2.5rem]",
+    };
 
-  if (!logoURI || hasError) {
-    // Fallback to initials if no image or error loading
+    if (!logoURI || hasError) {
+      return (
+        <div
+          className={`${sizeClasses[size]} rounded-full bg-info-muted flex items-center justify-center text-primary font-medium overflow-hidden flex-shrink-0 animate-fadeIn`}
+        >
+          <span className="text-xs sm:text-sm">
+            {symbol.substring(0, 2).toUpperCase()}
+          </span>
+        </div>
+      );
+    }
+
     return (
-      <div className={`${sizeClasses[size]} rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-medium overflow-hidden flex-shrink-0 animate-fadeIn`}>
-        <span className="text-xs sm:text-sm">{symbol.substring(0, 2).toUpperCase()}</span>
+      <div
+        className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 bg-muted border border-border relative`}
+      >
+        <img
+          src={logoURI}
+          alt={symbol}
+          width={32}
+          height={32}
+          className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+          onError={() => setHasError(true)}
+          onLoad={() => setIsLoaded(true)}
+          style={{ width: "100%", height: "100%" }}
+        />
+        {!isLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted animate-pulse">
+            <span className="text-xs text-muted-foreground">
+              {symbol.substring(0, 1)}
+            </span>
+          </div>
+        )}
       </div>
     );
   }
-
-  return (
-    <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 bg-muted border border-gray-200 dark:border-gray-600 relative`}>
-      <Image
-        src={logoURI}
-        alt={symbol}
-        width={32}
-        height={32}
-        className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-        onError={() => setHasError(true)}
-        onLoad={() => setIsLoaded(true)}
-      />
-      {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted animate-pulse">
-          <span className="text-xs text-muted-foreground">{symbol.substring(0, 1)}</span>
-        </div>
-      )}
-    </div>
-  );
-});
+);
 TokenImage.displayName = "TokenImage";
 
 // Memoized token card for grid view
-const TokenGridCard = memo(({
-  token,
-  isSelected,
-  onSelect,
-  showBalances,
-  showPrices
-}: {
-  token: Token;
-  isSelected: boolean;
-  onSelect: () => void;
-  showBalances: boolean;
-  showPrices: boolean;
-}) => {
-  return (
-    <Card
-      onClick={onSelect}
-      className={`cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800
+const TokenGridCard = memo(
+  ({
+    token,
+    isSelected,
+    onSelect,
+    showBalances,
+    showPrices,
+  }: {
+    token: Token;
+    isSelected: boolean;
+    onSelect: () => void;
+    showBalances: boolean;
+    showPrices: boolean;
+  }) => {
+    return (
+      <div
+        onClick={onSelect}
+        className={`bg-card rounded-lg p-3 sm:p-4 cursor-pointer
+        border border-border
+        hover:shadow-md hover:border-primary/30
         transform transition-all duration-200 hover:-translate-y-1 h-full
-        ${isSelected ? "ring-2 ring-blue-500 dark:ring-blue-400 shadow-md" : ""}`}
-    >
-      <CardContent className="p-3 sm:p-4">
+        ${isSelected ? "ring-2 ring-ring shadow-md" : ""}`}
+      >
         <div className="flex items-center space-x-3">
           <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="lg" />
           <div className="min-w-0 flex-1">
@@ -92,9 +98,18 @@ const TokenGridCard = memo(({
             </p>
           </div>
           {isSelected && (
-            <div className="flex-shrink-0 text-blue-500 dark:text-blue-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <div className="flex-shrink-0 text-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           )}
@@ -103,8 +118,10 @@ const TokenGridCard = memo(({
         <div className="mt-3 space-y-1">
           {showBalances && (
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Balance:</span>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2 truncate">
+              <span className="text-xs text-muted-foreground">
+                Balance:
+              </span>
+              <p className="text-sm font-medium text-foreground ml-2 truncate">
                 {formatBalance(token.balance || "0", token.decimals)}
               </p>
             </div>
@@ -112,7 +129,9 @@ const TokenGridCard = memo(({
 
           {showPrices && (
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Price:</span>
+              <span className="text-xs text-muted-foreground">
+                Price:
+              </span>
               <p className="text-sm font-medium text-foreground ml-2 truncate">
                 {formatCurrency(token.price || 0)}
               </p>
@@ -120,8 +139,10 @@ const TokenGridCard = memo(({
           )}
 
           {showPrices && showBalances && (
-            <div className="flex justify-between items-center pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
-              <span className="text-xs text-muted-foreground">Value:</span>
+            <div className="flex justify-between items-center pt-1 border-t border-border mt-1">
+              <span className="text-xs text-muted-foreground">
+                Value:
+              </span>
               <p className="text-sm font-semibold text-foreground ml-2 truncate">
                 {token.price && token.balance
                   ? formatCurrency(Number(token.balance) * token.price)
@@ -130,77 +151,92 @@ const TokenGridCard = memo(({
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
-  );
-});
+      </div>
+    );
+  }
+);
 TokenGridCard.displayName = "TokenGridCard";
 
 // Memoized token row for list view
-const TokenListRow = memo(({
-  token,
-  isSelected,
-  onSelect,
-  showBalances,
-  showPrices
-}: {
-  token: Token;
-  isSelected: boolean;
-  onSelect: () => void;
-  showBalances: boolean;
-  showPrices: boolean;
-}) => {
-  return (
-    <div
-      onClick={onSelect}
-      className={`flex items-center justify-between p-3 sm:p-4 cursor-pointer
-        bg-white dark:bg-gray-800
-        hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
-        ${isSelected ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400" : "border-l-4 border-transparent"}`}
-    >
-      <div className="flex items-center space-x-3 min-w-0 flex-1">
-        <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="md" />
-        <div className="min-w-0 flex-1">
-          <div className="font-medium text-foreground truncate">
-            {token.name}
+const TokenListRow = memo(
+  ({
+    token,
+    isSelected,
+    onSelect,
+    showBalances,
+    showPrices,
+  }: {
+    token: Token;
+    isSelected: boolean;
+    onSelect: () => void;
+    showBalances: boolean;
+    showPrices: boolean;
+  }) => {
+    return (
+      <div
+        onClick={onSelect}
+        className={`flex items-center justify-between p-3 sm:p-4 cursor-pointer
+        bg-card
+        hover:bg-accent transition-colors
+        ${isSelected ? "bg-info-muted border-l-4 border-primary" : "border-l-4 border-transparent"}`}
+      >
+        <div className="flex items-center space-x-3 min-w-0 flex-1">
+          <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="md" />
+          <div className="min-w-0 flex-1">
+            <div className="font-medium text-foreground truncate">
+              {token.name}
+            </div>
+            <div className="text-sm text-muted-foreground truncate">
+              {token.symbol}
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground truncate">
-            {token.symbol}
-          </div>
+          {isSelected && (
+            <div className="flex-shrink-0 text-primary mr-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          )}
         </div>
-        {isSelected && (
-          <div className="flex-shrink-0 text-blue-500 dark:text-blue-400 mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-          </div>
-        )}
-      </div>
 
-      <div className="flex items-center space-x-4 sm:space-x-6 flex-shrink-0">
-        {showBalances && (
-          <div className="flex flex-col items-end">
-            <span className="text-xs text-muted-foreground">Balance</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
-              {formatBalance(token.balance || "0", token.decimals)}
-            </span>
-          </div>
-        )}
+        <div className="flex items-center space-x-4 sm:space-x-6 flex-shrink-0">
+          {showBalances && (
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-muted-foreground">
+                Balance
+              </span>
+              <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                {formatBalance(token.balance || "0", token.decimals)}
+              </span>
+            </div>
+          )}
 
-        {showPrices && (
-          <div className="flex flex-col items-end">
-            <span className="text-xs text-muted-foreground">Value</span>
-            <span className="text-sm font-medium text-foreground whitespace-nowrap">
-              {token.price && token.balance
-                ? formatCurrency(Number(token.balance) * token.price)
-                : "-"}
-            </span>
-          </div>
-        )}
+          {showPrices && (
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-muted-foreground">
+                Value
+              </span>
+              <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                {token.price && token.balance
+                  ? formatCurrency(Number(token.balance) * token.price)
+                  : "-"}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 TokenListRow.displayName = "TokenListRow";
 
 export const TokenList: React.FC<TokenListProps> = ({
@@ -215,7 +251,19 @@ export const TokenList: React.FC<TokenListProps> = ({
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [isCompact, setIsCompact] = useState(variant === "grid" && tokens.length > 6);
+  const [isCompact, setIsCompact] = useState(
+    variant === "grid" && tokens.length > 6
+  );
+
+  useEffect(() => {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = animationStyles;
+    document.head.appendChild(styleTag);
+
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
 
   const handleSort = useCallback(
     (field: SortField) => {
@@ -229,25 +277,9 @@ export const TokenList: React.FC<TokenListProps> = ({
     [sortField]
   );
 
-  const tokenList = useMemo(() => {
-    return tokens.map((token) => {
-      if (typeof token === "string") {
-        const config = TOKEN_CONFIGS[token as keyof typeof TOKEN_CONFIGS];
-        if (!config) return null;
-        return {
-          ...config,
-          balance: "0", // This would be fetched from the wallet
-          price: 0, // This would be fetched from an API
-        };
-      }
-      return token; // If it's already a Token object, return as is
-    }).filter((token): token is Token => token !== null);
-  }, [tokens]);
-
   const filteredAndSortedTokens = useMemo(() => {
-    let result = tokenList;
+    let result = tokens;
 
-    // Filter
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(
@@ -257,7 +289,6 @@ export const TokenList: React.FC<TokenListProps> = ({
       );
     }
 
-    // Sort
     result = [...result].sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
@@ -280,9 +311,8 @@ export const TokenList: React.FC<TokenListProps> = ({
     });
 
     return result;
-  }, [tokenList, search, sortField, sortDirection]);
+  }, [tokens, search, sortField, sortDirection]);
 
-  // Determine optimal grid columns based on token count
   const getGridCols = useCallback(() => {
     const count = filteredAndSortedTokens.length;
     if (count <= 2) return "grid-cols-1";
@@ -298,32 +328,19 @@ export const TokenList: React.FC<TokenListProps> = ({
           <>
             {tokens.length > 6 && (
               <div className="flex justify-end mb-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={() => setIsCompact(!isCompact)}
-                  className="text-xs"
+                  className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
                 >
-                  {isCompact ? (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                      </svg>
-                      <span>Show All</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v4m0 0h4M4 4l5 5M4 16v4m0 0h4m-4 0l5-5m11-9V4m0 0h-4m4 0l-5 5M20 16v4m0 0h-4m4 0l-5-5" />
-                      </svg>
-                      <span>Compact View</span>
-                    </>
-                  )}
-                </Button>
+                  {isCompact ? "Show All" : "Compact View"}
+                </button>
               </div>
             )}
             <div className={`grid ${getGridCols()} gap-2 sm:gap-3 md:gap-4`}>
-              {(isCompact ? filteredAndSortedTokens.slice(0, 6) : filteredAndSortedTokens).map((token, index) => (
+              {(isCompact
+                ? filteredAndSortedTokens.slice(0, 6)
+                : filteredAndSortedTokens
+              ).map((token, index) => (
                 <TokenGridCard
                   key={`${token.chainId}-${token.address}-${index}`}
                   token={token}
@@ -335,20 +352,20 @@ export const TokenList: React.FC<TokenListProps> = ({
               ))}
             </div>
             {isCompact && filteredAndSortedTokens.length > 6 && (
-              <Button
-                variant="outline"
+              <button
                 onClick={() => setIsCompact(false)}
-                className="w-full mt-3"
+                className="w-full mt-3 py-2 text-sm text-primary hover:text-primary/80
+                  border border-primary/30 rounded-lg hover:bg-accent transition-colors"
               >
                 Show {filteredAndSortedTokens.length - 6} more tokens
-              </Button>
+              </button>
             )}
           </>
         );
 
       case "list":
         return (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="divide-y divide-border border border-border rounded-lg overflow-hidden">
             {filteredAndSortedTokens.length > 0 ? (
               filteredAndSortedTokens.map((token, index) => (
                 <TokenListRow
@@ -368,12 +385,12 @@ export const TokenList: React.FC<TokenListProps> = ({
           </div>
         );
 
-      default: // table variant
+      default:
         return (
           <div className={`w-full ${className}`}>
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800/50">
+            <div className="border border-border rounded-lg overflow-hidden">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-muted">
                   <tr>
                     <th
                       className="px-3 sm:px-6 py-3 text-left text-xs font-medium
@@ -383,7 +400,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                       <span className="flex items-center gap-2">
                         Token
                         {sortField === "name" && (
-                          <span className="text-gray-400">
+                          <span className="text-muted-foreground">
                             {sortDirection === "asc" ? "↑" : "↓"}
                           </span>
                         )}
@@ -398,7 +415,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                         <span className="flex items-center gap-2">
                           Balance
                           {sortField === "balance" && (
-                            <span className="text-gray-400">
+                            <span className="text-muted-foreground">
                               {sortDirection === "asc" ? "↑" : "↓"}
                             </span>
                           )}
@@ -417,7 +434,7 @@ export const TokenList: React.FC<TokenListProps> = ({
                           <span className="flex items-center gap-2">
                             Value
                             {sortField === "value" && (
-                              <span className="text-gray-400">
+                              <span className="text-muted-foreground">
                                 {sortDirection === "asc" ? "↑" : "↓"}
                               </span>
                             )}
@@ -427,21 +444,25 @@ export const TokenList: React.FC<TokenListProps> = ({
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                <tbody className="divide-y divide-border bg-card">
                   {filteredAndSortedTokens.map((token, index) => (
                     <tr
                       key={`${token.chainId}-${token.address}-${index}`}
                       onClick={() => onTokenSelect?.(token)}
-                      className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
+                      className={`cursor-pointer hover:bg-accent transition-colors
                         ${
                           selectedToken === token.symbol
-                            ? "bg-blue-50 dark:bg-blue-900/20"
+                            ? "bg-info-muted"
                             : ""
                         }`}
                     >
                       <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <TokenImage logoURI={token.logoURI} symbol={token.symbol} size="sm" />
+                          <TokenImage
+                            logoURI={token.logoURI}
+                            symbol={token.symbol}
+                            size="sm"
+                          />
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-sm sm:text-base text-foreground truncate max-w-[150px] sm:max-w-[200px]">
                               {token.name}
@@ -485,34 +506,57 @@ export const TokenList: React.FC<TokenListProps> = ({
     <div className={`w-full ${className}`}>
       <div className="mb-4 relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+          <svg
+            className="h-5 w-5 text-muted-foreground"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clipRule="evenodd"
+            />
           </svg>
         </div>
-        <Input
+        <input
           type="text"
           placeholder="Search tokens..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 pr-10"
+          className="w-full pl-10 pr-4 py-2 text-sm sm:text-base
+            border border-border rounded-lg
+            bg-card
+            text-foreground
+            placeholder:text-muted-foreground
+            focus:outline-none focus:ring-2 focus:ring-ring transition-all"
         />
         {search && (
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => setSearch("")}
-            className="absolute inset-y-0 right-0 h-full"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
           >
-            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <svg
+              className="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
             </svg>
-          </Button>
+          </button>
         )}
       </div>
 
       {filteredAndSortedTokens.length === 0 ? (
-        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-muted-foreground">No tokens found matching your search.</p>
+        <div className="text-center p-8 bg-muted rounded-lg border border-border">
+          <p className="text-muted-foreground">
+            No tokens found matching your search.
+          </p>
         </div>
       ) : (
         renderVariant()
@@ -520,3 +564,5 @@ export const TokenList: React.FC<TokenListProps> = ({
     </div>
   );
 };
+
+export default TokenList;

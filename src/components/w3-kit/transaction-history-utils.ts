@@ -1,5 +1,3 @@
-import { TransactionStatus } from "./transaction-history-types";
-
 export function formatAddress(address: string): string {
   if (!address) return "";
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -14,51 +12,19 @@ export function formatEther(value: string): string {
   return num.toFixed(4);
 }
 
-export function getStatusColor(status: TransactionStatus): string {
-  switch (status) {
+export function getStatusBadgeVariant(
+  status: string
+): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" {
+  switch (status.toLowerCase()) {
     case "pending":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      return "warning";
     case "success":
-      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+    case "confirmed":
+      return "success";
     case "failed":
-      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+    case "error":
+      return "destructive";
     default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
+      return "secondary";
   }
 }
-
-export const animationStyles = `
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slideDown {
-    from { max-height: 0; opacity: 0; transform: translateY(-10px); }
-    to { max-height: 500px; opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes slideUp {
-    from { max-height: 500px; opacity: 1; transform: translateY(0); }
-    to { max-height: 0; opacity: 0; transform: translateY(-10px); }
-  }
-
-  .animate-fadeIn {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  .animate-slideDown {
-    animation: slideDown 0.3s ease-out forwards;
-    overflow: hidden;
-  }
-
-  .animate-slideUp {
-    animation: slideUp 0.3s ease-in forwards;
-    overflow: hidden;
-  }
-
-  .transition-height {
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, transform 0.3s ease-out;
-    overflow: hidden;
-  }
-`;

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { NetworkSwitcherProps } from "./network-switcher-types";
+import { Button } from "@/components/ui/button";
+import { NetworkSwitcherProps } from './network-switcher-types';
 
 export function NetworkSwitcher({
   networks,
@@ -45,13 +46,13 @@ export function NetworkSwitcher({
         <div
           className={`w-2 h-2 rounded-full ${
             networkStatus === "connected"
-              ? "bg-green-500"
+              ? "bg-success"
               : networkStatus === "connecting"
-              ? "bg-yellow-500"
-              : "bg-red-500"
+              ? "bg-warning"
+              : "bg-destructive"
           }`}
         />
-        <span className="text-sm text-gray-600 dark:text-gray-400">
+        <span className="text-sm text-muted-foreground">
           {networkStatus === "connected"
             ? "Connected"
             : networkStatus === "connecting"
@@ -64,18 +65,17 @@ export function NetworkSwitcher({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200
-      dark:border-gray-700 shadow-sm w-full max-w-3xl mx-auto transition-all
-      duration-300 ease-in-out transform hover:shadow-lg ${className}`}
+      className={`bg-card rounded-lg border shadow-sm w-full max-w-3xl mx-auto transition-all
+      duration-300 ease-in-out transform hover:shadow-sm ${className}`}
     >
       {/* Header Section */}
-      <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 sm:p-6 border-b">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">
               Network
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Select a blockchain network to connect to
             </p>
           </div>
@@ -86,15 +86,16 @@ export function NetworkSwitcher({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search networks..."
-                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700
-                  rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full px-3 py-1.5 text-sm border
+                  rounded-lg bg-background text-foreground
+                  focus:outline-none focus:ring-2 focus:ring-ring transition-all"
               />
               {searchQuery && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400
-                    hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 p-0"
                 >
                   <svg
                     className="w-4 h-4"
@@ -109,33 +110,32 @@ export function NetworkSwitcher({
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </button>
+                </Button>
               )}
             </div>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowTestnets(!showTestnets)}
-              className="text-xs sm:text-sm px-3 py-1.5 border border-gray-200 dark:border-gray-700
-                rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700
-                transition-all duration-200 whitespace-nowrap flex items-center gap-2
-                transform active:scale-95"
+              className="text-xs sm:text-sm whitespace-nowrap"
             >
               {showTestnets ? "Show Mainnets" : "Show Testnets"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Network Status */}
       <div
-        className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-800/50
-        border-b border-gray-200 dark:border-gray-700"
+        className="px-4 sm:px-6 py-3 bg-muted/50
+        border-b"
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusIndicator />
           {gasPrice && (
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-gray-500"
+                className="w-4 h-4 text-muted-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -147,7 +147,7 @@ export function NetworkSwitcher({
                   d="M13 10V3L4 14h7v7l9-11h-7z"
                 />
               </svg>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 Gas: {gasPrice} Gwei
               </span>
             </div>
@@ -155,7 +155,7 @@ export function NetworkSwitcher({
           {latency > 0 && (
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-gray-500"
+                className="w-4 h-4 text-muted-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -167,7 +167,7 @@ export function NetworkSwitcher({
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 Latency: {latency}ms
               </span>
             </div>
@@ -179,19 +179,15 @@ export function NetworkSwitcher({
       <div className="p-4 sm:p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredNetworks.map((network) => (
-            <button
+            <Button
               key={network.chainId}
+              variant={selectedChainId === network.chainId ? "default" : "outline"}
               onClick={() => handleNetworkSwitch(network.chainId)}
               disabled={isLoading}
-              className={`relative p-4 text-left border rounded-lg transition-all duration-200
-                hover:border-blue-500 hover:shadow-sm
-                ${
-                  selectedChainId === network.chainId
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "border-gray-200 dark:border-gray-700"
-                } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`relative p-4 h-auto text-left justify-start hover:shadow-sm
+                ${selectedChainId === network.chainId ? "border-primary" : ""}`}
             >
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 w-full">
                 {network.logoURI && (
                   <div className="relative w-8 h-8">
                     <img
@@ -204,25 +200,25 @@ export function NetworkSwitcher({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white truncate">
+                  <div className="font-medium truncate">
                     {network.name}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <div className="text-xs text-muted-foreground mt-0.5">
                     Chain ID: {network.chainId}
                   </div>
                 </div>
                 {selectedChainId === network.chainId && (
                   <div className="flex-shrink-0">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
                   </div>
                 )}
               </div>
-            </button>
+            </Button>
           ))}
         </div>
 
         {filteredNetworks.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             No networks found matching your search
           </div>
         )}
@@ -230,31 +226,31 @@ export function NetworkSwitcher({
         {/* Network Details */}
         {selectedNetwork && (
           <div
-            className="mt-6 border border-gray-200 dark:border-gray-700 rounded-lg
-            divide-y divide-gray-200 dark:divide-gray-700 text-sm"
+            className="mt-6 border rounded-lg
+            divide-y text-sm"
           >
             <div className="p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <span className="text-gray-600 dark:text-gray-400">RPC URL</span>
+              <span className="text-muted-foreground">RPC URL</span>
               <code
-                className="text-xs sm:text-sm text-gray-900 dark:text-white font-mono bg-gray-50
-                dark:bg-gray-700 px-2 py-1 rounded break-all"
+                className="text-xs sm:text-sm text-foreground font-mono bg-muted
+                px-2 py-1 rounded break-all"
               >
                 {selectedNetwork.rpcUrl}
               </code>
             </div>
             <div className="p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <span className="text-gray-600 dark:text-gray-400">Currency</span>
-              <span className="font-medium text-gray-900 dark:text-white">
+              <span className="text-muted-foreground">Currency</span>
+              <span className="font-medium text-foreground">
                 {selectedNetwork.currency}
               </span>
             </div>
             <div className="p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <span className="text-gray-600 dark:text-gray-400">Explorer</span>
+              <span className="text-muted-foreground">Explorer</span>
               <a
                 href={selectedNetwork.blockExplorer}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline flex items-center gap-1"
+                className="text-primary hover:underline flex items-center gap-1"
               >
                 View Explorer
                 <svg
@@ -273,19 +269,19 @@ export function NetworkSwitcher({
               </a>
             </div>
             <div className="p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <span className="text-gray-600 dark:text-gray-400">
+              <span className="text-muted-foreground">
                 Connection
               </span>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <span className="text-sm text-gray-900 dark:text-white">
+                  <div className="w-2 h-2 rounded-full bg-success" />
+                  <span className="text-sm text-foreground">
                     RPC
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <span className="text-sm text-gray-900 dark:text-white">
+                  <div className="w-2 h-2 rounded-full bg-success" />
+                  <span className="text-sm text-foreground">
                     WebSocket
                   </span>
                 </div>
