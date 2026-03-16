@@ -3,15 +3,176 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Background & Foreground */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Primary (Brand blue) */
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --primary-hover: 221.2 83.2% 46%;
+    --primary-active: 221.2 83.2% 40%;
+
+    /* Secondary */
+    --secondary: 215 20% 93%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Muted */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent */
+    --accent: 214 32% 91%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --destructive-hover: 0 84.2% 52%;
+
+    /* Semantic: Success */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-hover: 142 71% 38%;
+    --success-muted: 142 50% 93%;
+
+    /* Semantic: Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-hover: 38 92% 43%;
+    --warning-muted: 38 70% 93%;
+
+    /* Semantic: Info */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --info-hover: 199 89% 40%;
+    --info-muted: 199 70% 93%;
+
+    /* Borders & Inputs */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --input-focus: 221.2 83.2% 53.3%;
+    --input-error: 0 84.2% 60.2%;
+    --ring: 221.2 83.2% 53.3%;
+
+    /* Overlay */
+    --overlay: 0 0% 0%;
+
+    /* Radius */
+    --radius: 0.5rem;
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.03);
+    --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px -1px hsl(0 0% 0% / 0.04);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.05), 0 2px 4px -2px hsl(0 0% 0% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.05), 0 4px 6px -4px hsl(0 0% 0% / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.05), 0 8px 10px -6px hsl(0 0% 0% / 0.05);
+    --shadow-overlay: 0 25px 50px -12px hsl(0 0% 0% / 0.15);
+
+    /* Typography */
+    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+    --heading-letter-spacing: -0.025em;
+    --heading-line-height: 1.15;
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 60% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 60% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-hover: 217.2 91.2% 66%;
+    --primary-active: 217.2 91.2% 72%;
+
+    --secondary: 215 28% 16%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 216 30% 20%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --destructive-hover: 0 62.8% 38%;
+
+    --success: 142 55% 35%;
+    --success-foreground: 0 0% 100%;
+    --success-hover: 142 55% 42%;
+    --success-muted: 142 30% 14%;
+
+    --warning: 38 72% 40%;
+    --warning-foreground: 0 0% 100%;
+    --warning-hover: 38 72% 48%;
+    --warning-muted: 38 40% 14%;
+
+    --info: 199 70% 40%;
+    --info-foreground: 0 0% 100%;
+    --info-hover: 199 70% 48%;
+    --info-muted: 199 40% 14%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --input-focus: 217.2 91.2% 59.8%;
+    --input-error: 0 62.8% 30.6%;
+    --ring: 224.3 76.3% 48%;
+
+    --overlay: 0 0% 0%;
+
+    --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
+    --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.2), 0 2px 4px -2px hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.2), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.25), 0 8px 10px -6px hsl(0 0% 0% / 0.2);
+    --shadow-overlay: 0 25px 50px -12px hsl(0 0% 0% / 0.4);
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Add transition for theme changes */
+  * {
+    border-color: hsl(var(--border));
+  }
+
   body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: var(--heading-letter-spacing);
+    line-height: var(--heading-line-height);
   }
 
   /* Theme transition for all relevant elements */
@@ -22,7 +183,7 @@
   /* For Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #E5E7EB transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
 
   /* For Chrome, Safari, and Opera */
@@ -36,22 +197,12 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: #E5E7EB;
+    background-color: hsl(var(--border));
     border-radius: 4px;
-  }
-
-  /* Dark mode scrollbar */
-  .dark *::-webkit-scrollbar-thumb {
-    background-color: #374151;
-  }
-
-  .dark * {
-    scrollbar-color: #374151 transparent;
   }
 }
 
 @layer utilities {
-  /* Chrome, Safari and Opera */
   .scrollbar-thin {
     scrollbar-width: thin;
   }
@@ -65,101 +216,45 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #d1d5db;
+    background-color: hsl(var(--muted-foreground) / 0.3);
     border-radius: 3px;
   }
 
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
-  }
-
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
-  }
-
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 }
 
 @keyframes sparkle {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.5);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
 }
 
 @keyframes success {
-  0% {
-    transform: scale(0.8);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes subscribePulse {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0.5;
-  }
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(0.95); opacity: 0.5; }
 }
 
-.animate-sparkle {
-  animation: sparkle 0.4s ease-in-out;
-}
-
-.animate-success {
-  animation: success 0.3s ease-in-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out forwards;
-}
-
-.animate-subscribe-pulse {
-  animation: subscribePulse 1s ease-in-out infinite;
-} 
+.animate-sparkle { animation: sparkle 0.4s ease-in-out; }
+.animate-success { animation: success 0.3s ease-in-out; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+.animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
+.animate-subscribe-pulse { animation: subscribePulse 1s ease-in-out infinite; }

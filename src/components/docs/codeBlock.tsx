@@ -17,20 +17,20 @@ export const CodeBlock = ({ code, id }: CodeBlockProps) => {
 
   return (
     <div className="relative group w-full">
-      <pre className="rounded-lg border max-h-[600px] border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 p-3 sm:p-4 overflow-y-auto">
-        <code className="text-sm sm:text-base text-gray-800 dark:text-gray-200 whitespace-pre">
+      <pre className="rounded-lg border max-h-[600px] border-border bg-muted p-3 sm:p-4 overflow-y-auto">
+        <code className="text-sm sm:text-base text-foreground whitespace-pre">
           {code}
         </code>
       </pre>
       <button
         onClick={() => handleCopy(code, id)}
-        className="absolute right-2 top-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+        className="absolute right-2 top-2 p-2 bg-muted rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent"
         title={copiedId === id ? "Copied!" : "Copy code"}
       >
         {copiedId === id ? (
-          <Check className="h-4 w-4 text-green-500" />
+          <Check className="h-4 w-4 text-success" />
         ) : (
-          <Copy className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+          <Copy className="h-4 w-4 text-muted-foreground" />
         )}
       </button>
     </div>

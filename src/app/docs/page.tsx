@@ -18,25 +18,25 @@ export const metadata: Metadata = {
 export default function DocsPage() {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Getting Started</h1>
-      
+      <h1 className="text-3xl font-bold mb-6 text-foreground">Getting Started</h1>
+
       <section className="prose dark:prose-invert prose-slate max-w-none">
-        <p className="text-lg mb-4 text-gray-700 dark:text-gray-300">
+        <p className="text-lg mb-4 text-muted-foreground">
           Welcome to our UI library documentation. This library provides a set of reusable,
           accessible components to help you build beautiful web applications quickly.
         </p>
 
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-900 dark:text-white">Quick Start</h2>
-        <p className="text-gray-700 dark:text-gray-300">
+        <h2 className="text-2xl font-semibold mt-8 mb-4 text-foreground">Quick Start</h2>
+        <p className="text-muted-foreground">
           Get started by installing the package using your preferred package manager:
         </p>
 
-        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4">
-          <code className="text-gray-800 dark:text-gray-200">npx w3-kit@latest init</code>
+        <pre className="bg-muted p-4 rounded-lg my-4">
+          <code className="text-foreground">npx w3-kit@latest init</code>
         </pre>
 
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-900 dark:text-white">Features</h2>
-        <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
+        <h2 className="text-2xl font-semibold mt-8 mb-4 text-foreground">Features</h2>
+        <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
           <li>Fully typed components with TypeScript</li>
           <li>Accessible by default</li>
           <li>Customizable theming</li>

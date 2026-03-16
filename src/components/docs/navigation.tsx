@@ -14,13 +14,13 @@ interface DocNavigationProps {
 
 export function DocNavigation({ prev, next }: DocNavigationProps) {
   return (
-    <div className="flex items-center justify-between mt-16 border-t border-gray-200 dark:border-gray-800 pt-6">
+    <div className="flex items-center justify-between mt-16 border-t border-border pt-6">
       {prev ? (
         <Link
           href={prev.href}
-          className="group flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200"
         >
-          <ChevronLeft className="h-5 w-5 text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
+          <ChevronLeft className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground" />
           <div className="flex flex-col items-start">
             <span className="text-sm font-medium">Previous</span>
             <span className="text-base font-semibold">{prev.title}</span>
@@ -33,17 +33,17 @@ export function DocNavigation({ prev, next }: DocNavigationProps) {
       {next ? (
         <Link
           href={next.href}
-          className="group flex items-center gap-3 text-right text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+          className="group flex items-center gap-3 text-right text-muted-foreground hover:text-foreground transition-colors duration-200"
         >
           <div className="flex flex-col items-end">
             <span className="text-sm font-medium">Next</span>
             <span className="text-base font-semibold">{next.title}</span>
           </div>
-          <ChevronRight className="h-5 w-5 text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
+          <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground" />
         </Link>
       ) : (
         <div></div>
       )}
     </div>
   );
-} 
+}

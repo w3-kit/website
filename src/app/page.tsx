@@ -16,7 +16,8 @@ import { features } from "@/constants/home-page-features";
 
 // Helper function at the top of the file
 const mockAssetData = {
-  ...TOKEN_CONFIGS.ETH,
+  symbol: TOKEN_CONFIGS.ETH.symbol,
+  tokenConfig: TOKEN_CONFIGS.ETH,
   balance: "2.5",
   price: 3500,
   value: 8750,
@@ -53,16 +54,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen mx-auto bg-white dark:bg-gray-950">
+    <div className="min-h-screen mx-auto bg-background">
       {/* Hero Section */}
       <section className="relative px-6 pt-14 lg:px-8">
         {/* Floating Components */}
         <div className="absolute inset-2 overflow-hidden pointer-events-none">
           {/* Top Left */}
           <div
-            className="absolute 
-            -left-20 xs:-left-16 sm:left-16 md:left-24 
-            -top-4 xs:top-0 sm:top-24 md:top-32 
+            className="absolute
+            -left-20 xs:-left-16 sm:left-16 md:left-24
+            -top-4 xs:top-0 sm:top-24 md:top-32
             transform -rotate-12 opacity-90 animate-float-slow"
           >
             <NFTCard
@@ -83,7 +84,7 @@ export default function Home() {
 
           {/* Top Right */}
           <div
-            className="absolute 
+            className="absolute
             -right-20 xs:-right-16 sm:right-16 md:right-24
             -top-4 xs:top-0 sm:top-24 md:top-32
             transform rotate-12 opacity-90 animate-float-delayed"
@@ -117,9 +118,9 @@ export default function Home() {
 
           {/* Center Right */}
           <div
-            className="absolute 
+            className="absolute
             -right-24 xs:-right-20 sm:right-16 md:right-32
-            top-1/2 transform -translate-y-1/2 rotate-6 
+            top-1/2 transform -translate-y-1/2 rotate-6
             opacity-90 animate-float-reverse"
           >
             <SmartContractScanner
@@ -130,7 +131,7 @@ export default function Home() {
 
           {/* Bottom Left */}
           <div
-            className="absolute 
+            className="absolute
             -left-20 xs:-left-16 sm:left-16 md:left-24
             -bottom-4 xs:bottom-0 sm:bottom-24 md:bottom-32
             transform -rotate-6 opacity-90 animate-float-reverse"
@@ -145,7 +146,7 @@ export default function Home() {
 
           {/* Bottom Right */}
           <div
-            className="absolute 
+            className="absolute
             -right-20 xs:-right-16 sm:right-16 md:right-24
             -bottom-4 xs:bottom-0 sm:bottom-24 md:bottom-32
             transform rotate-6 opacity-90 animate-float"
@@ -160,46 +161,46 @@ export default function Home() {
           </div>
 
           {/* Add subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white dark:from-gray-950 dark:via-transparent dark:to-gray-950 opacity-85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background opacity-85" />
         </div>
 
         <div className="mx-auto max-w-2xl py-28 sm:py-32">
           <div className="text-center">
             <div className="relative z-10">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
                 Build faster with Web3 Components
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+              <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl mx-auto">
                 A comprehensive library of accessible React components for
                 building high-quality Web3 applications and dApps
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Link
                   href="/docs/components"
-                  className="rounded-full bg-gray-900 dark:bg-white px-6 py-3 text-sm font-semibold text-white dark:text-gray-900 shadow-sm hover:bg-gray-800 dark:hover:bg-gray-100"
+                  className="rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background shadow-sm hover:bg-foreground/90 transition-colors duration-200"
                 >
                   Get Started
                 </Link>
-                <pre className="hidden md:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-4 py-2 rounded-full">
+                <pre className="hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-muted px-4 py-2 rounded-full">
                   <code>npx w3-kit@latest init</code>
                   <button
-                    className="relative hover:text-gray-900 dark:hover:text-white transition-all duration-300"
+                    className="relative hover:text-foreground transition-all duration-300"
                     onClick={handleCopy}
                   >
                     <span className="sr-only">Copy to clipboard</span>
                     <div className="relative">
                       {isAnimating && (
-                        <Sparkles 
-                          className="absolute inset-0 h-4 w-4 text-yellow-400 animate-sparkle" 
-                          style={{ 
+                        <Sparkles
+                          className="absolute inset-0 h-4 w-4 text-warning animate-sparkle"
+                          style={{
                             transform: 'scale(1.5)',
                             opacity: 0,
                             animation: 'sparkle 0.4s ease-in-out'
-                          }} 
+                          }}
                         />
                       )}
                       {copied ? (
-                        <Check className="h-4 w-4 text-green-500 transition-all duration-300 animate-success" />
+                        <Check className="h-4 w-4 text-success transition-all duration-300 animate-success" />
                       ) : (
                         <Code className="h-4 w-4 transition-all duration-300" />
                       )}
@@ -217,12 +218,12 @@ export default function Home() {
             className="absolute inset-0 flex items-center"
             aria-hidden="true"
           >
-            <div className="w-full border-t border-gray-200 dark:border-gray-800" />
+            <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center">
             <div className="w-full overflow-x-auto pb-6 hide-scrollbar">
               <div
-                className="inline-flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8 min-w-full md:min-w-0 
+                className="inline-flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 py-8 min-w-full md:min-w-0
                 animate-scroll md:animate-none whitespace-nowrap md:whitespace-normal"
               >
                 {previewComponents.map((component, index) => (
@@ -252,13 +253,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 px-6 sm:py-32 bg-gray-50 dark:bg-gray-900/50">
+      <section className="py-24 px-6 sm:py-32 bg-muted/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Built for modern dApps
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="mt-6 text-lg leading-8 text-muted-foreground">
               From next-gen startups to established enterprises, W3-Kit provides
               the building blocks for your Web3 applications
             </p>
@@ -267,13 +268,13 @@ export default function Home() {
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
               {features.map((feature) => (
                 <div key={feature.title} className="flex flex-col">
-                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                    <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                    <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-muted">
                       {feature.icon}
                     </div>
                     {feature.title}
                   </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-400">
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
                     <p className="flex-auto">{feature.description}</p>
                   </dd>
                 </div>

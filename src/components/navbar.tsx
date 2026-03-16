@@ -115,14 +115,6 @@ const DOCS_MENU = [
       { name: "Quick Start", href: "/docs/quick-start" },
     ],
   },
-  // {
-  //   title: "Core Concepts",
-  //   items: [
-  //     { name: "Architecture", href: "/docs/architecture" },
-  //     { name: "Theming", href: "/docs/theming" },
-  //     { name: "Web3 Integration", href: "/docs/web3-integration" },
-  //   ],
-  // },
 ];
 
 interface SearchResult {
@@ -226,18 +218,18 @@ export function Navbar() {
   const handleThemeSwitch = () => {
     setIsThemeTransitioning(true);
     toggleTheme();
-    setTimeout(() => setIsThemeTransitioning(false), 300); // Match transition duration
+    setTimeout(() => setIsThemeTransitioning(false), 300);
   };
 
   if (!mounted) return null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-20">
         <div className="flex items-center space-x-8">
           <Link
             href="/"
-            className="font-semibold text-xl dark:text-white flex items-center gap-2"
+            className="font-semibold text-xl text-foreground flex items-center gap-2"
           >
             <Image src="/w3-kit-logo.svg" alt="w3-kit" width={30} height={30} />
             w3-kit
@@ -247,31 +239,31 @@ export function Navbar() {
             {/* Docs Link */}
             <Link
               href="/docs/installation"
-              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
             >
               Docs
             </Link>
 
             {/* Components Dropdown */}
             <div className="relative dropdown-container group">
-              <button className="flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+              <button className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200">
                 <span>Components</span>
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
 
-              <div className="absolute top-full left-0 mt-2 w-[800px] max-w-[90vw] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                <div className="pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              <div className="absolute top-full left-0 mt-2 w-[800px] max-w-[90vw] bg-popover rounded-lg shadow-lg border border-border p-4 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                <div className="pb-3 mb-3 border-b border-border">
+                  <h3 className="text-sm font-medium text-foreground">
                     Components
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Explore our collection of Web3 UI components
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-x-8 gap-y-6">
                   {COMPONENTS_MENU.map((section) => (
                     <div key={section.title} className="min-w-[200px]">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         {section.title}
                       </div>
                       <div className="space-y-1">
@@ -284,7 +276,7 @@ export function Navbar() {
                               const dropdown = document.querySelector('.dropdown-container');
                               dropdown?.classList.remove('group-hover:visible', 'group-hover:opacity-100');
                             }}
-                            className="block py-1 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                            className="block py-1 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
                           >
                             {item.name}
                           </Link>
@@ -303,7 +295,7 @@ export function Navbar() {
           <div className="md:relative flex-1 md:flex-initial">
             {/* Search Icon for Mobile */}
             <button
-              className="md:hidden inline-flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="md:hidden inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-200"
               onClick={() => setIsSearchVisible(!isSearchVisible)}
             >
               <Search className="h-5 w-5" />
@@ -312,17 +304,17 @@ export function Navbar() {
             {/* Search Input and Results */}
             <div
               className={`
-                absolute md:relative 
-                md:top-0 
-                left-0 right-0 
+                absolute md:relative
+                md:top-0
+                left-0 right-0
                 md:right-auto
                 p-4 md:p-0
-                bg-white dark:bg-gray-950 md:bg-transparent
-                border-b border-gray-200 dark:border-gray-800 md:border-0
+                bg-background md:bg-transparent
+                border-b border-border md:border-0
                 transition-all duration-300 ease-in-out
                 transform md:transform-none
-                ${isSearchVisible 
-                  ? 'opacity-100 translate-y-16' 
+                ${isSearchVisible
+                  ? 'opacity-100 translate-y-16'
                   : 'opacity-0 -translate-y-full md:opacity-100 md:translate-y-0'
                 }
                 ${isSearchVisible ? 'pointer-events-auto' : 'pointer-events-none md:pointer-events-auto'}
@@ -331,23 +323,22 @@ export function Navbar() {
               `}
             >
               <div className="relative w-full md:w-auto">
-                <div 
+                <div
                   className={`
-                    relative 
-                    transition-all duration-300 ease-in-out 
+                    relative
+                    transition-all duration-300 ease-in-out
                     w-full
-                   
+
                     ${isSearchExpanded ? 'md:w-64' : 'md:w-40'}
                   `}
                 >
-                  <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                  <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Search components..."
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 
-                      dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 
-                      focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-white 
-                      placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-2 bg-muted border border-border rounded-full text-sm focus:outline-none focus:ring-2
+                      focus:ring-ring text-foreground
+                      placeholder:text-muted-foreground transition-all duration-300"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => {
@@ -366,7 +357,7 @@ export function Navbar() {
 
                   {/* Close button for mobile */}
                   <button
-                    className="md:hidden absolute right-2 top-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    className="md:hidden absolute right-2 top-2 text-muted-foreground hover:text-foreground"
                     onClick={() => {
                       setIsSearchVisible(false);
                       setIsSearchFocused(false);
@@ -383,23 +374,23 @@ export function Navbar() {
               {(isSearchFocused || searchResults.length > 0) && (
                 <div
                   className={`
-                    search-results 
-                    absolute 
-                    left-0 right-0 md:left-auto md:right-0 
+                    search-results
+                    absolute
+                    left-0 right-0 md:left-auto md:right-0
                     top-full
                     mt-2
-                    w-full md:w-96 
-                    bg-white dark:bg-gray-900 
-                    rounded-lg shadow-lg 
-                    border border-gray-200 dark:border-gray-700 
+                    w-full md:w-96
+                    bg-popover
+                    rounded-lg shadow-lg
+                    border border-border
                     p-4
-                    max-h-[60vh] md:max-h-96 
+                    max-h-[60vh] md:max-h-96
                     overflow-auto
                     mx-auto md:mx-0
                     z-50
                     transition-all duration-300 ease-in-out
-                    ${isSearchFocused 
-                      ? 'opacity-100 translate-y-0' 
+                    ${isSearchFocused
+                      ? 'opacity-100 translate-y-0'
                       : 'opacity-0 -translate-y-4 pointer-events-none'
                     }
                   `}
@@ -417,12 +408,12 @@ export function Navbar() {
                             setIsSearchFocused(false);
                             setIsSearchVisible(false);
                           }}
-                          className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+                          className="block px-4 py-2 hover:bg-accent rounded-md transition-colors duration-200"
                         >
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-foreground">
                             {result.name}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-muted-foreground">
                             {result.category}
                           </div>
                         </Link>
@@ -431,7 +422,7 @@ export function Navbar() {
                   ) : (
                     // Show popular components
                     <div>
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                      <h3 className="text-sm font-medium text-foreground mb-3">
                         Popular Components
                       </h3>
                       <div className="space-y-2">
@@ -440,12 +431,12 @@ export function Navbar() {
                             key={component.href}
                             href={component.href}
                             onClick={() => setIsSearchFocused(false)}
-                            className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                            className="block p-2 hover:bg-accent rounded-md transition-colors"
                           >
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-foreground">
                               {component.name}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            <div className="text-xs text-muted-foreground mt-0.5">
                               {component.description}
                             </div>
                           </Link>
@@ -463,7 +454,7 @@ export function Navbar() {
             href="https://github.com/w3-kit/ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 justify-center rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <Github className="h-5 w-5" />
             {stars !== null && (
@@ -473,19 +464,19 @@ export function Navbar() {
           </a>
           <button
             onClick={handleThemeSwitch}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
             disabled={isThemeTransitioning}
           >
             <div className="relative w-5 h-5">
               {theme === "light" ? (
-                <Moon 
-                  className={`h-5 w-5 absolute transition-all duration-300 
-                    ${isThemeTransitioning ? 'scale-50 opacity-0' : 'scale-100 opacity-100'}`} 
+                <Moon
+                  className={`h-5 w-5 absolute transition-all duration-300
+                    ${isThemeTransitioning ? 'scale-50 opacity-0' : 'scale-100 opacity-100'}`}
                 />
               ) : (
-                <Sun 
-                  className={`h-5 w-5 absolute transition-all duration-300 
-                    ${isThemeTransitioning ? 'scale-50 opacity-0' : 'scale-100 opacity-100'}`} 
+                <Sun
+                  className={`h-5 w-5 absolute transition-all duration-300
+                    ${isThemeTransitioning ? 'scale-50 opacity-0' : 'scale-100 opacity-100'}`}
                 />
               )}
             </div>

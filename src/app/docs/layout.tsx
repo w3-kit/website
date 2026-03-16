@@ -34,22 +34,22 @@ export default function DocsLayout({
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-white dark:bg-gray-950">
+    <div className="min-h-screen max-w-7xl mx-auto bg-background">
       {/* Mobile Menu Button */}
       <button
-        className="md:hidden fixed top-20 right-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-md shadow-lg transition-colors"
+        className="md:hidden fixed top-20 right-4 z-50 p-2 bg-card rounded-md shadow-lg transition-colors"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
         {isMobileMenuOpen ? (
-          <X className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+          <X className="h-6 w-6 text-muted-foreground" />
         ) : (
-          <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+          <Menu className="h-6 w-6 text-muted-foreground" />
         )}
       </button>
 
       {/* Mobile Menu Backdrop */}
       <div
-        className={`md:hidden fixed inset-0 bg-black transition-opacity duration-300 ${
+        className={`md:hidden fixed inset-0 bg-overlay transition-opacity duration-300 ${
           isMobileMenuOpen ? "opacity-50 z-40" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
@@ -58,13 +58,13 @@ export default function DocsLayout({
       {/* Mobile Menu */}
       <div
         data-mobile-menu
-        className={`md:hidden fixed right-0 top-0 h-screen w-[280px] bg-white dark:bg-gray-950 z-50 
+        className={`md:hidden fixed right-0 top-0 h-screen w-[280px] bg-background z-50
           flex flex-col transform transition-transform duration-300 ease-in-out
           ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* Fixed Header */}
-        <div className="h-20 flex-shrink-0 border-b border-gray-200 dark:border-gray-800" />
-        
+        <div className="h-20 flex-shrink-0 border-b border-border" />
+
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto overscroll-y-contain">
           <div className="h-full px-4 pb-20">
@@ -76,7 +76,7 @@ export default function DocsLayout({
       <div className="container mx-auto">
         <div className="flex relative">
           {/* Desktop Sidebar */}
-          <aside className="hidden md:block sticky top-14 h-[calc(100vh-3.5rem)] w-[280px] lg:w-[20%] bg-white dark:bg-gray-950">
+          <aside className="hidden md:block sticky top-14 h-[calc(100vh-3.5rem)] w-[280px] lg:w-[20%] bg-background">
             <Sidebar />
           </aside>
 
