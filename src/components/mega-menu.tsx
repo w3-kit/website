@@ -111,8 +111,8 @@ export function ComponentsMegaMenu() {
 
 export function ResourcesMegaMenu() {
   return (
-    <div className="w-full max-w-md p-6">
-      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+    <div className="p-6 min-w-[420px]">
+      <div className="grid grid-cols-2 gap-x-12 gap-y-4">
         {RESOURCES_MENU.map((section) => (
           <div key={section.title}>
             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">

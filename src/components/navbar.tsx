@@ -61,6 +61,7 @@ export function Navbar() {
   const [isThemeTransitioning, setIsThemeTransitioning] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMegaMenu, setOpenMegaMenu] = useState<string | null>(null);
   const [expandedMobileSection, setExpandedMobileSection] = useState<string | null>(null);
   const { stars } = useGitHubStars("https://github.com/w3-kit/ui");
 
@@ -117,7 +118,7 @@ export function Navbar() {
   if (!mounted) return null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 backdrop-blur-md bg-white/80 dark:bg-gray-950/80">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 relative">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-20">
         {/* Logo */}
         <div className="flex items-center">
@@ -129,19 +130,15 @@ export function Navbar() {
 
         {/* Desktop Navigation — CSS hover dropdowns */}
         <nav className="hidden md:flex ml-8 items-center space-x-1">
-          {/* Components — hover mega menu */}
-          <div className="relative group">
+          {/* Components — hover mega menu (panel rendered below header) */}
+          <div
+            onMouseEnter={() => setOpenMegaMenu("components")}
+            onMouseLeave={() => setOpenMegaMenu(null)}
+          >
             <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-150 ease-in-out rounded-md">
               Components
-              <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${openMegaMenu === "components" ? "rotate-180" : ""}`} />
             </button>
-            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-150 absolute left-0 top-full pt-2 z-50" style={{ left: 'calc(-50vw + 50%)' , width: '100vw' }}>
-              <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-lg">
-                <div className="mx-auto max-w-7xl">
-                  <ComponentsMegaMenu />
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Docs — direct link */}
@@ -266,6 +263,19 @@ export function Navbar() {
           </button>
         </div>
       </div>
+
+      {/* Components Mega Menu — full-width panel below header */}
+      {openMegaMenu === "components" && (
+        <div
+          className="absolute left-0 right-0 top-full z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-lg animate-slide-down"
+          onMouseEnter={() => setOpenMegaMenu("components")}
+          onMouseLeave={() => setOpenMegaMenu(null)}
+        >
+          <div className="mx-auto max-w-7xl">
+            <ComponentsMegaMenu />
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
