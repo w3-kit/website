@@ -3,18 +3,9 @@ export function formatAddress(address: string): string {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-export function formatEther(value: string): string {
-  return (Number(value) / 1e18).toFixed(4);
-}
-
 export function formatTimestamp(timestamp: number): string {
-  return new Date(timestamp).toLocaleString();
-}
-
-export function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-export function isValidHexData(data: string): boolean {
-  return !data || /^0x[a-fA-F0-9]*$/.test(data);
+  const diff = (Date.now() - timestamp) / 1000;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return new Date(timestamp).toLocaleDateString();
 }

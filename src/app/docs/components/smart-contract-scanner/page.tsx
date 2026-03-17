@@ -2,31 +2,18 @@
 
 import React, { useState, useCallback } from "react";
 import { SmartContractScanner } from "@/components/w3-kit/smart-contract-scanner";
-import { Code, Eye, AlertTriangle } from "lucide-react";
+import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { ContractError } from "@/components/w3-kit/smart-contract-scanner-types";
 
 export default function SmartContractScannerPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [lastError, setLastError] = useState<ContractError | null>(null);
   const [scanHistory, setScanHistory] = useState<string[]>([]);
 
   // Handle contract scanning
   const handleScan = useCallback((address: string) => {
     console.log("Scanning contract:", address);
     setScanHistory(prev => [...prev, `Scanned: ${address} at ${new Date().toLocaleTimeString()}`]);
-  }, []);
-
-  // Handle contract errors
-  const handleError = useCallback((error: ContractError) => {
-    console.error("Contract scan error:", error);
-    setLastError(error);
-    
-    // Clear error after 5 seconds
-    setTimeout(() => {
-      setLastError(null);
-    }, 5000);
   }, []);
 
   return (
@@ -73,22 +60,8 @@ export default function SmartContractScannerPage() {
           <div className="rounded-lg overflow-hidden">
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                {/* Error display */}
-                {lastError && (
-                  <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg flex items-start space-x-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Contract Scan Error</h4>
-                      <p className="text-sm text-amber-700 dark:text-amber-400">
-                        Error: {lastError}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                
                 <SmartContractScanner
                   onScan={handleScan}
-                  onError={handleError}
                 />
 
                 {/* Scan history display */}

@@ -8,10 +8,11 @@ export interface VestingSchedule {
   cliffDate: number;
   lastClaimDate: number | null;
   beneficiary: string;
-  status: 'active' | 'completed' | 'pending';
+  status: "active" | "completed" | "pending";
 }
 
 export interface TokenVestingProps {
   vestingSchedules: VestingSchedule[];
   onClaimTokens: (scheduleId: string) => Promise<void>;
+  className?: string;
 }

@@ -4,41 +4,6 @@ import React, { useState } from "react";
 import { AssetPortfolio } from "@/components/w3-kit/asset-portfolio";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import { TOKEN_CONFIGS } from "@/config/tokens";
-
-// Add the CandleData type
-interface CandleData {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-// Helper function to generate mock candle data
-const generateCandleData = (basePrice: number, timeframe: '24h' | '7d' | '30d'): CandleData[] => {
-  const length = timeframe === '24h' ? 24 : timeframe === '7d' ? 7 : 30;
-  const now = new Date();
-  
-  return Array.from({ length }, (_, i) => {
-    const time = new Date(now.getTime() - (length - i) * 3600000).toISOString();
-    const volatility = basePrice * 0.02;
-    const open = basePrice + (Math.random() - 0.5) * volatility;
-    const close = basePrice + (Math.random() - 0.5) * volatility;
-    const high = Math.max(open, close) + Math.random() * volatility;
-    const low = Math.min(open, close) - Math.random() * volatility;
-    
-    return {
-      time,
-      open,
-      high,
-      low,
-      close,
-      volume: Math.random() * 1000000
-    };
-  });
-};
 
 // Add these helper functions at the top
 const generatePriceHistory = (basePrice: number, volatility: number, length: number) => {
@@ -50,13 +15,14 @@ const generatePriceHistory = (basePrice: number, volatility: number, length: num
 
 export default function AssetPortfolioPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
 
   // Update mockAssets
   const mockAssets = [
     {
-      ...TOKEN_CONFIGS.ADA,
+      symbol: 'ADA',
+      name: 'Cardano',
+      logoURI: 'https://cryptologos.cc/logos/cardano-ada-logo.svg?v=040',
       balance: '2.5',
       price: 3500,
       value: 8750,
@@ -67,14 +33,11 @@ export default function AssetPortfolioPage() {
         '7d': generatePriceHistory(3500, 10, 7),
         '30d': generatePriceHistory(3500, 15, 30)
       },
-      candleData: {
-        '24h': generateCandleData(3500, '24h'),
-        '7d': generateCandleData(3500, '7d'),
-        '30d': generateCandleData(3500, '30d')
-      }
     },
     {
-      ...TOKEN_CONFIGS.BTC,
+      symbol: 'BTC',
+      name: 'Bitcoin',
+      logoURI: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=040',
       balance: '0.15',
       price: 45000,
       value: 6750,
@@ -85,14 +48,11 @@ export default function AssetPortfolioPage() {
         '7d': generatePriceHistory(45000, 2000, 7),
         '30d': generatePriceHistory(45000, 3000, 30)
       },
-      candleData: {
-        '24h': generateCandleData(45000, '24h'),
-        '7d': generateCandleData(45000, '7d'),
-        '30d': generateCandleData(45000, '30d')
-      }
     },
     {
-      ...TOKEN_CONFIGS.USDC,
+      symbol: 'USDC',
+      name: 'USD Coin',
+      logoURI: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040',
       balance: '5000',
       price: 1,
       value: 5000,
@@ -103,14 +63,11 @@ export default function AssetPortfolioPage() {
         '7d': generatePriceHistory(1, 0.002, 7),
         '30d': generatePriceHistory(1, 0.003, 30)
       },
-      candleData: {
-        '24h': generateCandleData(1, '24h'),
-        '7d': generateCandleData(1, '7d'),
-        '30d': generateCandleData(1, '30d')
-      }
     },
     {
-      ...TOKEN_CONFIGS.USDT,
+      symbol: 'USDT',
+      name: 'Tether',
+      logoURI: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040',
       balance: '4500',
       price: 1,
       value: 4500,
@@ -121,11 +78,6 @@ export default function AssetPortfolioPage() {
         '7d': generatePriceHistory(1, 0.002, 7),
         '30d': generatePriceHistory(1, 0.003, 30)
       },
-      candleData: {
-        '24h': generateCandleData(1, '24h'),
-        '7d': generateCandleData(1, '7d'),
-        '30d': generateCandleData(1, '30d')
-      }
     }
   ];
 
@@ -142,23 +94,6 @@ export default function AssetPortfolioPage() {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             A comprehensive portfolio tracker component for displaying crypto assets with distribution charts and performance metrics.
           </p>
-        </div>
-
-        {/* Variant Selector */}
-        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
-          {(['default', 'compact'] as const).map((variant) => (
-            <button
-              key={variant}
-              onClick={() => setSelectedVariant(variant)}
-              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                selectedVariant === variant
-                  ? "border-b-2 border-blue-500 text-blue-500"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              {variant.charAt(0).toUpperCase() + variant.slice(1)}
-            </button>
-          ))}
         </div>
 
         {/* Preview/Code Section */}
@@ -195,7 +130,6 @@ export default function AssetPortfolioPage() {
                   assets={mockAssets}
                   totalValue={totalValue}
                   totalChange24h={totalChange24h}
-                  variant={selectedVariant}
                   onAssetClick={(asset) => console.log("Asset clicked:", asset)}
                 />
               </div>
@@ -275,7 +209,6 @@ export default function Page() {
       assets={assets}
       totalValue={totalValue}
       totalChange24h={totalChange24h}
-      variant="${selectedVariant}"
       onAssetClick={(asset) => console.log("Asset clicked:", asset)}
     />
   );

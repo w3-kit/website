@@ -15,6 +15,7 @@ export interface AirdropInfo {
 export interface TokenAirdropProps {
   airdrops: AirdropInfo[];
   onClaim: (airdropId: string) => Promise<void>;
+  className?: string;
 }
 
 export type AirdropStatus = "active" | "claimed" | "expired" | "upcoming";

@@ -148,7 +148,6 @@ export default function DeFiPositionManagerPage() {
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <DeFiPositionManager
                   positions={mockPositions}
-                  onAdjustPosition={handleAdjustPosition}
                 />
               </div>
             ) : (

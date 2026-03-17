@@ -28,11 +28,3 @@ export interface MultisigWalletProps {
   onReject?: (txId: string) => void;
   className?: string;
 }
-
-export interface FormErrors {
-  description?: string;
-  to?: string;
-  value?: string;
-  data?: string;
-  submit?: string;
-}

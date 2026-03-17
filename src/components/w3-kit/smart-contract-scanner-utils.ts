@@ -4,26 +4,16 @@ export function isValidAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
 
-export function getStatusColor(status: SecurityCheck["status"]): string {
-  switch (status) {
-    case "safe":
-      return "text-green-500 dark:text-green-400";
-    case "warning":
-      return "text-yellow-500 dark:text-yellow-400";
-    case "danger":
-      return "text-red-500 dark:text-red-400";
-    default:
-      return "text-gray-500 dark:text-gray-400";
-  }
+export function getMockChecks(): SecurityCheck[] {
+  return [
+    { id: "1", name: "Ownership Renounced", status: "safe", description: "Contract ownership has been renounced" },
+    { id: "2", name: "No Proxy Pattern", status: "safe", description: "No upgradeable proxy detected" },
+    { id: "3", name: "Reentrancy Guard", status: "safe", description: "Protected against reentrancy attacks" },
+    { id: "4", name: "Unlimited Minting", status: "warning", description: "Token has no max supply cap" },
+    { id: "5", name: "External Calls", status: "danger", description: "Unvalidated external contract calls found" },
+  ];
 }
 
-export function getCodePreview(sourceCode: string, maxLines = 15): string {
-  const lines = sourceCode.split("\n");
-  if (lines.length <= maxLines) return sourceCode;
-
-  return lines.slice(0, maxLines).join("\n") + "\n...";
-}
-
-export function copyToClipboard(text: string): Promise<void> {
-  return navigator.clipboard.writeText(text);
+export function getStatusVariant(status: "safe" | "warning" | "danger"): "success" | "warning" | "error" {
+  return status === "safe" ? "success" : status === "warning" ? "warning" : "error";
 }

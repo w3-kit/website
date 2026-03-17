@@ -1,254 +1,100 @@
+"use client";
+
 import React, { useState } from "react";
-import { ArrowUpDown, Loader2, Check, AlertCircle } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { TokenIcon } from "@/components/ui/token-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Protocol, FlashLoanToken, FlashLoanExecutorProps } from "./flash-loan-executor-types";
 
-export interface FlashLoanData {
-  id: string;
-  protocol: {
-    name: string;
-    logoURI: string;
-    address: string;
-  };
-  token: {
-    symbol: string;
-    logoURI: string;
-    decimals: number;
-    address: string;
-  };
-  amount: string;
-  profit: string;
-  risk: "low" | "medium" | "high";
-  status: "pending" | "executing" | "completed" | "failed";
-  timestamp: number;
-}
-
-interface FlashLoanExecutorProps {
-  protocols: {
-    name: string;
-    logoURI: string;
-    address: string;
-  }[];
-  tokens: {
-    symbol: string;
-    logoURI: string;
-    decimals: number;
-    address: string;
-  }[];
-  onExecute?: (data: Omit<FlashLoanData, "id" | "timestamp">) => void;
-  className?: string;
-}
+export type { Protocol, FlashLoanToken, FlashLoanExecutorProps };
 
 export const FlashLoanExecutor: React.FC<FlashLoanExecutorProps> = ({
   protocols,
   tokens,
   onExecute,
-  className = "",
+  className,
 }) => {
-  const [selectedProtocol, setSelectedProtocol] = useState(protocols[0]);
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [selectedProtocol, setSelectedProtocol] = useState<Protocol | null>(null);
+  const [selectedToken, setSelectedToken] = useState<FlashLoanToken | null>(null);
   const [amount, setAmount] = useState("");
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [errors, setErrors] = useState<{
-    amount?: string;
-    protocol?: string;
-    token?: string;
-  }>({});
-
-  const validateForm = () => {
-    const newErrors: typeof errors = {};
-
-    if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = "Amount must be greater than 0";
-    }
-
-    if (!selectedProtocol) {
-      newErrors.protocol = "Please select a protocol";
-    }
-
-    if (!selectedToken) {
-      newErrors.token = "Please select a token";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleExecute = async () => {
-    if (!validateForm()) return;
-
-    setIsExecuting(true);
+    if (!selectedProtocol || !selectedToken || !amount) return;
+    setLoading(true);
     try {
-      // Simulate flash loan execution
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const flashLoanData: Omit<FlashLoanData, "id" | "timestamp"> = {
-        protocol: selectedProtocol,
-        token: selectedToken,
-        amount,
-        profit: "0.05", // Example profit in ETH
-        risk: "medium",
-        status: "completed",
-      };
-
-      await onExecute?.(flashLoanData);
-
-      // Show success animation
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-        setAmount("");
-      }, 1500);
+      await onExecute?.(selectedProtocol.name, selectedToken.symbol, amount);
     } finally {
-      setIsExecuting(false);
-    }
-  };
-
-  const getRiskColor = (risk: FlashLoanData["risk"]) => {
-    switch (risk) {
-      case "low":
-        return "text-green-500 dark:text-green-400";
-      case "medium":
-        return "text-yellow-500 dark:text-yellow-400";
-      case "high":
-        return "text-red-500 dark:text-red-400";
+      setLoading(false);
     }
   };
 
   return (
-    <Card className={className}>
-      <CardContent className="p-4 space-y-4">
+    <div className={cn("rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden", className)}>
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+        <Zap className="h-4 w-4 text-amber-500" />
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Flash Loan</h3>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Protocol */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Protocol
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {protocols.map((protocol) => (
-              <Button
-                key={protocol.address}
-                onClick={() => setSelectedProtocol(protocol)}
-                variant={selectedProtocol.address === protocol.address ? "default" : "outline"}
-                className="flex items-center space-x-2 flex-1 min-w-[120px]"
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Protocol</p>
+          <div className="flex gap-2">
+            {protocols.map((p) => (
+              <button
+                key={p.name}
+                onClick={() => setSelectedProtocol(p)}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors duration-150",
+                  selectedProtocol?.name === p.name
+                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900"
+                    : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900"
+                )}
               >
-                <Image
-                  src={protocol.logoURI}
-                  alt={protocol.name}
-                  width={24}
-                  height={24}
-                  className="rounded-full"
-                />
-                <span className="text-sm font-medium">
-                  {protocol.name}
-                </span>
-              </Button>
+                <TokenIcon symbol={p.name} logoURI={p.logoURI} size="sm" />
+                <span className="text-gray-900 dark:text-white">{p.name}</span>
+              </button>
             ))}
           </div>
-          {errors.protocol && (
-            <p className="mt-1 text-sm text-red-500">{errors.protocol}</p>
-          )}
         </div>
 
+        {/* Token */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Token
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {tokens.map((token) => (
-              <Button
-                key={token.address}
-                onClick={() => setSelectedToken(token)}
-                variant={selectedToken.address === token.address ? "default" : "outline"}
-                className="flex items-center space-x-2 flex-1 min-w-[120px]"
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Token</p>
+          <div className="flex gap-2">
+            {tokens.map((t) => (
+              <button
+                key={t.symbol}
+                onClick={() => setSelectedToken(t)}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors duration-150",
+                  selectedToken?.symbol === t.symbol
+                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900"
+                    : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900"
+                )}
               >
-                <Image
-                  src={token.logoURI}
-                  alt={token.symbol}
-                  width={24}
-                  height={24}
-                  className="rounded-full"
-                />
-                <span className="text-sm font-medium">
-                  {token.symbol}
-                </span>
-              </Button>
+                <TokenIcon symbol={t.symbol} logoURI={t.logoURI} size="sm" />
+                <span className="text-gray-900 dark:text-white">{t.symbol}</span>
+              </button>
             ))}
           </div>
-          {errors.token && (
-            <p className="mt-1 text-sm text-red-500">{errors.token}</p>
-          )}
         </div>
 
+        {/* Amount */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Amount
-          </label>
-          <div className="relative">
-            <Input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className={errors.amount ? "border-red-500" : ""}
-              placeholder="0.0"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <Image
-                src={selectedToken.logoURI}
-                alt={selectedToken.symbol}
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-            </div>
-          </div>
-          {errors.amount && (
-            <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
-          )}
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Amount</p>
+          <Input type="number" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </div>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <span className="text-sm text-muted-foreground">Estimated Profit</span>
-              <span className="text-sm font-medium text-green-500">+0.05 ETH</span>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm text-muted-foreground">Risk Level</span>
-              <span className={`text-sm font-medium ${getRiskColor("medium")}`}>Medium</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Button
-          onClick={handleExecute}
-          disabled={isExecuting || showSuccess}
-          className="w-full"
-        >
-          {isExecuting ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              <span className="whitespace-nowrap">Executing Flash Loan...</span>
-            </>
-          ) : showSuccess ? (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              <span className="whitespace-nowrap">Flash Loan Executed!</span>
-            </>
-          ) : (
-            <>
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              <span className="whitespace-nowrap">Execute Flash Loan</span>
-            </>
-          )}
+        <Button onClick={handleExecute} disabled={!selectedProtocol || !selectedToken || !amount || loading} className="w-full">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Execute Flash Loan"}
         </Button>
-
-        <div className="flex flex-wrap items-center text-sm text-yellow-600 dark:text-yellow-400 gap-2">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>Make sure you have enough collateral to cover the flash loan fee</span>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
+
+export default FlashLoanExecutor;

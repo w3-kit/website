@@ -7,7 +7,6 @@ import { CodeBlock } from "@/components/docs/codeBlock";
 
 export default function ENSResolverPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
 
   return (
@@ -20,23 +19,6 @@ export default function ENSResolverPage() {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             A component for resolving ENS names to Ethereum addresses and vice versa.
           </p>
-        </div>
-
-        {/* Variant Selector */}
-        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
-          {(['default', 'compact'] as const).map((variant) => (
-            <button
-              key={variant}
-              onClick={() => setSelectedVariant(variant)}
-              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                selectedVariant === variant
-                  ? "border-b-2 border-blue-500 text-blue-500"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              {variant.charAt(0).toUpperCase() + variant.slice(1)}
-            </button>
-          ))}
         </div>
 
         {/* Preview/Code Section */}
@@ -70,7 +52,6 @@ export default function ENSResolverPage() {
             {activeTab === "preview" ? (
               <div className="p-4 bg-gray-50 dark:bg-gray-900">
                 <ENSResolver
-                  variant={selectedVariant}
                   onResolve={(result) => console.log("Resolved:", result)}
                 />
               </div>
@@ -96,7 +77,6 @@ export default function Page() {
 
   return (
     <ENSResolver
-      variant="${selectedVariant}"
       onResolve={(result) => {
         console.log("Resolved:", result);
         setResolvedData(result);

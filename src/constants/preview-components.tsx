@@ -40,7 +40,7 @@ export const previewComponents = [
     description:
       "Analyze and verify smart contracts with comprehensive security checks",
     path: "/docs/components/smart-contract-scanner",
-    preview: <SmartContractScanner variant="compact" />,
+    preview: <SmartContractScanner />,
   },
   {
     name: "Asset Portfolio",
@@ -49,10 +49,11 @@ export const previewComponents = [
     path: "/docs/components/asset-portfolio",
     preview: (
       <AssetPortfolio
-        variant="compact"
         assets={[
           {
-            ...TOKEN_CONFIGS.ETH,
+            symbol: TOKEN_CONFIGS.ETH.symbol,
+            name: TOKEN_CONFIGS.ETH.name,
+            logoURI: TOKEN_CONFIGS.ETH.logoURI,
             balance: "2.5",
             price: 3500,
             value: 8750,
@@ -63,14 +64,11 @@ export const previewComponents = [
               '7d': Array.from({ length: 7 }, (_, i) => 3500 + Math.sin(i / 2) * 200),
               '30d': Array.from({ length: 30 }, (_, i) => 3500 + Math.sin(i) * 300)
             },
-            candleData: {
-              '24h': [],
-              '7d': [],
-              '30d': []
-            }
           },
           {
-            ...TOKEN_CONFIGS.BTC,
+            symbol: TOKEN_CONFIGS.BTC.symbol,
+            name: TOKEN_CONFIGS.BTC.name,
+            logoURI: TOKEN_CONFIGS.BTC.logoURI,
             balance: "0.15",
             price: 45000,
             value: 6750,
@@ -81,14 +79,11 @@ export const previewComponents = [
               '7d': Array.from({ length: 7 }, (_, i) => 45000 + Math.sin(i / 2) * 2000),
               '30d': Array.from({ length: 30 }, (_, i) => 45000 + Math.sin(i) * 3000)
             },
-            candleData: {
-              '24h': [],
-              '7d': [],
-              '30d': []
-            }
           },
           {
-            ...TOKEN_CONFIGS.USDC,
+            symbol: TOKEN_CONFIGS.USDC.symbol,
+            name: TOKEN_CONFIGS.USDC.name,
+            logoURI: TOKEN_CONFIGS.USDC.logoURI,
             balance: "5000",
             price: 1,
             value: 5000,
@@ -99,14 +94,11 @@ export const previewComponents = [
               '7d': Array.from({ length: 7 }, () => 1),
               '30d': Array.from({ length: 30 }, () => 1)
             },
-            candleData: {
-              '24h': [],
-              '7d': [],
-              '30d': []
-            }
           },
           {
-            ...TOKEN_CONFIGS.SOL,
+            symbol: TOKEN_CONFIGS.SOL.symbol,
+            name: TOKEN_CONFIGS.SOL.name,
+            logoURI: TOKEN_CONFIGS.SOL.logoURI,
             balance: "45",
             price: 110,
             value: 4950,
@@ -117,11 +109,6 @@ export const previewComponents = [
               '7d': Array.from({ length: 7 }, (_, i) => 110 + Math.sin(i / 2) * 10),
               '30d': Array.from({ length: 30 }, (_, i) => 110 + Math.sin(i) * 15)
             },
-            candleData: {
-              '24h': [],
-              '7d': [],
-              '30d': []
-            }
           },
         ]}
         totalValue={15500}
@@ -145,11 +132,8 @@ export const previewComponents = [
           token: {
             symbol: "ETH",
             logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
-            liquidity: 156.78,
             price: 1900.50,
             marketCap: 250000000000,
-            totalSupply: 120000000,
-            circulatingSupply: 119000000
           },
           fee: 500,
           tvl: 548000,

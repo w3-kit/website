@@ -2,10 +2,8 @@
 
 import React, { useState } from "react";
 import { FlashLoanExecutor } from "@/components/w3-kit/flash-loan-executor";
-import { FlashLoanData } from "@/components/w3-kit/flash-loan-executor-types";
 import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
-import Image from "next/image";
 
 const mockProtocols = [
   {
@@ -49,15 +47,8 @@ const mockTokens = [
 export default function FlashLoanExecutorPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [flashLoans, setFlashLoans] = useState<FlashLoanData[]>([]);
-
-  const handleExecute = async (data: Omit<FlashLoanData, "id" | "timestamp">) => {
-    const newFlashLoan: FlashLoanData = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: Date.now(),
-    };
-    setFlashLoans((prev) => [...prev, newFlashLoan]);
+  const handleExecute = async (protocol: string, token: string, amount: string) => {
+    console.log(`Flash loan: ${amount} ${token} via ${protocol}`);
   };
 
   return (
@@ -109,32 +100,6 @@ export default function FlashLoanExecutorPage() {
                   tokens={mockTokens}
                   onExecute={handleExecute}
                 />
-                {flashLoans.length > 0 && (
-                  <div className="mt-8 animate-fade-in">
-                    <h3 className="text-lg font-semibold mb-4">Recent Flash Loans</h3>
-                    <div className="space-y-2">
-                      {flashLoans.map((loan, index) => (
-                        <div 
-                          key={loan.id} 
-                          className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg animate-slide-in"
-                          style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <Image
-                              src={loan.protocol.logoURI}
-                              alt={loan.protocol.name}
-                              width={24}
-                              height={24}
-                              className="rounded-full"
-                            />
-                            <span>{loan.amount} {loan.token.symbol}</span>
-                          </div>
-                          <span className="text-green-500">+{loan.profit} ETH</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <CodeBlock

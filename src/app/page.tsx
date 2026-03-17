@@ -16,7 +16,9 @@ import { features } from "@/constants/home-page-features";
 
 // Helper function at the top of the file
 const mockAssetData = {
-  ...TOKEN_CONFIGS.ETH,
+  symbol: TOKEN_CONFIGS.ETH.symbol,
+  name: TOKEN_CONFIGS.ETH.name,
+  logoURI: TOKEN_CONFIGS.ETH.logoURI,
   balance: "2.5",
   price: 3500,
   value: 8750,
@@ -27,11 +29,6 @@ const mockAssetData = {
     '7d': Array.from({ length: 7 }, (_, i) => 3500 + Math.sin(i / 2) * 200),
     '30d': Array.from({ length: 30 }, (_, i) => 3500 + Math.sin(i) * 300)
   },
-  candleData: {
-    '24h': [],
-    '7d': [],
-    '30d': []
-  }
 };
 
 export default function Home() {
@@ -93,11 +90,8 @@ export default function Home() {
                   symbol: "ETH",
                   logoURI:
                     "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
-                  liquidity: 156.78,
                   price: 1900.50,
                   marketCap: 250000000000,
-                  totalSupply: 120000000,
-                  circulatingSupply: 119000000
                 },
                 fee: 500,
                 tvl: 548000,
@@ -109,7 +103,6 @@ export default function Home() {
                 uniqueHolders: 15000,
                 transactions24h: 25000
               }}
-              variant="compact"
               className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>
@@ -122,7 +115,6 @@ export default function Home() {
             opacity-90 animate-float-reverse"
           >
             <SmartContractScanner
-              variant="compact"
               className="scale-[0.3] xs:scale-[0.35] sm:scale-[0.4] md:scale-[0.45] lg:scale-[0.55]"
             />
           </div>
@@ -150,7 +142,6 @@ export default function Home() {
             transform rotate-6 opacity-90 animate-float"
           >
             <AssetPortfolio
-              variant="compact"
               assets={[mockAssetData]}
               totalValue={8750}
               totalChange24h={4.2}

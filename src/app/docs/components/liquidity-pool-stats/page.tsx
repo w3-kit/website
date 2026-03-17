@@ -8,20 +8,15 @@ import { PoolData } from "@/components/w3-kit/liquidity-pool-stats-types";
 
 export default function LiquidityPoolStatsPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [selectedVariant, setSelectedVariant] = useState<'default' | 'compact'>('default');
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [showLoading, setShowLoading] = useState(false);
 
   // Mock data for preview
   const mockPool: PoolData = {
     token: {
       symbol: "ETH-USDC",
       logoURI: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
-      liquidity: 245678.34,
       price: 2845.67,
       marketCap: 345678901.23,
-      totalSupply: 120000000,
-      circulatingSupply: 118500000,
     },
     fee: 3000, // 0.3%
     tvl: 456789123.45,
@@ -44,23 +39,6 @@ export default function LiquidityPoolStatsPage() {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             A component for displaying detailed statistics and metrics for liquidity pools.
           </p>
-        </div>
-
-        {/* Variant Selector */}
-        <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-800">
-          {(['default', 'compact'] as const).map((variant) => (
-            <button
-              key={variant}
-              onClick={() => setSelectedVariant(variant)}
-              className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                selectedVariant === variant
-                  ? "border-b-2 border-blue-500 text-blue-500"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              {variant.charAt(0).toUpperCase() + variant.slice(1)}
-            </button>
-          ))}
         </div>
 
         {/* Preview/Code Section */}
@@ -90,14 +68,6 @@ export default function LiquidityPoolStatsPage() {
                 Code
               </button>
             </div>
-            {activeTab === "preview" && (
-              <button
-                onClick={() => setShowLoading(!showLoading)}
-                className="text-sm font-medium text-blue-500 hover:text-blue-600"
-              >
-                {showLoading ? "Show Data" : "Show Loading"}
-              </button>
-            )}
           </div>
 
           <div className="rounded-lg overflow-hidden">
@@ -105,9 +75,6 @@ export default function LiquidityPoolStatsPage() {
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <LiquidityPoolStats
                   poolData={mockPool}
-                  variant={selectedVariant}
-                  isLoading={showLoading}
-                  onTokenClick={(pairId) => console.log("Token pair clicked:", pairId)}
                 />
               </div>
             ) : (

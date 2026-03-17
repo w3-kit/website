@@ -114,7 +114,6 @@ export default function StakingInterfacePage() {
                 </div>
                 <StakingInterface
                   pools={mockPools}
-                  userBalance="2.5"
                   onStake={handleStake}
                   onUnstake={handleUnstake}
                 />

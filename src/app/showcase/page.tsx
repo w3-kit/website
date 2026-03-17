@@ -377,7 +377,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Track and visualize crypto asset holdings with detailed analytics",
     href: "/docs/components/asset-portfolio",
     category: "Analytics",
-    render: () => <AssetPortfolio variant="compact" assets={mockPortfolioAssets} totalValue={15500} totalChange24h={2.8} />,
+    render: () => <AssetPortfolio assets={mockPortfolioAssets} totalValue={15500} totalChange24h={2.8} />,
   },
   {
     name: "Gas Calculator",
@@ -391,7 +391,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Analyze and verify smart contracts with security checks",
     href: "/docs/components/smart-contract-scanner",
     category: "Analytics",
-    render: () => <SmartContractScanner variant="compact" />,
+    render: () => <SmartContractScanner />,
   },
   {
     name: "NFT Marketplace Aggregator",

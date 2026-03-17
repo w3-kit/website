@@ -2,11 +2,7 @@ export interface SubscriptionPlan {
   id: string;
   name: string;
   price: string;
-  token: {
-    symbol: string;
-    logoURI: string;
-    decimals: number;
-  };
+  token: { symbol: string; logoURI: string; decimals: number };
   interval: "daily" | "weekly" | "monthly" | "yearly";
   features: string[];
   description: string;
