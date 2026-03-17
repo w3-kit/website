@@ -4,17 +4,16 @@ export const features = [
   {
     icon: <Code className="h-6 w-6" />,
     title: "TypeScript First",
-    description:
-      "Built with TypeScript for better developer experience and type safety",
+    description: "Full type safety and autocompletion out of the box.",
   },
   {
     icon: <Palette className="h-6 w-6" />,
-    title: "Customizable",
-    description: "Fully customizable components with Tailwind CSS",
+    title: "Tailwind CSS",
+    description: "Customize every component with utility classes.",
   },
   {
     icon: <Zap className="h-6 w-6" />,
     title: "High Performance",
-    description: "Optimized for speed and efficiency with minimal bundle size",
+    description: "Optimized rendering and minimal bundle size.",
   },
-]; 
+];

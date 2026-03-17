@@ -32,9 +32,11 @@ export default function RootLayout({
         className={`${GeistSans.className} antialiased bg-white dark:bg-gray-950`}
       >
         <ThemeProvider>
-
+          <a href="#main-content" className="skip-to-content">
+            Skip to content
+          </a>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main id="main-content" className="min-h-screen">{children}</main>
           <Footer />
 
         </ThemeProvider>

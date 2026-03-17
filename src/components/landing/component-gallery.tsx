@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, LayoutGrid } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 // Components
 import { NFTCard } from "@/components/w3-kit/nft-card";
@@ -38,6 +38,11 @@ import {
   NETWORKS,
   TEST_NETWORKS,
 } from "@/app/docs/components/network-switcher/networks";
+
+// Static timestamp to avoid hydration mismatch (STATIC_NOW differs server vs client)
+const STATIC_NOW = 1742169600000; // 2026-03-17T00:00:00Z
+const STATIC_ISO = "2026-03-17T00:00:00.000Z";
+const STATIC_UNIX = Math.floor(STATIC_NOW / 1000);
 
 // ─── Categories ────────────────────────────────────────────
 const CATEGORIES = [
@@ -91,7 +96,7 @@ const mockPriceData = [
     circulatingSupply: 19000000,
     maxSupply: 21000000,
     logoURI: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: STATIC_ISO,
   },
   {
     name: "Ethereum",
@@ -103,7 +108,7 @@ const mockPriceData = [
     circulatingSupply: 120000000,
     maxSupply: null,
     logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: STATIC_ISO,
   },
 ];
 
@@ -119,9 +124,9 @@ const mockWalletTokens = [
 ];
 
 const mockTransactions = [
-  { hash: "0x113...abc", from: "0xabc...def", to: "0xdef...789", value: "1000000000000000000", timestamp: Math.floor(Date.now() / 1000), status: "success" as const, type: "send" as const, nonce: 1, blockNumber: 12345678 },
-  { hash: "0x456...def", from: "0x789...123", to: "0xfed...456", value: "500000000000000000", timestamp: Math.floor(Date.now() / 1000) - 3600, status: "pending" as const, type: "receive" as const, nonce: 2, blockNumber: 12345679 },
-  { hash: "0x789...ghi", from: "0xabc...def", to: "0x123...456", value: "2500000000000000000", timestamp: Math.floor(Date.now() / 1000) - 7200, status: "failed" as const, type: "send" as const, nonce: 3, blockNumber: 12345680 },
+  { hash: "0x113...abc", from: "0xabc...def", to: "0xdef...789", value: "1000000000000000000", timestamp: STATIC_UNIX, status: "success" as const, type: "send" as const, nonce: 1, blockNumber: 12345678 },
+  { hash: "0x456...def", from: "0x789...123", to: "0xfed...456", value: "500000000000000000", timestamp: STATIC_UNIX - 3600, status: "pending" as const, type: "receive" as const, nonce: 2, blockNumber: 12345679 },
+  { hash: "0x789...ghi", from: "0xabc...def", to: "0x123...456", value: "2500000000000000000", timestamp: STATIC_UNIX - 7200, status: "failed" as const, type: "send" as const, nonce: 3, blockNumber: 12345680 },
 ];
 
 const mockNFTCollection = [
@@ -158,8 +163,8 @@ const mockPortfolioAssets = [
 ];
 
 const mockAirdrops = [
-  { id: "1", tokenSymbol: "W3K", tokenName: "W3Kit Token", tokenAddress: "0x1234567890123456789012345678901234567890", amount: "1000", merkleRoot: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", merkleProof: [] as string[], startTime: Date.now() - 86400000, endTime: Date.now() + 86400000 * 7, claimed: false, logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040" },
-  { id: "2", tokenSymbol: "TEST", tokenName: "Test Token", tokenAddress: "0x0987654321098765432109876543210987654321", amount: "500", merkleRoot: "0x0987654321abcdef0987654321abcdef0987654321abcdef0987654321abcdef", merkleProof: [] as string[], startTime: Date.now() + 86400000, endTime: Date.now() + 86400000 * 14, claimed: false, logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" },
+  { id: "1", tokenSymbol: "W3K", tokenName: "W3Kit Token", tokenAddress: "0x1234567890123456789012345678901234567890", amount: "1000", merkleRoot: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", merkleProof: [] as string[], startTime: STATIC_NOW - 86400000, endTime: STATIC_NOW + 86400000 * 7, claimed: false, logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040" },
+  { id: "2", tokenSymbol: "TEST", tokenName: "Test Token", tokenAddress: "0x0987654321098765432109876543210987654321", amount: "500", merkleRoot: "0x0987654321abcdef0987654321abcdef0987654321abcdef0987654321abcdef", merkleProof: [] as string[], startTime: STATIC_NOW + 86400000, endTime: STATIC_NOW + 86400000 * 14, claimed: false, logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" },
 ];
 
 const mockSubscriptionPlans = [
@@ -168,8 +173,8 @@ const mockSubscriptionPlans = [
 ];
 
 const mockDefiPositions = [
-  { id: "1", protocol: { name: "Aave", logoURI: "https://cryptologos.cc/logos/aave-aave-logo.png", type: "lending" as const }, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "1.5", value: 4268.51, healthFactor: 2.5, apy: 3.2, rewards: [{ token: "AAVE", amount: "0.05", value: 2.50 }], risk: "low" as const, lastUpdate: Date.now() },
-  { id: "2", protocol: { name: "Compound", logoURI: "https://cryptologos.cc/logos/compound-comp-logo.png", type: "borrowing" as const }, token: { symbol: "USDC", logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png", price: 1.00 }, amount: "5000", value: 5000, healthFactor: 1.8, apy: -2.5, rewards: [{ token: "COMP", amount: "0.8", value: 24.00 }], risk: "medium" as const, lastUpdate: Date.now() },
+  { id: "1", protocol: { name: "Aave", logoURI: "https://cryptologos.cc/logos/aave-aave-logo.png", type: "lending" as const }, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "1.5", value: 4268.51, healthFactor: 2.5, apy: 3.2, rewards: [{ token: "AAVE", amount: "0.05", value: 2.50 }], risk: "low" as const, lastUpdate: STATIC_NOW },
+  { id: "2", protocol: { name: "Compound", logoURI: "https://cryptologos.cc/logos/compound-comp-logo.png", type: "borrowing" as const }, token: { symbol: "USDC", logoURI: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png", price: 1.00 }, amount: "5000", value: 5000, healthFactor: 1.8, apy: -2.5, rewards: [{ token: "COMP", amount: "0.8", value: 24.00 }], risk: "medium" as const, lastUpdate: STATIC_NOW },
 ];
 
 const mockFlashLoanProtocols = [
@@ -183,8 +188,8 @@ const mockFlashLoanTokens = [
 ];
 
 const mockVestingSchedules = [
-  { id: "1", tokenSymbol: "TOKEN", totalAmount: "100000", vestedAmount: "25000", startDate: Date.now() - 90 * 86400000, endDate: Date.now() + 275 * 86400000, cliffDate: Date.now() - 30 * 86400000, lastClaimDate: Date.now() - 15 * 86400000, beneficiary: "0x1234...5678", status: "active" as const },
-  { id: "2", tokenSymbol: "REWARD", totalAmount: "50000", vestedAmount: "50000", startDate: Date.now() - 180 * 86400000, endDate: Date.now() - 30 * 86400000, cliffDate: Date.now() - 150 * 86400000, lastClaimDate: Date.now() - 30 * 86400000, beneficiary: "0x8765...4321", status: "completed" as const },
+  { id: "1", tokenSymbol: "TOKEN", totalAmount: "100000", vestedAmount: "25000", startDate: STATIC_NOW - 90 * 86400000, endDate: STATIC_NOW + 275 * 86400000, cliffDate: STATIC_NOW - 30 * 86400000, lastClaimDate: STATIC_NOW - 15 * 86400000, beneficiary: "0x1234...5678", status: "active" as const },
+  { id: "2", tokenSymbol: "REWARD", totalAmount: "50000", vestedAmount: "50000", startDate: STATIC_NOW - 180 * 86400000, endDate: STATIC_NOW - 30 * 86400000, cliffDate: STATIC_NOW - 150 * 86400000, lastClaimDate: STATIC_NOW - 30 * 86400000, beneficiary: "0x8765...4321", status: "completed" as const },
 ];
 
 const mockMultisigData = {
@@ -198,8 +203,8 @@ const mockMultisigData = {
 };
 
 const mockLimitOrders = [
-  { id: "1", type: "limit" as const, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "0.5", price: "3000", status: "active" as const, timestamp: Date.now() - 3600000 },
-  { id: "2", type: "stop-loss" as const, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "1.0", price: "2500", status: "active" as const, timestamp: Date.now() - 7200000 },
+  { id: "1", type: "limit" as const, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "0.5", price: "3000", status: "active" as const, timestamp: STATIC_NOW - 3600000 },
+  { id: "2", type: "stop-loss" as const, token: { symbol: "ETH", logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.png", price: 2845.67 }, amount: "1.0", price: "2500", status: "active" as const, timestamp: STATIC_NOW - 7200000 },
 ];
 
 // ─── Showcase Items ────────────────────────────────────────
@@ -412,7 +417,7 @@ const showcaseItems: ShowcaseItem[] = [
 
 // ─── Component ─────────────────────────────────────────────
 
-export default function ShowcasePage() {
+export function ComponentGallery() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
 
   const filtered =
@@ -421,73 +426,45 @@ export default function ShowcasePage() {
       : showcaseItems.filter((item) => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Hero */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-              <LayoutGrid className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-            </div>
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Component Showcase
-            </span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-            All Components
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
-            Every w3-kit component rendered live in one place. Browse, explore, and find the right building blocks for your Web3 application.
+    <section className="px-6 lg:px-8 py-24">
+      <div className="mx-auto max-w-7xl">
+        {/* Heading */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight text-gray-900 dark:text-white">
+            Components for every Web3 use case
+          </h2>
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            From NFT displays to DeFi dashboards, everything you need to build production-ready Web3 interfaces
           </p>
-          <div className="mt-6 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 font-medium">
-              {showcaseItems.length} components
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 font-medium">
-              {showcaseItems.filter((i) => i.isNew).length} new
-            </span>
-          </div>
         </div>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="sticky top-16 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1 overflow-x-auto py-3 scrollbar-hide">
-            {CATEGORIES.map((cat) => {
-              const count =
-                cat === "All"
-                  ? showcaseItems.length
-                  : showcaseItems.filter((i) => i.category === cat).length;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                    activeCategory === cat
-                      ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                  }`}
-                >
-                  {cat}
-                  <span
-                    className={`text-xs ${
-                      activeCategory === cat
-                        ? "text-gray-400 dark:text-gray-500"
-                        : "text-gray-400 dark:text-gray-500"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        {/* Filter Tabs */}
+        <div className="flex items-center justify-center gap-1 overflow-x-auto pb-1 mb-10 scrollbar-hide">
+          {CATEGORIES.map((cat) => {
+            const count =
+              cat === "All"
+                ? showcaseItems.length
+                : showcaseItems.filter((i) => i.category === cat).length;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  activeCategory === cat
+                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {cat}
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Masonry Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Masonry Grid */}
         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 [column-fill:_balance]">
           {filtered.map((item) => (
             <div
@@ -536,6 +513,6 @@ export default function ShowcasePage() {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
