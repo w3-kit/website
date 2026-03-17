@@ -13,8 +13,10 @@ interface Transaction {
   value: string;
   timestamp: number;
   status: "success" | "pending" | "failed";
+  type: "send" | "receive" | "contract" | "approve" | "swap";
   nonce: number;
   blockNumber?: number;
+  tokenSymbol?: string;
 }
 
 // Mock transactions for preview
@@ -26,16 +28,18 @@ const mockTransactions: Transaction[] = [
     value: "1000000000000000000",
     timestamp: Math.floor(Date.now() / 1000),
     status: "success",
+    type: "send",
     nonce: 1,
     blockNumber: 12345678,
   },
   {
     hash: "0x123...abc",
-    from: "0xabc...def",
-    to: "0xdef...789",
+    from: "0xdef...789",
+    to: "0xabc...def",
     value: "1000000000000000000",
-    timestamp: Math.floor(Date.now() / 1000),
+    timestamp: Math.floor(Date.now() / 1000) - 1200,
     status: "success",
+    type: "receive",
     nonce: 1,
     blockNumber: 12345678,
   },
@@ -44,8 +48,9 @@ const mockTransactions: Transaction[] = [
     from: "0x789...123",
     to: "0xfed...456",
     value: "500000000000000000",
-    timestamp: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago
+    timestamp: Math.floor(Date.now() / 1000) - 3600,
     status: "pending",
+    type: "swap",
     nonce: 2,
     blockNumber: 12345679,
   },
@@ -54,8 +59,9 @@ const mockTransactions: Transaction[] = [
     from: "0xabc...def",
     to: "0x123...456",
     value: "2500000000000000000",
-    timestamp: Math.floor(Date.now() / 1000) - 7200, // 2 hours ago
+    timestamp: Math.floor(Date.now() / 1000) - 7200,
     status: "failed",
+    type: "send",
     nonce: 3,
     blockNumber: 12345680,
   },
@@ -64,8 +70,9 @@ const mockTransactions: Transaction[] = [
     from: "0xfed...456",
     to: "0x789...123",
     value: "750000000000000000",
-    timestamp: Math.floor(Date.now() / 1000) - 10800, // 3 hours ago
+    timestamp: Math.floor(Date.now() / 1000) - 10800,
     status: "success",
+    type: "contract",
     nonce: 4,
     blockNumber: 12345681,
   }
