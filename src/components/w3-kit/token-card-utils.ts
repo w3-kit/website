@@ -1,8 +1,3 @@
-export function formatBalance(balance?: string, decimals = 18): string {
-  if (!balance) return "0";
-  return balance;
-}
-
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -12,22 +7,15 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+export function formatBalance(balance: string): string {
+  const num = parseFloat(balance);
+  if (isNaN(num)) return "0";
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(2)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(2)}K`;
+  if (num < 0.001 && num > 0) return "<0.001";
+  return num.toLocaleString("en-US", { maximumFractionDigits: 4 });
 }
 
-export const animationStyles = `
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .animate-fadeIn {
-    animation: fadeIn 0.2s ease-in-out;
-  }
-`;
+export function formatPercentage(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+}

@@ -151,7 +151,6 @@ export default function WalletBalancePage() {
                 </div>
                 <WalletBalance
                   tokens={tokens}
-                  variant={selectedVariant}
                   onTokenClick={handleTokenClick}
                 />
               </div>

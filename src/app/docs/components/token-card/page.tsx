@@ -6,43 +6,22 @@ import { Code, Eye } from "lucide-react";
 import { CodeBlock } from "@/components/docs/codeBlock";
 import { Token } from "@/components/w3-kit/token-card-types";
 
-// Define the ExtendedToken interface
-interface ExtendedToken extends Token {
-  priceChange24h?: number;
-  verified?: boolean;
-  marketCap?: number;
-  volume24h?: number;
-  allTimeHigh?: number;
-  allTimeHighDate?: string;
-  rank?: number;
-}
-
 // Create mock token data
-const mockToken: ExtendedToken = {
+const mockToken: Token = {
   symbol: "ETH",
   name: "Ethereum",
   balance: "1.5",
-  value: 2850.75,
   price: 1900.50,
   priceChange24h: 2.5,
   logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040",
-  address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-  decimals: 18,
-  chainId: 1,
-  verified: true,
-  marketCap: 250000000000,
-  volume24h: 15000000000,
-  allTimeHigh: 4800.00,
-  allTimeHighDate: "2021-11-10",
-  rank: 1
 };
 
 export default function TokenCardPage() {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
   const [installTab, setInstallTab] = useState<"cli" | "manual">("cli");
-  const [token, setToken] = useState<ExtendedToken>(mockToken);
+  const [token, setToken] = useState<Token>(mockToken);
 
-  const handleTokenClick = useCallback((token: ExtendedToken) => {
+  const handleTokenClick = useCallback((token: Token) => {
     setToken(prev => ({
       ...prev,
       price: prev.price ?? token.price,
@@ -104,9 +83,6 @@ export default function TokenCardPage() {
                 </div>
                 <TokenCard
                   token={token}
-                  showPrice={true}
-                  showPriceChange={true}
-                  showBalance={true}
                   onClick={handleTokenClick}
                 />
               </div>

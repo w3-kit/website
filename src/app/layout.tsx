@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import React from "react";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Web3 UI Component Library | W3-Kit",
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="light scroll-smooth">
     <body
-        className={`${inter.className} antialiased bg-white dark:bg-gray-950`}
+        className={`${GeistSans.className} antialiased bg-white dark:bg-gray-950`}
       >
         <ThemeProvider>
 

@@ -123,7 +123,6 @@ export default function PriceTickerPage() {
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <PriceTicker
                   tokens={mockData}
-                  onPriceUpdate={(prices) => console.log('Prices updated:', prices)}
                 />
               </div>
             ) : (

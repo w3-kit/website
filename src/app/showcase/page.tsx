@@ -76,12 +76,9 @@ const mockTokenCard = {
   symbol: "ETH",
   name: "Ethereum",
   balance: "1.5",
-  value: 2850.75,
   price: 1900.5,
+  priceChange24h: 2.5,
   logoURI: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=040",
-  address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-  decimals: 18,
-  chainId: 1,
 };
 
 const mockPriceData = [
@@ -231,7 +228,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Display token information with price and balance details",
     href: "/docs/components/token-card",
     category: "Data Display",
-    render: () => <TokenCard token={mockTokenCard} onClick={() => {}} />,
+    render: () => <TokenCard token={mockTokenCard} />,
   },
   {
     name: "Price Ticker",
@@ -252,7 +249,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Display wallet token balances with real-time value updates",
     href: "/docs/components/wallet-balance",
     category: "Data Display",
-    render: () => <WalletBalance tokens={mockWalletTokens} variant="default" onTokenClick={() => {}} />,
+    render: () => <WalletBalance tokens={mockWalletTokens} />,
   },
   {
     name: "Transaction History",
