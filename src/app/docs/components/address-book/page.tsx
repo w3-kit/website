@@ -135,7 +135,6 @@ export default function AddressBookPage() {
                   onAdd={handleAdd}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
-                  variant={selectedVariant}
                 />
               </div>
             ) : (

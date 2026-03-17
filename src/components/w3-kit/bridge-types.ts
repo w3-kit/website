@@ -4,26 +4,15 @@ export interface Network {
   icon: string;
 }
 
-export interface Token {
+export interface BridgeToken {
   symbol: string;
   name: string;
   icon: string;
-  balance: string;
-  decimals: number;
 }
 
 export interface BridgeWidgetProps {
   className?: string;
   networks?: Network[];
-  tokens?: Token[];
-  tokenFees?: Record<string, string>;
-  estimatedTime?: string;
-  onBridge?: (params: BridgeParams) => void | Promise<void>;
-}
-
-export interface BridgeParams {
-  fromNetwork: Network;
-  toNetwork: Network;
-  token: Token;
-  amount: string;
+  tokens?: BridgeToken[];
+  onBridge?: (params: { fromNetwork: Network; toNetwork: Network; token: BridgeToken; amount: string }) => void | Promise<void>;
 }

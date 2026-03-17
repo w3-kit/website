@@ -83,7 +83,6 @@ export default function TokenSwapPage() {
                 )}
                 <TokenSwapWidget
                   onSwap={handleSwap}
-                  defaultSlippage={0.5}
                 />
               </div>
             ) : (

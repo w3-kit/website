@@ -1,459 +1,156 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { ChevronRight, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-  TabType,
-  FunctionType,
-  ResultType,
-  ErrorState,
-  ContractInteractionProps,
-} from './contract-interaction-types';
-import {
-  DEFAULT_FUNCTIONS,
-  getFunctionDescription,
-  getResultMessage,
-  validateAddress,
-  fadeInAnimation,
-  slideInAnimation,
-  buttonAnimation,
-} from './contract-interaction-utils';
+import React, { useState } from "react";
+import { Play, Eye, Edit3, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { StatusDot } from "@/components/ui/status-dot";
+import { ContractFunction, ContractInteractionProps } from "./contract-interaction-types";
+import { DEFAULT_FUNCTIONS, validateAddress } from "./contract-interaction-utils";
 
-// Error message component
-const ErrorMessage = ({ error }: { error: ErrorState }) => (
-  <div className={`
-    mt-4 p-3 rounded-lg text-sm
-    transition-all duration-300
-    ${slideInAnimation}
-    ${error.type === 'error'
-      ? 'bg-red-50 dark:bg-red-900/10 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800'
-      : error.type === 'warning'
-      ? 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-      : 'bg-blue-50 dark:bg-blue-900/10 text-blue-500 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-    }
-  `}>
-    <div className="flex items-center space-x-2">
-      {error.type === 'error' ? (
-        <XCircle className="w-4 h-4" />
-      ) : error.type === 'warning' ? (
-        <AlertTriangle className="w-4 h-4" />
-      ) : (
-        <Info className="w-4 h-4" />
-      )}
-      <span>{error.message}</span>
-    </div>
-  </div>
-);
+export type { ContractFunction, ContractInteractionProps };
 
-export const ContractInteraction: React.FC<ContractInteractionProps> = ({
-  className = '',
-  contractAddress = '0x1234...5678',
+interface Result {
+  fn: string;
+  value: string;
+  status: "success" | "error";
+}
+
+export function ContractInteraction({
+  className,
+  contractAddress: defaultAddress = "",
   functions = DEFAULT_FUNCTIONS,
   onExecute,
-  resultsPerPage = 6,
-}) => {
-  const [activeTab, setActiveTab] = useState<TabType>('read');
-  const [selectedFunction, setSelectedFunction] = useState<FunctionType | null>(null);
-  const [inputValue, setInputValue] = useState<string>('');
-  const [results, setResults] = useState<ResultType[]>([]);
-  const [selectedResult, setSelectedResult] = useState<ResultType | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [error, setError] = useState<ErrorState | null>(null);
+}: ContractInteractionProps) {
+  const [address, setAddress] = useState(defaultAddress);
+  const [activeTab, setActiveTab] = useState<"view" | "write">("view");
+  const [selectedFn, setSelectedFn] = useState<ContractFunction | null>(null);
+  const [inputs, setInputs] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Result[]>([]);
 
-  const filteredFunctions = functions.filter(fn =>
-    activeTab === 'read' ? fn.type === 'view' : fn.type === 'write'
-  );
+  const filteredFunctions = functions.filter((f) => f.type === activeTab);
 
-  const totalPages = Math.ceil(results.length / resultsPerPage);
-  const paginatedResults = results.slice(
-    (currentPage - 1) * resultsPerPage,
-    currentPage * resultsPerPage
-  );
+  const handleSelectFn = (fn: ContractFunction) => {
+    setSelectedFn(fn);
+    setInputs(Array(fn.inputs).fill(""));
+  };
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedFunction) return;
-
-    setError(null);
-
+  const handleExecute = async () => {
+    if (!selectedFn) return;
+    setLoading(true);
     try {
-      if (selectedFunction.inputs > 0 && !inputValue) {
-        throw {
-          message: 'Input value is required',
-          type: 'error',
-          field: 'input'
-        } as ErrorState;
-      }
-
-      if (selectedFunction.inputs > 0 && !validateAddress(inputValue)) {
-        throw {
-          message: 'Invalid Ethereum address format',
-          type: 'error',
-          field: 'input'
-        } as ErrorState;
-      }
-
-      setIsExecuting(true);
-
-      let mockValue = '';
-
-      if (onExecute) {
-        // Use custom execute handler if provided
-        mockValue = await onExecute(selectedFunction.name, inputValue ? [inputValue] : []);
-      } else {
-        // Simulate execution with mock data
-        if (Math.random() < 0.2) {
-          throw {
-            message: 'Network error: Please try again',
-            type: 'error'
-          } as ErrorState;
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        switch (selectedFunction.name) {
-          case 'balanceOf':
-            mockValue = (Math.random() * 1000).toFixed(2);
-            break;
-          case 'transfer':
-            if (Number(inputValue) > 1000) {
-              throw {
-                message: 'Insufficient balance for transfer',
-                type: 'error',
-                field: 'input'
-              } as ErrorState;
-            }
-            mockValue = inputValue || '100';
-            break;
-          case 'approve':
-            mockValue = inputValue || '1000';
-            break;
-          case 'allowance':
-            mockValue = (Math.random() * 500).toFixed(2);
-            break;
-          case 'totalSupply':
-            mockValue = '1000000';
-            break;
-          case 'name':
-            mockValue = 'Example Token';
-            break;
-          default:
-            mockValue = '0';
-        }
-      }
-
-      const mockResult: ResultType = {
-        id: `${Date.now()}-${selectedFunction.name}`,
-        function: {
-          name: selectedFunction.name,
-          type: selectedFunction.type
-        },
-        result: mockValue,
-        time: new Date().toLocaleTimeString(),
-        hash: selectedFunction.type === 'write' ? '0x' + Math.random().toString(16).slice(2, 42) : '',
-        from: selectedFunction.type === 'write' ? '0x' + Math.random().toString(16).slice(2, 42) : '',
-        to: selectedFunction.type === 'write' ? '0x' + Math.random().toString(16).slice(2, 42) : '',
-        gasUsed: selectedFunction.type === 'write' ? Math.floor(Math.random() * 100000).toString() : '0',
-        status: selectedFunction.type === 'write' ?
-          (Math.random() > 0.1 ? 'success' : 'failed') :
-          'success'
-      };
-
-      if (mockResult.status === 'failed') {
-        throw {
-          message: 'Transaction failed: Out of gas',
-          type: 'error'
-        } as ErrorState;
-      }
-
-      setResults(prev => [mockResult, ...prev].slice(0, 18));
-      setInputValue('');
-      setCurrentPage(1);
-    } catch (err) {
-      const errorState = err as ErrorState;
-      setError(errorState);
-
-      setTimeout(() => setError(null), 5000);
+      const result = onExecute
+        ? await onExecute(selectedFn.name, inputs)
+        : `Mock result for ${selectedFn.name}`;
+      setResults((prev) => [{ fn: selectedFn.name, value: result, status: "success" }, ...prev]);
+    } catch {
+      setResults((prev) => [{ fn: selectedFn.name, value: "Execution failed", status: "error" }, ...prev]);
     } finally {
-      setIsExecuting(false);
+      setLoading(false);
     }
-  }, [selectedFunction, inputValue, onExecute]);
+  };
 
   return (
-    <Card className={`${fadeInAnimation} ${className}`}>
+    <div className={cn("rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden", className)}>
       {/* Header */}
-      <CardHeader className="border-b">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground">Contract Interaction</h2>
-            <div className="flex items-center mt-2 space-x-2">
-              <span className="text-sm text-muted-foreground">Contract:</span>
-              <div className="group cursor-pointer transition-transform duration-200 hover:scale-[1.02]">
-                <code className="text-sm bg-muted px-2 py-1 rounded text-foreground
-                  transition-colors duration-200
-                  group-hover:bg-muted/80"
-                >
-                  {contractAddress}
-                </code>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardHeader>
-
-      {/* Interactive Tabs */}
-      <div className="border-b">
-        <div className="flex">
-          {(['read', 'write'] as TabType[]).map((tab) => (
-            <Button
-              key={tab}
-              variant="ghost"
-              onClick={() => {
-                setActiveTab(tab);
-                setSelectedFunction(null);
-                setInputValue('');
-                setError(null);
-              }}
-              className={`
-                flex-1 px-3 py-2 text-sm rounded-none
-                transition-all duration-200
-                active:scale-[0.98]
-                ${activeTab === tab
-                  ? 'border-b-2 border-foreground font-medium text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-                }
-              `}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)} Functions
-            </Button>
-          ))}
-        </div>
+      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Contract Interaction</h3>
+        <Input
+          placeholder="Contract address (0x...)"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="font-mono text-xs"
+        />
       </div>
 
-      <CardContent className="p-6">
-        {/* Interactive Function Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
-          {filteredFunctions.map((fn) => (
-            <Button
-              key={fn.name}
-              variant="outline"
-              onClick={() => {
-                setSelectedFunction(fn);
-                setError(null);
-                setInputValue('');
-              }}
-              className={`
-                p-3 text-left h-auto justify-start flex-col items-start
-                transition-all duration-300 ease-in-out
-                ${buttonAnimation}
-                hover:shadow-md
-                ${fadeInAnimation}
-                group
-                ${selectedFunction?.name === fn.name
-                  ? 'border-foreground bg-muted'
-                  : ''
-                }
-              `}
-            >
-              <div className="font-medium text-foreground group-hover:text-blue-600
-                dark:group-hover:text-blue-400 transition-colors duration-200">
-                {fn.name}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1
-                group-hover:text-foreground/70 transition-colors duration-200">
-                {fn.inputs} input(s) • {fn.type}
-              </div>
-              <div className="text-xs text-muted-foreground/70 mt-2
-                group-hover:text-muted-foreground transition-colors duration-200">
-                {getFunctionDescription(fn)}
-              </div>
-            </Button>
-          ))}
-        </div>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-100 dark:border-gray-800">
+        {(["view", "write"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => { setActiveTab(tab); setSelectedFn(null); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors duration-150",
+              activeTab === tab
+                ? "text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            )}
+          >
+            {tab === "view" ? <Eye className="h-3.5 w-3.5" /> : <Edit3 className="h-3.5 w-3.5" />}
+            {tab === "view" ? "Read" : "Write"}
+          </button>
+        ))}
+      </div>
 
-        {/* Interactive Function Inputs */}
-        {selectedFunction && (
-          <Card className={`bg-muted ${slideInAnimation}`}>
-            <CardContent className="pt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-foreground">{selectedFunction.name}</h3>
-                <span className="text-xs text-muted-foreground">{selectedFunction.type}</span>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {selectedFunction.inputs > 0 && (
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-foreground">
-                      address
-                      <span className="text-muted-foreground ml-1">(address)</span>
-                    </label>
-                    <Input
-                      type="text"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      placeholder="Enter address"
-                      className={error?.field === 'input' ? 'border-red-500' : ''}
-                    />
-                  </div>
-                )}
-
-                {error && <ErrorMessage error={error} />}
-
-                <Button
-                  type="submit"
-                  disabled={isExecuting || !!error}
-                  className="w-full"
-                >
-                  {isExecuting ? (
-                    <>
-                      <div className="animate-spin">
-                        <Code className="w-4 h-4" />
-                      </div>
-                      <span>Executing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Execute {selectedFunction.name}</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Results Display */}
-        {results.length > 0 && (
-          <div className={`mt-6 space-y-3 ${slideInAnimation}`}>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-foreground">Recent Results</h3>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8"
-                >
-                  ←
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  {currentPage} / {totalPages}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8"
-                >
-                  →
-                </Button>
-              </div>
+      {/* Functions */}
+      <div className="p-4 space-y-2">
+        {filteredFunctions.map((fn) => (
+          <button
+            key={fn.name}
+            onClick={() => handleSelectFn(fn)}
+            className={cn(
+              "flex items-center justify-between w-full px-3 py-2 rounded-lg text-left transition-colors duration-150",
+              selectedFn?.name === fn.name
+                ? "bg-gray-100 dark:bg-gray-800"
+                : "hover:bg-gray-50 dark:hover:bg-gray-900"
+            )}
+          >
+            <div>
+              <p className="text-sm font-medium font-mono text-gray-900 dark:text-white">{fn.name}</p>
+              {fn.description && <p className="text-xs text-gray-500 dark:text-gray-400">{fn.description}</p>}
             </div>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              {fn.inputs} {fn.inputs === 1 ? "input" : "inputs"}
+            </span>
+          </button>
+        ))}
 
-            <div className="space-y-2">
-              {paginatedResults.map((result) => (
-                <Button
-                  key={result.id}
-                  variant="outline"
-                  onClick={() => setSelectedResult(
-                    selectedResult?.id === result.id ? null : result
-                  )}
-                  className={`
-                    w-full p-3 h-auto flex-col items-start
-                    hover:shadow-sm
-                    transition-all duration-200
-                    text-left
-                    group
-                    ${selectedResult?.id === result.id ?
-                      'border-foreground ring-1 ring-foreground' :
-                      ''
-                    }
-                  `}
-                >
-                  <div className="flex justify-between items-center w-full">
-                    <div className="flex items-center space-x-2">
-                      {result.status === 'success' ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : result.status === 'pending' ? (
-                        <div className="w-4 h-4">
-                          <Code className="w-4 h-4 text-yellow-500 animate-spin" />
-                        </div>
-                      ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
-                      )}
-                      <span className="font-medium text-foreground">{result.function.name}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {result.time}
-                    </span>
-                  </div>
-
-                  <div className="mt-1 text-sm text-muted-foreground font-mono break-all w-full
-                    transition-all duration-200 group-hover:text-foreground">
-                    {getResultMessage(result.function.name, result.result)}
-                  </div>
-
-                  {/* Expanded Details */}
-                  <div className={`
-                    mt-2 space-y-1 text-sm w-full
-                    transition-all duration-300 ease-in-out
-                    ${selectedResult?.id === result.id
-                      ? 'opacity-100 max-h-[200px]'
-                      : 'opacity-0 max-h-0 overflow-hidden'
-                    }
-                  `}>
-                    <div className="grid grid-cols-3 gap-2 pt-2 border-t">
-                      {result.function.type === 'write' ? (
-                        <>
-                          <div key="hash">
-                            <div className="text-xs text-muted-foreground">Hash</div>
-                            <div className="font-mono truncate text-foreground">{result.hash}</div>
-                          </div>
-                          <div key="from">
-                            <div className="text-xs text-muted-foreground">From</div>
-                            <div className="font-mono truncate text-foreground">{result.from}</div>
-                          </div>
-                          <div key="to">
-                            <div className="text-xs text-muted-foreground">To</div>
-                            <div className="font-mono truncate text-foreground">{result.to}</div>
-                          </div>
-                          <div key="gas">
-                            <div className="text-xs text-muted-foreground">Gas Used</div>
-                            <div className="font-mono text-foreground">{result.gasUsed}</div>
-                          </div>
-                        </>
-                      ) : null}
-                      <div key="type">
-                        <div className="text-xs text-muted-foreground">Type</div>
-                        <div className="font-medium text-foreground">
-                          {result.function.type === 'write' ? 'Transaction' : 'Read Call'}
-                        </div>
-                      </div>
-                      <div key="status">
-                        <div className="text-xs text-muted-foreground">Status</div>
-                        <div className={`font-medium ${
-                          result.status === 'success' ? 'text-green-500' :
-                          result.status === 'pending' ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`}>
-                          {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              ))}
-            </div>
+        {/* Input fields */}
+        {selectedFn && selectedFn.inputs > 0 && (
+          <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800 space-y-2">
+            {Array.from({ length: selectedFn.inputs }).map((_, i) => (
+              <Input
+                key={i}
+                placeholder={`Input ${i + 1}`}
+                value={inputs[i] || ""}
+                onChange={(e) => {
+                  const newInputs = [...inputs];
+                  newInputs[i] = e.target.value;
+                  setInputs(newInputs);
+                }}
+                className="font-mono text-xs"
+              />
+            ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+
+        {/* Execute */}
+        {selectedFn && (
+          <Button onClick={handleExecute} disabled={loading} size="sm" className="w-full mt-2">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Play className="h-3.5 w-3.5" /> Execute {selectedFn.name}</>}
+          </Button>
+        )}
+      </div>
+
+      {/* Results */}
+      {results.length > 0 && (
+        <div className="border-t border-gray-100 dark:border-gray-800">
+          <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400">Results</div>
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+            {results.slice(0, 5).map((r, i) => (
+              <div key={i} className="flex items-center gap-2 px-4 py-2.5">
+                <StatusDot status={r.status === "success" ? "success" : "error"} />
+                <span className="text-xs font-mono text-gray-500 dark:text-gray-400">{r.fn}</span>
+                <span className="text-xs text-gray-900 dark:text-white ml-auto truncate max-w-[200px]">{r.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
-};
+}
+
+export default ContractInteraction;
