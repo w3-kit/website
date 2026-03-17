@@ -76,7 +76,6 @@ export default function Home() {
                 contractAddress: "0x1234...",
                 chainId: 1,
               }}
-              variant="expanded"
               className="scale-[0.35] xs:scale-[0.4] sm:scale-[0.45] md:scale-[0.55] lg:scale-[0.65]"
             />
           </div>

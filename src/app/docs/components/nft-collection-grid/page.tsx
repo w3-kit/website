@@ -153,15 +153,7 @@ export default function NFTCollectionGridPage() {
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <NFTCollectionGrid
                   nfts={mockData}
-                  variant="default"
-                  columns={{
-                    default: 1,
-                    sm: 2,
-                    md: 3,
-                    lg: 4,
-                  }}
                   onNFTClick={(nft) => console.log("NFT clicked:", nft)}
-                  onOwnerClick={(owner) => console.log("Owner clicked:", owner)}
                 />
               </div>
             ) : (

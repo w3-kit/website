@@ -100,18 +100,12 @@ export default function ConnectWalletPage() {
                   </h3>
                   <div className="grid gap-4">
                     <ConnectWalletButton
-                      variant="ghost"
-                      walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="outline"
-                      walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                     <ConnectWalletButton
-                      variant="default"
-                      walletType={walletTab}
                       onConnect={(address) => console.log('Connected:', address)}
                     />
                   </div>

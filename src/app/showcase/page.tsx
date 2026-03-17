@@ -221,7 +221,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Display NFTs with rich metadata and interactive features",
     href: "/docs/components/nft-card",
     category: "Data Display",
-    render: () => <NFTCard nft={mockNFT} variant="default" />,
+    render: () => <NFTCard nft={mockNFT} />,
   },
   {
     name: "Token Card",
@@ -242,7 +242,7 @@ const showcaseItems: ShowcaseItem[] = [
     description: "Searchable list of tokens with metadata and filtering",
     href: "/docs/components/token-list",
     category: "Data Display",
-    render: () => <TokenList tokens={mockTokenList} variant="list" onTokenSelect={() => {}} />,
+    render: () => <TokenList tokens={mockTokenList} />,
   },
   {
     name: "Wallet Balance",
@@ -256,14 +256,14 @@ const showcaseItems: ShowcaseItem[] = [
     description: "View and track transaction history with detailed status",
     href: "/docs/components/transaction-history",
     category: "Data Display",
-    render: () => <TransactionHistory transactions={mockTransactions} onTransactionClick={() => {}} />,
+    render: () => <TransactionHistory transactions={mockTransactions} />,
   },
   {
     name: "NFT Collection Grid",
     description: "Grid layout for displaying and managing NFT collections",
     href: "/docs/components/nft-collection-grid",
     category: "Data Display",
-    render: () => <NFTCollectionGrid nfts={mockNFTCollection} onNFTClick={() => {}} />,
+    render: () => <NFTCollectionGrid nfts={mockNFTCollection} />,
   },
   // Inputs & Actions
   {

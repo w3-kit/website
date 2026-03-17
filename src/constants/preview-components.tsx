@@ -32,7 +32,6 @@ export const previewComponents = [
             { trait_type: "Clothes", value: "Suit" },
           ],
         }}
-        variant="default"
       />
     ),
   },

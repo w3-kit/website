@@ -9,41 +9,11 @@ import { Token } from "@/components/w3-kit/token-list-types";
 
 // Mock data using TOKEN_CONFIGS
 const mockTokens: Token[] = [
-  {
-    ...TOKEN_CONFIGS.ETH,
-    balance: "1.5",
-    price: 1900.50,
-    value: 2850.75,
-    chainId: 1
-  },
-  {
-    ...TOKEN_CONFIGS.BTC,
-    balance: "0.05",
-    price: 35000,
-    value: 1750,
-    chainId: 1
-  },
-  {
-    ...TOKEN_CONFIGS.USDC,
-    balance: "1000",
-    price: 1,
-    value: 1000,
-    chainId: 1
-  },
-  {
-    ...TOKEN_CONFIGS.USDT,
-    balance: "500",
-    price: 1,
-    value: 500,
-    chainId: 1
-  },
-  {
-    ...TOKEN_CONFIGS.SOL,
-    balance: "25",
-    price: 125.75,
-    value: 3143.75,
-    chainId: 1
-  }
+  { symbol: TOKEN_CONFIGS.ETH.symbol, name: TOKEN_CONFIGS.ETH.name, logoURI: TOKEN_CONFIGS.ETH.logoURI, balance: "1.5", price: 1900.50 },
+  { symbol: TOKEN_CONFIGS.BTC.symbol, name: TOKEN_CONFIGS.BTC.name, logoURI: TOKEN_CONFIGS.BTC.logoURI, balance: "0.05", price: 35000 },
+  { symbol: TOKEN_CONFIGS.USDC.symbol, name: TOKEN_CONFIGS.USDC.name, logoURI: TOKEN_CONFIGS.USDC.logoURI, balance: "1000", price: 1 },
+  { symbol: TOKEN_CONFIGS.USDT.symbol, name: TOKEN_CONFIGS.USDT.name, logoURI: TOKEN_CONFIGS.USDT.logoURI, balance: "500", price: 1 },
+  { symbol: TOKEN_CONFIGS.SOL.symbol, name: TOKEN_CONFIGS.SOL.name, logoURI: TOKEN_CONFIGS.SOL.logoURI, balance: "25", price: 125.75 },
 ];
 
 export default function TokenListPage() {
@@ -60,7 +30,6 @@ export default function TokenListPage() {
         ? {
             ...t,
             price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
-            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -128,15 +97,11 @@ export default function TokenListPage() {
             {activeTab === "preview" ? (
               <div className="p-20 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                  Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
+                  Total Value: ${tokens.reduce((sum, t) => sum + (t.balance && t.price ? Number(t.balance) * t.price : 0), 0).toFixed(2)}
                 </div>
                 <TokenList
                   tokens={tokens}
                   onTokenSelect={handleTokenSelect}
-                  variant={selectedVariant}
-                  showPrices={true}
-                  showValue={true}
-                  showBalances={true}
                 />
               </div>
             ) : (
@@ -158,7 +123,6 @@ export default function Page() {
         ? {
             ...t,
             price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
-            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -167,7 +131,7 @@ export default function Page() {
   return (
     <div>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
+        Total Value: ${tokens.reduce((sum, t) => sum + (t.balance && t.price ? Number(t.balance) * t.price : 0), 0).toFixed(2)}
       </div>
       <TokenList
         tokens={tokens}
@@ -300,7 +264,6 @@ export default function Page() {
         ? {
             ...t,
             price: t.price ? t.price * (1 + (Math.random() - 0.5) * 0.01) : undefined,
-            value: t.price && t.balance ? Number(t.balance) * t.price : undefined
           }
         : t
     ));
@@ -309,7 +272,7 @@ export default function Page() {
   return (
     <div>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Total Value: ${tokens.reduce((sum, t) => sum + (t.value ?? 0), 0).toFixed(2)}
+        Total Value: ${tokens.reduce((sum, t) => sum + (t.balance && t.price ? Number(t.balance) * t.price : 0), 0).toFixed(2)}
       </div>
       <TokenList
         tokens={tokens}

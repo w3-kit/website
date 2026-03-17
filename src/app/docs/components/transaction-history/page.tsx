@@ -132,7 +132,6 @@ export default function TransactionHistoryPage() {
                 <TransactionHistory
                   transactions={transactions}
                   onTransactionClick={handleTransactionClick}
-                  itemsPerPage={5}
                 />
               </div>
             ) : (

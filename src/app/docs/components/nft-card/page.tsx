@@ -81,12 +81,7 @@ export default function NFTCardPage() {
                     <NFTCard
                       key={nft.id}
                       nft={nft}
-                      variant="expanded"
-                      onOwnerClick={(owner) =>
-                        console.log("Owner clicked:", owner)
-                      }
                       onNFTClick={(nft) => console.log("NFT clicked:", nft)}
-                      className="transform scale-90"
                     />
                   ))}
                 </div>

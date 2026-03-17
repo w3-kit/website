@@ -1,276 +1,96 @@
-import React, { useState, useCallback } from 'react';
-import { MetaMaskInpageProvider } from '@metamask/providers';
-import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+"use client";
+
+import React, { useState, useCallback } from "react";
+import { MetaMaskInpageProvider } from "@metamask/providers";
+import { Wallet, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface CoinbaseWalletProvider {
   request: (args: { method: string }) => Promise<string[]>;
-}
-
-interface SolanaProvider {
-  connect(): Promise<{ publicKey: { toString(): string } }>;
 }
 
 declare global {
   interface Window {
     ethereum?: MetaMaskInpageProvider;
     coinbaseWalletExtension?: CoinbaseWalletProvider;
-    solana?: SolanaProvider;
-    phantom?: {
-      solana?: SolanaProvider;
-    };
   }
 }
 
-type ButtonVariant = 'ghost' | 'outline' | 'default' | 'secondary';
-type WalletType = 'metamask' | 'walletconnect' | 'coinbase' | 'phantom';
-
-interface ConnectWalletButtonProps {
+export interface ConnectWalletButtonProps {
   onConnect?: (address: string) => void;
   onError?: (error: Error) => void;
   className?: string;
-  customLabel?: string;
-  variant?: ButtonVariant;
-  walletType?: WalletType;
 }
 
-const walletConnectConfig = {
-  rpc: {
-    1: 'https://mainnet.infura.io/v3/YOUR_INFURA_ID', // Replace with your Infura ID
-    4: 'https://rinkeby.infura.io/v3/YOUR_INFURA_ID',
-  },
-  bridge: 'https://bridge.walletconnect.org',
-};
-
-const WalletIcons = {
-  metamask: (
-    <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/2048px-MetaMask_Fox.svg.png"
-      alt="MetaMask"
-      width={24}
-      height={24}
-      className="rounded-sm"
-    />
-  ),
-  walletconnect: (
-    <Image
-      src="https://cdn-images-1.medium.com/max/1200/1*fgRGbOjhoJMHqh9czHETZQ.png"
-      alt="WalletConnect"
-      width={24}
-      height={24}
-    />
-  ),
-  coinbase: (
-    <Image
-      src="https://cdn.iconscout.com/icon/free/png-256/free-coinbase-logo-icon-download-in-svg-png-gif-file-formats--web-crypro-trading-platform-logos-pack-icons-7651204.png"
-      alt="Coinbase"
-      width={24}
-      height={24}
-      className="rounded-sm"
-    />
-  ),
-  phantom: (
-    <svg width="24" height="24" viewBox="0 0 128 128" fill="none">
-      <rect width="128" height="128" rx="64" fill="#AB9FF2"/>
-      <path d="M110.984 64.206C110.984 89.2476 90.7077 109.524 65.666 109.524C40.6244 109.524 20.3477 89.2476 20.3477 64.206C20.3477 39.1644 40.6244 18.8877 65.666 18.8877C90.7077 18.8877 110.984 39.1644 110.984 64.206Z" fill="white"/>
-    </svg>
-  )
-};
-
-export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
+export function ConnectWalletButton({
   onConnect,
   onError,
-  className = '',
-  customLabel,
-  variant = 'default',
-  walletType = 'metamask'
-}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  className,
+}: ConnectWalletButtonProps) {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
 
-  const getDefaultLabel = (type: WalletType) => {
-    switch (type) {
-      case 'metamask':
-        return 'Connect MetaMask';
-      case 'walletconnect':
-        return 'WalletConnect';
-      case 'coinbase':
-        return 'Coinbase Wallet';
-      case 'phantom':
-        return 'Phantom Wallet';
-      default:
-        return 'Connect Wallet';
-    }
-  };
+  const formatAddress = (addr: string) =>
+    `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
-  const connectMetaMask = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const handleConnect = useCallback(async () => {
+    if (isConnecting) return;
+    setIsConnecting(true);
 
     try {
-      // First check if MetaMask is actually installed
-      if (typeof window.ethereum === 'undefined') {
-        throw new Error('MetaMask is not installed');
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("No wallet detected. Please install MetaMask.");
       }
 
-      // Check if the provider is actually MetaMask
+      const accounts = (await window.ethereum.request({
+        method: "eth_requestAccounts",
+      })) as string[];
 
-      if (!window.ethereum.isMetaMask) {
-        throw new Error('Please switch to MetaMask');
-      }
-
-      // This is the actual connection request to MetaMask
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
-      });
-
-      if (accounts && Array.isArray(accounts) && accounts.length > 0) {
-        onConnect?.(accounts[0] as string);
-      } else {
-        throw new Error('No accounts found');
-      }
-    } catch (err) {
-      const error = err as Error;
-      setError(error.message);
-      onError?.(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onConnect, onError]);
-
-  const connectWalletConnect = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const connector = new WalletConnectConnector({
-        rpc: walletConnectConfig.rpc,
-        bridge: walletConnectConfig.bridge,
-        qrcode: true,
-      });
-
-      await connector.activate();
-      const account = await connector.getAccount();
-      if (account) {
-        onConnect?.(account);
-      } else {
-        throw new Error('No account found');
-      }
-    } catch (err) {
-      const error = err as Error;
-      setError(error.message);
-      onError?.(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onConnect, onError]);
-
-  const connectCoinbase = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Check specifically for Coinbase Wallet
-      if (!window.coinbaseWalletExtension) {
-        throw new Error('Coinbase Wallet is not installed');
-      }
-
-      const accounts = await window.coinbaseWalletExtension.request({
-        method: 'eth_requestAccounts'
-      });
-
-      if (accounts && Array.isArray(accounts) && accounts.length > 0) {
+      if (accounts && accounts.length > 0) {
+        setConnectedAddress(accounts[0]);
         onConnect?.(accounts[0]);
-      } else {
-        throw new Error('No accounts found');
       }
     } catch (err) {
-      const error = err as Error;
-      setError(error.message);
+      const error =
+        err instanceof Error ? err : new Error("Failed to connect wallet");
       onError?.(error);
     } finally {
-      setIsLoading(false);
+      setIsConnecting(false);
     }
-  }, [onConnect, onError]);
+  }, [isConnecting, onConnect, onError]);
 
-  const connectPhantom = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const handleDisconnect = useCallback(() => {
+    setConnectedAddress(null);
+  }, []);
 
-    try {
-      if (!window.phantom?.solana) {
-        throw new Error('Phantom wallet is not installed');
-      }
-
-      const response = await window.phantom.solana.connect();
-      const address = response.publicKey.toString();
-      onConnect?.(address);
-    } catch (err) {
-      const error = err as Error;
-      setError(error.message);
-      onError?.(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onConnect, onError]);
-
-  const handleConnect = useCallback(() => {
-    switch (walletType) {
-      case 'metamask':
-        return connectMetaMask();
-      case 'walletconnect':
-        return connectWalletConnect();
-      case 'coinbase':
-        return connectCoinbase();
-      case 'phantom':
-        return connectPhantom();
-      default:
-        return connectMetaMask();
-    }
-  }, [walletType, connectMetaMask, connectWalletConnect, connectCoinbase, connectPhantom]);
+  if (connectedAddress) {
+    return (
+      <Button
+        variant="outline"
+        onClick={handleDisconnect}
+        className={cn("gap-2", className)}
+      >
+        <Wallet className="h-4 w-4" />
+        <span className="font-mono text-xs">{formatAddress(connectedAddress)}</span>
+      </Button>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center">
-      <Button
-        onClick={handleConnect}
-        disabled={isLoading}
-        variant={variant}
-        size="lg"
-        className={`min-w-[240px] rounded-xl transform hover:scale-[1.02] active:scale-[0.98] ${className}`}
-      >
-        {isLoading ? (
-          <div className="flex items-center space-x-2">
-            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            <span>Connecting...</span>
-          </div>
-        ) : (
-          <div className="flex items-center space-x-3">
-            <div className="w-6 h-6 flex items-center justify-center">
-              {WalletIcons[walletType]}
-            </div>
-            <span className="text-[15px]">{customLabel || getDefaultLabel(walletType)}</span>
-          </div>
-        )}
-      </Button>
-      {error && (
-        <p className="mt-2 text-sm text-destructive">{error}</p>
+    <Button
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className={cn("gap-2", className)}
+    >
+      {isConnecting ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Wallet className="h-4 w-4" />
       )}
-    </div>
+      {isConnecting ? "Connecting..." : "Connect Wallet"}
+    </Button>
   );
-};
+}
+
+export default ConnectWalletButton;
