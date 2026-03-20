@@ -1,17 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true,
-    domains: [
-      'upload.wikimedia.org',
-      'logos-world.net',
-      '1000logos.net',
-      'cdn.iconscout.com',
-      'cdn-images-1.medium.com'
+    remotePatterns: [
+      { protocol: "https", hostname: "upload.wikimedia.org" },
+      { protocol: "https", hostname: "logos-world.net" },
+      { protocol: "https", hostname: "1000logos.net" },
+      { protocol: "https", hostname: "cdn.iconscout.com" },
+      { protocol: "https", hostname: "cdn-images-1.medium.com" },
     ],
   },
 };
