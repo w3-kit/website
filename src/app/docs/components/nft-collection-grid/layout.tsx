@@ -1,11 +1,13 @@
 import { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { ComponentJsonLd } from "@/components/ComponentJsonLd";
 
 export const metadata: Metadata = {
-  title: "NFT Collection Grid - Components | W3-Kit",
+  title: "NFT Collection Grid - Components",
   description: "Learn about W3-Kit's NFT Collection Grid component for displaying NFT collections. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "NFT Collection Grid - Components | W3-Kit",
+    title: "NFT Collection Grid - Components",
     description: "Learn about W3-Kit's NFT Collection Grid component for displaying NFT collections.",
     type: "website",
     siteName: "W3-Kit",
@@ -26,5 +28,14 @@ export default function NFTCollectionGridLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd path="/docs/components/nft-collection-grid" />
+      <ComponentJsonLd
+        name="NFT Collection Grid"
+        description="Learn about W3-Kit's NFT Collection Grid component for displaying NFT collections. Built with React and Tailwind CSS for modern Web3 applications."
+      />
+      {children}
+    </>
+  );
 }

@@ -1,11 +1,13 @@
 import { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { ComponentJsonLd } from "@/components/ComponentJsonLd";
 
 export const metadata: Metadata = {
-  title: "Token Card - Components | W3-Kit",
+  title: "Token Card - Components",
   description: "Learn about W3-Kit's Token Card component for displaying token information and balances. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "Token Card - Components | W3-Kit",
+    title: "Token Card - Components",
     description: "Learn about W3-Kit's Token Card component for displaying token information and balances.",
     type: "website",
     siteName: "W3-Kit",
@@ -26,5 +28,14 @@ export default function TokenCardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd path="/docs/components/token-card" />
+      <ComponentJsonLd
+        name="Token Card"
+        description="Learn about W3-Kit's Token Card component for displaying token information and balances. Built with React and Tailwind CSS for modern Web3 applications."
+      />
+      {children}
+    </>
+  );
 }

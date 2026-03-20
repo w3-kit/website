@@ -1,11 +1,13 @@
 import { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { ComponentJsonLd } from "@/components/ComponentJsonLd";
 
 export const metadata: Metadata = {
-  title: "NFT Card - Components | W3-Kit",
+  title: "NFT Card - Components",
   description: "Learn about W3-Kit's NFT Card component for displaying non-fungible tokens. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "NFT Card - Components | W3-Kit",
+    title: "NFT Card - Components",
     description: "Learn about W3-Kit's NFT Card component for displaying non-fungible tokens.",
     type: "website",
     siteName: "W3-Kit",
@@ -26,5 +28,14 @@ export default function NFTCardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd path="/docs/components/nft-card" />
+      <ComponentJsonLd
+        name="NFT Card"
+        description="Learn about W3-Kit's NFT Card component for displaying non-fungible tokens. Built with React and Tailwind CSS for modern Web3 applications."
+      />
+      {children}
+    </>
+  );
 }

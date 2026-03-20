@@ -4,11 +4,11 @@ import { getComponentList } from "@/config/docs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Components | W3-Kit",
+  title: "Components",
   description: "Explore W3-Kit's comprehensive collection of accessible Web3 UI components. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "Components | W3-Kit",
+    title: "Components",
     description: "Explore W3-Kit's comprehensive collection of accessible Web3 UI components.",
     type: "website",
     siteName: "W3-Kit",

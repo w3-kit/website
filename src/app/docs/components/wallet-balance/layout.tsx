@@ -1,14 +1,14 @@
 import { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { ComponentJsonLd } from "@/components/ComponentJsonLd";
 
 export const metadata: Metadata = {
-  title: "Wallet Balance - Components | W3-Kit",
-  description:
-    "Learn about W3-Kit's Wallet Balance component for displaying cryptocurrency balances. Built with React and Tailwind CSS for modern Web3 applications.",
+  title: "Wallet Balance - Components",
+  description: "Learn about W3-Kit's Wallet Balance component for displaying cryptocurrency balances. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "Wallet Balance - Components | W3-Kit",
-    description:
-      "Learn about W3-Kit's Wallet Balance component for displaying cryptocurrency balances.",
+    title: "Wallet Balance - Components",
+    description: "Learn about W3-Kit's Wallet Balance component for displaying cryptocurrency balances.",
     type: "website",
     siteName: "W3-Kit",
     locale: "en_US",
@@ -28,5 +28,14 @@ export default function WalletBalanceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd path="/docs/components/wallet-balance" />
+      <ComponentJsonLd
+        name="Wallet Balance"
+        description="Learn about W3-Kit's Wallet Balance component for displaying cryptocurrency balances. Built with React and Tailwind CSS for modern Web3 applications."
+      />
+      {children}
+    </>
+  );
 }

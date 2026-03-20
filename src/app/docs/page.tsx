@@ -2,11 +2,11 @@ import { Metadata } from 'next';
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: "Documentation | W3-Kit",
+  title: "Documentation",
   description: "Learn how to build Web3 applications with W3-Kit's accessible and modern component library. Get started with installation, usage guides, and component documentation.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "Documentation | W3-Kit",
+    title: "Documentation",
     description: "Learn how to build Web3 applications with W3-Kit's accessible and modern component library.",
     type: "website",
     siteName: "W3-Kit",

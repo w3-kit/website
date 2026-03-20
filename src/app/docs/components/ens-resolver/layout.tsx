@@ -1,11 +1,13 @@
 import { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { ComponentJsonLd } from "@/components/ComponentJsonLd";
 
 export const metadata: Metadata = {
-  title: "ENS Resolver - Components | W3-Kit",
+  title: "ENS Resolver - Components",
   description: "Learn about W3-Kit's ENS Resolver component for resolving Ethereum Name Service addresses. Built with React and Tailwind CSS for modern Web3 applications.",
   authors: [{ name: "W3-Kit Team" }],
   openGraph: {
-    title: "ENS Resolver - Components | W3-Kit",
+    title: "ENS Resolver - Components",
     description: "Learn about W3-Kit's ENS Resolver component for resolving Ethereum Name Service addresses.",
     type: "website",
     siteName: "W3-Kit",
@@ -26,5 +28,14 @@ export default function ENSResolverLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd path="/docs/components/ens-resolver" />
+      <ComponentJsonLd
+        name="ENS Resolver"
+        description="Learn about W3-Kit's ENS Resolver component for resolving Ethereum Name Service addresses. Built with React and Tailwind CSS for modern Web3 applications."
+      />
+      {children}
+    </>
+  );
 }
