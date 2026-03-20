@@ -7,6 +7,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Web3 UI Component Library | W3-Kit",
@@ -41,6 +42,7 @@ export default function RootLayout({
 
         </ThemeProvider>
         <GoogleAnalytics />
+        <Analytics />
       </body>
     </html>
   );
