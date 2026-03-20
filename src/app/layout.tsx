@@ -8,6 +8,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Analytics } from "@vercel/analytics/next";
+import { JsonLd } from "@/components/JsonLd";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -72,6 +73,31 @@ export default function RootLayout({
         </ThemeProvider>
         <GoogleAnalytics />
         <Analytics />
+        <JsonLd
+          data={[
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "W3-Kit",
+              url: "https://w3-kit.com",
+              logo: "https://w3-kit.com/OpenGraphImage.png",
+              description:
+                "A modern, accessible UI component library for Web3 applications",
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "W3-Kit",
+              url: "https://w3-kit.com",
+              potentialAction: {
+                "@type": "SearchAction",
+                target:
+                  "https://www.google.com/search?q=site:w3-kit.com+{search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ]}
+        />
       </body>
     </html>
   );
