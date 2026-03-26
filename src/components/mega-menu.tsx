@@ -49,6 +49,7 @@ const RESOURCES_MENU = [
       { title: "Installation Guide", href: "/docs/installation" },
       { title: "Getting Started", href: "/docs/components" },
       { title: "API Reference", href: "/docs/api" },
+      { title: "MCP Server", href: "/docs/mcp" },
     ],
   },
   {

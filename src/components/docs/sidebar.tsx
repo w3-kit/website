@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { getComponentList } from '@/config/docs'
+import { getComponentList, getMcpList } from '@/config/docs'
 
 interface SidebarItem {
   title: string;
@@ -23,6 +23,14 @@ const sidebarItems: SidebarSection[] = [
       { title: 'Introduction', href: '/docs' },
       { title: 'Installation', href: '/docs/installation' },
     ]
+  },
+  {
+    section: 'AI Integration',
+    items: getMcpList().map(page => ({
+      title: page.title,
+      href: page.href,
+      isNew: page.isNew,
+    }))
   },
   {
     section: 'Components',

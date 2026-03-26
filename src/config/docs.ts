@@ -1,7 +1,7 @@
 interface DocPage {
   title: string;
   href: string;
-  section: "getting-started" | "components" | "examples";
+  section: "getting-started" | "components" | "examples" | "mcp";
   description?: string;
   isNew?: boolean;
 }
@@ -177,6 +177,14 @@ const pages: DocPage[] = [
     section: "components",
     description: "Display wallet token balances with real-time value updates",
   },
+  // MCP (AI Integration)
+  {
+    title: "MCP Server",
+    href: "/docs/mcp",
+    section: "mcp",
+    description: "Connect AI coding assistants to w3-kit via the Model Context Protocol",
+    isNew: true,
+  },
 ];
 
 
@@ -197,4 +205,8 @@ export function getPageNavigation(currentPath: string) {
 
 export function getComponentList() {
   return pages.filter((page) => page.section === "components");
+}
+
+export function getMcpList() {
+  return pages.filter((page) => page.section === "mcp");
 }
