@@ -6,7 +6,6 @@ export const Route = createFileRoute("/_landing/")({
     <UnderConstruction
       section="Home"
       description="Open-source web3 developer toolkit."
-      features={["npx create-w3-kit@latest"]}
       showSubdomains
     />
   ),

@@ -6,7 +6,6 @@ export const Route = createFileRoute("/ui/")({
     <UnderConstruction
       section="UI Library"
       description="Production-ready web3 React components."
-      features={["npx create-w3-kit@latest"]}
     />
   ),
 });

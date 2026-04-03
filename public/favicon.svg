@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#000"/>
-  <text x="16" y="22" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="14" font-weight="800" fill="#ededed">W3</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100">
+  <!-- Top-left -->
+  <rect x="10" y="10" width="30" height="30" rx="8" fill="#ededed" transform="rotate(-12 25 25)"/>
+  <!-- Top-right -->
+  <rect x="60" y="10" width="30" height="30" rx="8" fill="#ededed" transform="rotate(12 75 25)"/>
+  <!-- Bottom-left -->
+  <rect x="10" y="60" width="30" height="30" rx="8" fill="#ededed" transform="rotate(12 25 75)"/>
+  <!-- Bottom-right -->
+  <rect x="60" y="60" width="30" height="30" rx="8" fill="#ededed" transform="rotate(-12 75 75)"/>
 </svg>

@@ -1,11 +1,10 @@
 type Props = {
   section: string;
   description: string;
-  features?: string[];
   showSubdomains?: boolean;
 };
 
-export function UnderConstruction({ section, description, features, showSubdomains }: Props) {
+export function UnderConstruction({ section, description, showSubdomains }: Props) {
   return (
     <>
       <style>{`
@@ -14,11 +13,9 @@ export function UnderConstruction({ section, description, features, showSubdomai
         body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
         a { color: inherit; }
 
-        .uc { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; gap: 2rem; }
-        .uc-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
-        .uc-title span { font-weight: 400; font-size: 0.5em; vertical-align: super; letter-spacing: -0.02em; color: var(--muted); }
-        .uc-steps { display: flex; flex-direction: column; gap: 0.375rem; font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
-        .uc-steps code { background: #111; border: 1px solid #222; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8125rem; color: var(--fg); }
+        .uc { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; gap: 1.5rem; }
+        .uc-logo { width: 64px; height: 64px; }
+        .uc-desc { color: var(--muted); font-size: 0.875rem; max-width: 360px; line-height: 1.6; }
         .uc-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
         .uc-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.15s; }
         .uc-btn-primary { background: var(--fg); color: var(--bg); }
@@ -31,18 +28,9 @@ export function UnderConstruction({ section, description, features, showSubdomai
         .uc-link svg { width: 14px; height: 14px; }
       `}</style>
       <div className="uc">
-        <div className="uc-title">
-          {section === "Home" ? <>W3-KIT<span>.dev</span></> : section}
-        </div>
+        <img src="/logo.png" alt="w3-kit" className="uc-logo" />
 
-        <div className="uc-steps">
-          <span>{description}</span>
-          {features?.map((f) => (
-            <span key={f}>
-              <code>{f}</code>
-            </span>
-          ))}
-        </div>
+        <p className="uc-desc">{description}</p>
 
         <div className="uc-buttons">
           <a href="https://github.com/w3-kit" target="_blank" rel="noopener noreferrer" className="uc-btn uc-btn-primary">

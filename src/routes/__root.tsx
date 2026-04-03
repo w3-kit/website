@@ -14,7 +14,10 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "w3-kit — Open Source Web3 Developer Toolkit" },
     ],
-    links: [{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }],
+    links: [
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
+    ],
   }),
   component: RootComponent,
 });
