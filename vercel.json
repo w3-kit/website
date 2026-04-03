@@ -6,6 +6,16 @@
       "source": "/:path*",
       "has": [{ "type": "host", "value": "ui.w3-kit.com" }],
       "destination": "/ui/:path*"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "docs.w3-kit.com" }],
+      "destination": "/docs/:path*"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "registry.w3-kit.com" }],
+      "destination": "/registry/:path*"
     }
   ]
 }
