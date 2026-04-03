@@ -17,11 +17,7 @@ export default createServerEntry({
 
     if (subdomain !== "landing" && !url.pathname.startsWith(`/${subdomain}`)) {
       const rewrittenUrl = new URL(`/${subdomain}${url.pathname}${url.search}`, url.origin);
-      const rewrittenRequest = new Request(rewrittenUrl.toString(), {
-        method: request.method,
-        headers: request.headers,
-        body: request.body,
-      });
+      const rewrittenRequest = new Request(rewrittenUrl.toString(), request);
       return handler.fetch(rewrittenRequest);
     }
 
