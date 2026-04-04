@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { UnderConstruction } from "../../shared/ui/under-construction";
+import { UnderConstructionLayout } from "../../pages/under-construction";
+import { LandingAnimation } from "../../pages/under-construction/ui/landing-animation";
 
 export const Route = createFileRoute("/_landing/")({
   component: () => (
-    <UnderConstruction
-      section="Home"
+    <UnderConstructionLayout
+      section="landing"
+      title="w3-kit"
       description="Open-source web3 developer toolkit."
-      showSubdomains
+      animation={<LandingAnimation />}
     />
   ),
 });
