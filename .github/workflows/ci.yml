@@ -16,7 +16,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci --legacy-peer-deps
+      - run: npm run build
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check
-      - run: npm run build

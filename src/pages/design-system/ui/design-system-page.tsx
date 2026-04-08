@@ -43,18 +43,73 @@ const grayScale = [
 ];
 
 const headingTypes = [
-  { example: "Heading 48", className: "text-heading-48", size: "48px", weight: 600, usage: "Hero sections and landing pages." },
-  { example: "Heading 32", className: "text-heading-32", size: "32px", weight: 600, usage: "Page titles and major sections." },
-  { example: "Heading 24", className: "text-heading-24", size: "24px", weight: 600, usage: "Section headings within pages." },
-  { example: "Heading 20", className: "text-heading-20", size: "20px", weight: 500, usage: "Sub-section headings." },
+  {
+    example: "Heading 48",
+    className: "text-heading-48",
+    size: "48px",
+    weight: 600,
+    usage: "Hero sections and landing pages.",
+  },
+  {
+    example: "Heading 32",
+    className: "text-heading-32",
+    size: "32px",
+    weight: 600,
+    usage: "Page titles and major sections.",
+  },
+  {
+    example: "Heading 24",
+    className: "text-heading-24",
+    size: "24px",
+    weight: 600,
+    usage: "Section headings within pages.",
+  },
+  {
+    example: "Heading 20",
+    className: "text-heading-20",
+    size: "20px",
+    weight: 500,
+    usage: "Sub-section headings.",
+  },
 ];
 
 const copyTypes = [
-  { example: "Copy 16 with Strong", className: "text-copy-16", size: "16px", weight: 400, usage: "Default body text for content." },
-  { example: "Copy 14 with Strong", className: "text-copy-14", size: "14px", weight: 400, usage: "Most commonly used text style." },
-  { example: "Copy 13", className: "text-copy-13", size: "13px", weight: 400, usage: "Secondary text and descriptions." },
-  { example: "Copy 13 Mono", className: "text-copy-13-mono", size: "13px", weight: 400, usage: "Used for inline code mentions.", mono: true },
-  { example: "Copy 12", className: "text-copy-12", size: "12px", weight: 400, usage: "Captions and metadata." },
+  {
+    example: "Copy 16 with Strong",
+    className: "text-copy-16",
+    size: "16px",
+    weight: 400,
+    usage: "Default body text for content.",
+  },
+  {
+    example: "Copy 14 with Strong",
+    className: "text-copy-14",
+    size: "14px",
+    weight: 400,
+    usage: "Most commonly used text style.",
+  },
+  {
+    example: "Copy 13",
+    className: "text-copy-13",
+    size: "13px",
+    weight: 400,
+    usage: "Secondary text and descriptions.",
+  },
+  {
+    example: "Copy 13 Mono",
+    className: "text-copy-13-mono",
+    size: "13px",
+    weight: 400,
+    usage: "Used for inline code mentions.",
+    mono: true,
+  },
+  {
+    example: "Copy 12",
+    className: "text-copy-12",
+    size: "12px",
+    weight: 400,
+    usage: "Captions and metadata.",
+  },
 ];
 
 const spacingValues = [4, 8, 16, 24, 32, 48, 64];
@@ -70,7 +125,14 @@ const inputBaseStyle: React.CSSProperties = {
 
 export function DesignSystemPage() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--w3-gray-100)" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: "var(--w3-gray-100)",
+      }}
+    >
       <SiteHeader currentSection="design" />
 
       <div style={{ display: "flex", flex: 1 }}>
@@ -87,7 +149,9 @@ export function DesignSystemPage() {
             overflowY: "auto",
           }}
         >
-          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--w3-gray-900)", marginBottom: 24 }}>
+          <div
+            style={{ fontSize: 15, fontWeight: 600, color: "var(--w3-gray-900)", marginBottom: 24 }}
+          >
             w3-kit Design System
           </div>
 
@@ -137,21 +201,30 @@ export function DesignSystemPage() {
 
         {/* Main content */}
         <div style={{ flex: 1, padding: "48px 64px", maxWidth: 900 }}>
-
           {/* Introduction */}
           <section id="intro" style={{ marginBottom: 80 }}>
             <h1 style={{ marginBottom: 16 }}>Design System</h1>
-            <p style={{ fontSize: 16, color: "var(--w3-gray-700)", lineHeight: 1.6, maxWidth: 600 }}>
-              The visual language for w3-kit. Monochrome foundations with Solidity purple as a structural accent.
-              Built on Geist Sans, a 10-step gray scale, and GSAP-driven motion.
+            <p
+              style={{ fontSize: 16, color: "var(--w3-gray-700)", lineHeight: 1.6, maxWidth: 600 }}
+            >
+              The visual language for w3-kit. Monochrome foundations with Solidity purple as a
+              structural accent. Built on Geist Sans, a 10-step gray scale, and GSAP-driven motion.
             </p>
           </section>
 
           {/* Colors */}
           <section id="colors" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Colors</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
-              10-step semantic gray scale. Values swap automatically between light and dark themes via CSS custom properties.
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
+              10-step semantic gray scale. Values swap automatically between light and dark themes
+              via CSS custom properties.
             </p>
 
             {/* Gray scale table */}
@@ -214,7 +287,9 @@ export function DesignSystemPage() {
                     marginBottom: 8,
                   }}
                 />
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>Accent</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>
+                  Accent
+                </div>
                 <code style={{ fontSize: 12, color: "var(--w3-gray-600)" }}>#5554D9</code>
               </div>
               <div>
@@ -228,7 +303,9 @@ export function DesignSystemPage() {
                     marginBottom: 8,
                   }}
                 />
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>Accent Subtle</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>
+                  Accent Subtle
+                </div>
                 <code style={{ fontSize: 12, color: "var(--w3-gray-600)" }}>Backgrounds</code>
               </div>
             </div>
@@ -237,8 +314,16 @@ export function DesignSystemPage() {
           {/* Typography */}
           <section id="typography" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Typography</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
-              Geist Sans for UI text, Geist Mono for code. Tight letter-spacing on headings, comfortable line-height on body copy.
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
+              Geist Sans for UI text, Geist Mono for code. Tight letter-spacing on headings,
+              comfortable line-height on body copy.
             </p>
 
             {/* Heading */}
@@ -275,11 +360,21 @@ export function DesignSystemPage() {
                   borderBottom: "1px solid var(--w3-gray-300)",
                 }}
               >
-                <span style={{ fontSize: t.size, fontWeight: t.weight, color: "var(--w3-gray-900)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+                <span
+                  style={{
+                    fontSize: t.size,
+                    fontWeight: t.weight,
+                    color: "var(--w3-gray-900)",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1.1,
+                  }}
+                >
                   {t.example}
                 </span>
                 <code style={{ fontSize: 13, color: "var(--w3-gray-700)" }}>{t.className}</code>
-                <span style={{ fontSize: 14, color: "var(--w3-gray-700)", lineHeight: 1.5 }}>{t.usage}</span>
+                <span style={{ fontSize: 14, color: "var(--w3-gray-700)", lineHeight: 1.5 }}>
+                  {t.usage}
+                </span>
               </div>
             ))}
 
@@ -334,13 +429,30 @@ export function DesignSystemPage() {
                   )}
                 </span>
                 <code style={{ fontSize: 13, color: "var(--w3-gray-700)" }}>{t.className}</code>
-                <span style={{ fontSize: 14, color: "var(--w3-gray-700)", lineHeight: 1.5 }}>{t.usage}</span>
+                <span style={{ fontSize: 14, color: "var(--w3-gray-700)", lineHeight: 1.5 }}>
+                  {t.usage}
+                </span>
               </div>
             ))}
 
             {/* Mono specimen */}
-            <div style={{ marginTop: 32, padding: 20, background: "var(--w3-gray-200)", borderRadius: 6 }}>
-              <div style={{ fontSize: 12, color: "var(--w3-gray-600)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div
+              style={{
+                marginTop: 32,
+                padding: 20,
+                background: "var(--w3-gray-200)",
+                borderRadius: 6,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "var(--w3-gray-600)",
+                  marginBottom: 8,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
                 Geist Mono
               </div>
               <code style={{ fontSize: 14, color: "var(--w3-gray-900)" }}>
@@ -352,7 +464,14 @@ export function DesignSystemPage() {
           {/* Spacing */}
           <section id="spacing" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Spacing</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
               4px base unit. All spacing is a multiple of 4 or 8.
             </p>
 
@@ -387,7 +506,14 @@ export function DesignSystemPage() {
           {/* Buttons */}
           <section id="buttons" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Buttons</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
               Button variants following the monochrome design system.
             </p>
 
@@ -421,7 +547,14 @@ export function DesignSystemPage() {
           {/* Badges */}
           <section id="badges" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Badges</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
               Status indicators and labels.
             </p>
 
@@ -451,19 +584,35 @@ export function DesignSystemPage() {
           {/* Inputs */}
           <section id="inputs" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Inputs</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
               Form input states.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <input
                 placeholder="Default input"
-                style={{ ...inputBaseStyle, background: "var(--w3-gray-100)", color: "var(--w3-gray-900)" }}
+                style={{
+                  ...inputBaseStyle,
+                  background: "var(--w3-gray-100)",
+                  color: "var(--w3-gray-900)",
+                }}
               />
               <input
                 placeholder="Disabled"
                 disabled
-                style={{ ...inputBaseStyle, background: "var(--w3-gray-200)", color: "var(--w3-gray-500)", cursor: "not-allowed" }}
+                style={{
+                  ...inputBaseStyle,
+                  background: "var(--w3-gray-200)",
+                  color: "var(--w3-gray-500)",
+                  cursor: "not-allowed",
+                }}
               />
             </div>
           </section>
@@ -471,7 +620,14 @@ export function DesignSystemPage() {
           {/* Cards */}
           <section id="cards" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Cards</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
               Container components with surface background.
             </p>
 
@@ -494,8 +650,16 @@ export function DesignSystemPage() {
           {/* Animations */}
           <section id="animations" style={{ marginBottom: 80 }}>
             <h2 style={{ marginBottom: 8 }}>Animations</h2>
-            <p style={{ fontSize: 14, color: "var(--w3-gray-700)", marginBottom: 32, lineHeight: 1.6 }}>
-              GSAP-driven abstract structural SVG animations. Each subdomain has a unique animation that hints at its content.
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--w3-gray-700)",
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
+              GSAP-driven abstract structural SVG animations. Each subdomain has a unique animation
+              that hints at its content.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -514,7 +678,14 @@ export function DesignSystemPage() {
                     overflow: "hidden",
                   }}
                 >
-                  <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div
+                    style={{
+                      height: 200,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     {anim.component}
                   </div>
                   <div

@@ -28,9 +28,7 @@ export function UnderConstructionLayout({
             padding: "48px",
           }}
         >
-          <h1 style={{ marginBottom: 12, color: "var(--w3-gray-900)" }}>
-            {title}
-          </h1>
+          <h1 style={{ marginBottom: 12, color: "var(--w3-gray-900)" }}>{title}</h1>
           <p
             style={{
               fontSize: 16,
@@ -45,8 +43,7 @@ export function UnderConstructionLayout({
             style={{
               width: 60,
               height: 1,
-              background:
-                "linear-gradient(90deg, var(--w3-accent), transparent)",
+              background: "linear-gradient(90deg, var(--w3-accent), transparent)",
               marginBottom: 24,
             }}
           />

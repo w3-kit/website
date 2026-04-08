@@ -29,11 +29,7 @@ export function SiteHeader({ currentSection }: SiteHeaderProps) {
           textDecoration: "none",
         }}
       >
-        <img
-          src="/logo.png"
-          alt="w3-kit"
-          style={{ height: 28, width: 28, borderRadius: 6 }}
-        />
+        <img src="/logo.png" alt="w3-kit" style={{ height: 28, width: 28, borderRadius: 6 }} />
       </a>
       <nav style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         {currentSection && currentSection !== "landing" && (
@@ -57,10 +53,7 @@ export function SiteHeader({ currentSection }: SiteHeaderProps) {
             href={link.href}
             style={{
               fontSize: 14,
-              color:
-                currentSection === link.section
-                  ? "var(--w3-gray-900)"
-                  : "var(--w3-gray-700)",
+              color: currentSection === link.section ? "var(--w3-gray-900)" : "var(--w3-gray-700)",
               textDecoration: "none",
               padding: "4px 12px",
               borderRadius: 4,
