@@ -1,5 +1,8 @@
 # w3-kit/website
 
+[![CI](https://github.com/w3-kit/website/actions/workflows/ci.yml/badge.svg)](https://github.com/w3-kit/website/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 The w3-kit website — serving w3-kit.com and all subdomains.
 
 ## Subdomains

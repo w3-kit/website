@@ -30,6 +30,21 @@ This is a TanStack Start application using Feature-Sliced Design (FSD).
 - `entities/` — domain objects with UI
 - `shared/` — reusable infrastructure
 
+## Local development
+
+```bash
+git clone https://github.com/YOUR_USERNAME/website.git
+cd website
+npm install --legacy-peer-deps
+npm run dev
+```
+
+### Run all CI checks locally
+
+```bash
+npm run build && npm run typecheck && npm run lint && npm run format:check
+```
+
 ## What to contribute
 
 - Page implementations for any subdomain
