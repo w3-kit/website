@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  type Theme,
-  getStoredTheme,
-  setTheme,
-  listenToSystemTheme,
-} from "../../shared/lib/theme";
+import { type Theme, getStoredTheme, setTheme, listenToSystemTheme } from "../../shared/lib/theme";
 
 const iconPaths: Record<Theme, string> = {
   system:
@@ -41,10 +36,8 @@ export function ThemeToggle() {
             justifyContent: "center",
             border: `1px solid ${current === theme ? "var(--w3-accent)" : "var(--w3-gray-300)"}`,
             borderRadius: 4,
-            background:
-              current === theme ? "var(--w3-accent-subtle)" : "transparent",
-            color:
-              current === theme ? "var(--w3-accent)" : "var(--w3-gray-700)",
+            background: current === theme ? "var(--w3-accent-subtle)" : "transparent",
+            color: current === theme ? "var(--w3-accent)" : "var(--w3-gray-700)",
             cursor: "pointer",
             transition: "all 0.2s",
           }}

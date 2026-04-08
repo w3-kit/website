@@ -11,9 +11,7 @@ export const STROKE = {
 export const SVG_STYLE = { width: "80%", height: "80%" } as const;
 export const SVG_VIEWBOX = "0 0 400 300";
 
-export function useAnimatedSvg(
-  buildTimeline: (tl: gsap.core.Timeline) => void
-) {
+export function useAnimatedSvg(buildTimeline: (tl: gsap.core.Timeline) => void) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useGSAP(
@@ -27,7 +25,7 @@ export function useAnimatedSvg(
       });
       return () => mm.revert();
     },
-    { scope: svgRef }
+    { scope: svgRef },
   );
 
   return svgRef;

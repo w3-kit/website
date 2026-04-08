@@ -24,13 +24,13 @@ export function DocsAnimation() {
     tl.fromTo(
       ".sidebar",
       { scaleY: 0, transformOrigin: "top" },
-      { scaleY: 1, duration: 1, ease: "power2.out" }
+      { scaleY: 1, duration: 1, ease: "power2.out" },
     );
     tl.fromTo(
       ".text-line",
       { x: -300, opacity: 0 },
       { x: 0, opacity: 1, duration: 0.5, stagger: 0.04, ease: "power2.out" },
-      "-=0.6"
+      "-=0.6",
     );
   });
 
@@ -43,7 +43,11 @@ export function DocsAnimation() {
         <rect
           key={i}
           className="text-line"
-          x="80" y={line.y} width={line.w} height={line.h} rx="1"
+          x="80"
+          y={line.y}
+          width={line.w}
+          height={line.h}
+          rx="1"
           fill={line.isHeading ? a : g4}
           opacity={line.isHeading ? 0.8 : 0.4}
         />
