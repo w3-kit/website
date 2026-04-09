@@ -6,7 +6,7 @@ interface UnderConstructionLayoutProps {
   section: Section;
   title: string;
   description: string;
-  animation: ReactNode;
+  animation?: ReactNode;
 }
 
 export function UnderConstructionLayout({

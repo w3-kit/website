@@ -4,11 +4,43 @@ interface SiteHeaderProps {
   currentSection?: Section;
 }
 
+const DOMAIN = "w3-kit.com";
+
 const navLinks = [
-  { label: "UI", href: "/ui", section: "ui" as const },
-  { label: "Docs", href: "/docs", section: "docs" as const },
-  { label: "Registry", href: "/registry", section: "registry" as const },
+  { label: "UI", section: "ui" as const },
+  { label: "Docs", section: "docs" as const },
+  { label: "Registry", section: "registry" as const },
+  { label: "Learn", section: "learn" as const },
+  { label: "Design", section: "design" as const },
 ];
+
+function getSectionUrl(section: string): string {
+  if (typeof window === "undefined") return `/${section}`;
+  const host = window.location.host;
+  const protocol = window.location.protocol;
+
+  // Localhost: use subdomain.localhost:port
+  if (host.includes("localhost") || host.includes("127.0.0.1")) {
+    const port = window.location.port;
+    return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
+  }
+
+  // Production: use subdomain.domain
+  return `${protocol}//${section}.${DOMAIN}`;
+}
+
+function getLandingUrl(): string {
+  if (typeof window === "undefined") return "/";
+  const host = window.location.host;
+  const protocol = window.location.protocol;
+
+  if (host.includes("localhost") || host.includes("127.0.0.1")) {
+    const port = window.location.port;
+    return `${protocol}//localhost${port ? `:${port}` : ""}`;
+  }
+
+  return `${protocol}//www.${DOMAIN}`;
+}
 
 export function SiteHeader({ currentSection }: SiteHeaderProps) {
   return (
@@ -22,7 +54,7 @@ export function SiteHeader({ currentSection }: SiteHeaderProps) {
       }}
     >
       <a
-        href="/"
+        href={getLandingUrl()}
         style={{
           display: "flex",
           alignItems: "center",
@@ -34,7 +66,7 @@ export function SiteHeader({ currentSection }: SiteHeaderProps) {
       <nav style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         {currentSection && currentSection !== "landing" && (
           <a
-            href="/"
+            href={getLandingUrl()}
             style={{
               fontSize: 14,
               color: "var(--w3-gray-700)",
@@ -50,7 +82,7 @@ export function SiteHeader({ currentSection }: SiteHeaderProps) {
         {navLinks.map((link) => (
           <a
             key={link.section}
-            href={link.href}
+            href={getSectionUrl(link.section)}
             style={{
               fontSize: 14,
               color: currentSection === link.section ? "var(--w3-gray-900)" : "var(--w3-gray-700)",

@@ -1,5 +1,5 @@
 export type Theme = "system" | "light" | "dark";
-export type Section = "landing" | "ui" | "docs" | "registry" | "design";
+export type Section = "landing" | "ui" | "docs" | "registry" | "design" | "learn";
 
 export const THEME_KEY = "w3-theme";
 export const THEME_ATTR = "data-theme";
