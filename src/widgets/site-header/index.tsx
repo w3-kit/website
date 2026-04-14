@@ -1,105 +1,150 @@
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
+import { Button } from "../../shared/ui/button";
+import { Logo } from "../../shared/ui/logo";
+import { cn } from "../../shared/lib/utils";
+import { getSectionUrl, getLandingUrl } from "../../shared/lib/urls";
 import type { Section } from "../../shared/lib/theme";
 
 interface SiteHeaderProps {
   currentSection?: Section;
+  /** Transparent header that floats over content (for hero sections) */
+  variant?: "default" | "transparent";
 }
-
-const DOMAIN = "w3-kit.com";
 
 const navLinks = [
   { label: "UI", section: "ui" as const },
   { label: "Docs", section: "docs" as const },
   { label: "Registry", section: "registry" as const },
   { label: "Learn", section: "learn" as const },
-  { label: "Design", section: "design" as const },
 ];
 
-function getSectionUrl(section: string): string {
-  if (typeof window === "undefined") return `/${section}`;
-  const host = window.location.host;
-  const protocol = window.location.protocol;
+export function SiteHeader({ currentSection, variant = "default" }: SiteHeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isTransparent = variant === "transparent";
 
-  // Localhost: use subdomain.localhost:port
-  if (host.includes("localhost") || host.includes("127.0.0.1")) {
-    const port = window.location.port;
-    return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
-  }
+  useEffect(() => {
+    if (!isTransparent) return;
 
-  // Production: use subdomain.domain
-  return `${protocol}//${section}.${DOMAIN}`;
-}
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll(); // check initial position
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isTransparent]);
 
-function getLandingUrl(): string {
-  if (typeof window === "undefined") return "/";
-  const host = window.location.host;
-  const protocol = window.location.protocol;
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) setMobileOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-  if (host.includes("localhost") || host.includes("127.0.0.1")) {
-    const port = window.location.port;
-    return `${protocol}//localhost${port ? `:${port}` : ""}`;
-  }
+  const showBackground = !isTransparent || scrolled;
 
-  return `${protocol}//www.${DOMAIN}`;
-}
-
-export function SiteHeader({ currentSection }: SiteHeaderProps) {
   return (
-    <header
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "16px 24px",
-        borderBottom: "1px solid var(--w3-gray-300)",
-      }}
-    >
-      <a
-        href={getLandingUrl()}
+    <>
+      <header
+        className={cn(
+          "z-50 flex items-center justify-between px-6 py-4 transition-all duration-300",
+          isTransparent ? "fixed inset-x-0 top-0" : "sticky top-0",
+          showBackground && "border-b backdrop-blur-xl",
+        )}
         style={{
-          display: "flex",
-          alignItems: "center",
-          textDecoration: "none",
+          borderColor: showBackground ? "var(--w3-border-subtle)" : "transparent",
+          background: showBackground
+            ? "color-mix(in srgb, var(--w3-gray-100) 80%, transparent)"
+            : "transparent",
         }}
       >
-        <img src="/logo.png" alt="w3-kit" style={{ height: 28, width: 28, borderRadius: 6 }} />
-      </a>
-      <nav style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-        {currentSection && currentSection !== "landing" && (
-          <a
-            href={getLandingUrl()}
-            style={{
-              fontSize: 14,
-              color: "var(--w3-gray-700)",
-              textDecoration: "none",
-              padding: "4px 12px",
-              borderRadius: 4,
-              transition: "color 0.2s",
-            }}
-          >
-            Home
-          </a>
-        )}
-        {navLinks.map((link) => (
-          <a
-            key={link.section}
-            href={getSectionUrl(link.section)}
-            style={{
-              fontSize: 14,
-              color: currentSection === link.section ? "var(--w3-gray-900)" : "var(--w3-gray-700)",
-              textDecoration: "none",
-              padding: "4px 12px",
-              borderRadius: 4,
-              borderLeft:
+        {/* Logo */}
+        <a href={getLandingUrl()} className="flex items-center gap-2">
+          <Logo size={24} className="text-[var(--w3-accent)]" />
+          <span className="text-sm font-semibold" style={{ color: "var(--w3-gray-900)" }}>
+            w3-kit
+          </span>
+        </a>
+
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {currentSection && currentSection !== "landing" && (
+            <a
+              href={getLandingUrl()}
+              className="rounded-md px-3 py-1.5 text-sm transition-colors"
+              style={{ color: "var(--w3-gray-600)" }}
+            >
+              Home
+            </a>
+          )}
+          {navLinks.map((link) => (
+            <a
+              key={link.section}
+              href={getSectionUrl(link.section)}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 currentSection === link.section
-                  ? "2px solid var(--w3-accent)"
-                  : "2px solid transparent",
-              transition: "all 0.2s",
-            }}
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
-    </header>
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Mobile hamburger */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="md:hidden"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+        >
+          {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+        </Button>
+      </header>
+
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 flex flex-col pt-16 backdrop-blur-xl md:hidden"
+          style={{
+            background: "color-mix(in srgb, var(--w3-gray-100) 95%, transparent)",
+          }}
+        >
+          <nav className="flex flex-col gap-1 px-6 py-4">
+            {currentSection && currentSection !== "landing" && (
+              <a
+                href={getLandingUrl()}
+                className="rounded-lg px-4 py-3 text-base transition-colors"
+                style={{ color: "var(--w3-gray-600)" }}
+              >
+                Home
+              </a>
+            )}
+            {navLinks.map((link) => (
+              <a
+                key={link.section}
+                href={getSectionUrl(link.section)}
+                className={cn(
+                  "rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                  currentSection === link.section ? "text-foreground" : "text-muted-foreground",
+                )}
+                style={
+                  currentSection === link.section
+                    ? { background: "var(--w3-surface-elevated)" }
+                    : undefined
+                }
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
+    </>
   );
 }

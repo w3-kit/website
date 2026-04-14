@@ -50,6 +50,24 @@
   --w3-accent: #5554d9;
   --w3-accent-subtle: rgba(85, 84, 217, 0.1);
 
+  /* Landing surface tokens */
+  --w3-surface-translucent: rgba(0, 0, 0, 0.02);
+  --w3-surface-elevated: rgba(0, 0, 0, 0.04);
+  --w3-border-subtle: rgba(0, 0, 0, 0.06);
+  --w3-border-standard: rgba(0, 0, 0, 0.1);
+  --w3-hero-gradient: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(85, 84, 217, 0.06) 0%,
+    transparent 60%
+  );
+  --w3-glow-accent: rgba(85, 84, 217, 0.15);
+
+  /* Glass / Liquid glass */
+  --w3-glass-bg: rgba(255, 255, 255, 0.45);
+  --w3-glass-border: rgba(255, 255, 255, 0.6);
+  --w3-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --w3-glass-inner-bg: rgba(255, 255, 255, 0.55);
+
   font-family:
     "Geist Sans",
     system-ui,
@@ -104,41 +122,36 @@
   --w3-gray-900: #ededed;
   --w3-accent: #5554d9;
   --w3-accent-subtle: rgba(85, 84, 217, 0.15);
+
+  /* Landing surface tokens */
+  --w3-surface-translucent: rgba(255, 255, 255, 0.02);
+  --w3-surface-elevated: rgba(255, 255, 255, 0.05);
+  --w3-border-subtle: rgba(255, 255, 255, 0.05);
+  --w3-border-standard: rgba(255, 255, 255, 0.08);
+  --w3-hero-gradient: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(85, 84, 217, 0.15) 0%,
+    transparent 60%
+  );
+  --w3-glow-accent: rgba(85, 84, 217, 0.25);
+
+  /* Glass / Liquid glass */
+  --w3-glass-bg: rgba(255, 255, 255, 0.04);
+  --w3-glass-border: rgba(255, 255, 255, 0.08);
+  --w3-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --w3-glass-inner-bg: rgba(255, 255, 255, 0.06);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-h1 {
-  font-size: 48px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-h2 {
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.15;
-}
-h3 {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-
-code,
-pre {
-  font-family: "Geist Mono", ui-monospace, monospace;
+  code,
+  pre {
+    font-family: "Geist Mono", ui-monospace, monospace;
+  }
 }
 
 @theme inline {
