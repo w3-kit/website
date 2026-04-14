@@ -16,7 +16,6 @@ const navLinks = [
   { label: "Docs", section: "docs" as const },
   { label: "Registry", section: "registry" as const },
   { label: "Learn", section: "learn" as const },
-  { label: "Design", section: "design" as const },
 ];
 
 export function SiteHeader({ currentSection, variant = "default" }: SiteHeaderProps) {

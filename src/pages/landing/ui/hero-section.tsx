@@ -1,4 +1,5 @@
-import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Check, Copy } from "lucide-react";
 import { Button } from "../../../shared/ui/button";
 import { Badge } from "../../../shared/ui/badge";
 import { SectionContainer } from "../../../shared/ui/section-container";
@@ -8,6 +9,13 @@ import { GitHubIcon } from "./github-icon";
 
 export function HeroSection() {
   const containerRef = useEntranceAnimation({ stagger: 0.18, y: 30, delay: 0.3 });
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("npx w3-kit init");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="relative flex min-h-[100svh] items-center overflow-hidden pb-32 md:pb-40">
@@ -73,10 +81,10 @@ export function HeroSection() {
             </Button>
           </div>
 
-          {/* Quick install hint */}
-          <div data-entrance className="flex items-center gap-3">
-            <code
-              className="rounded-md px-3 py-1.5 text-sm"
+          <div data-entrance>
+            <button
+              onClick={handleCopy}
+              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all active:scale-95"
               style={{
                 background: "var(--w3-surface-translucent)",
                 border: "1px solid var(--w3-border-subtle)",
@@ -85,7 +93,12 @@ export function HeroSection() {
               }}
             >
               npx w3-kit init
-            </code>
+              {copied ? (
+                <Check size={14} style={{ color: "var(--w3-accent)" }} />
+              ) : (
+                <Copy size={14} style={{ color: "var(--w3-gray-400)" }} />
+              )}
+            </button>
           </div>
         </div>
       </SectionContainer>
