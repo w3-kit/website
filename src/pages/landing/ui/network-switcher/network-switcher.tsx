@@ -15,11 +15,7 @@ function StatusIndicator({ status }: { status: "connected" | "connecting" | "err
         }`}
       />
       <span className="text-sm text-muted-foreground">
-        {status === "connected"
-          ? "Connected"
-          : status === "connecting"
-            ? "Connecting..."
-            : "Error"}
+        {status === "connected" ? "Connected" : status === "connecting" ? "Connecting..." : "Error"}
       </span>
     </div>
   );

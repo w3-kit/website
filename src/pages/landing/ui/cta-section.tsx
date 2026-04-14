@@ -14,9 +14,7 @@ export function CtaSection() {
     <div className="relative -mt-8 md:-mt-12">
       <SectionContainer className="relative py-16 md:py-24">
         <div ref={containerRef} className="relative">
-          <GlassCard
-            className="relative items-center gap-8 px-8 py-12 text-center md:px-16 md:py-16"
-          >
+          <GlassCard className="relative items-center gap-8 px-8 py-12 text-center md:px-16 md:py-16">
             <h2
               className="text-3xl font-semibold tracking-tight sm:text-4xl"
               style={{ color: "var(--w3-gray-900)", letterSpacing: "-0.02em" }}

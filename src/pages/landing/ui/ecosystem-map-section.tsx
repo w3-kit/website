@@ -174,9 +174,7 @@ export function EcosystemMapSection() {
 
 function EcosystemDetail({ sub }: { sub: (typeof subdomains)[number] }) {
   return (
-    <GlassCard
-      className="w-full max-w-2xl overflow-hidden rounded-xl p-0"
-    >
+    <GlassCard className="w-full max-w-2xl overflow-hidden rounded-xl p-0">
       {/* Header */}
       <div className="flex items-center justify-between p-5">
         <div className="flex items-center gap-3">

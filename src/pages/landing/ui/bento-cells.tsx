@@ -19,7 +19,10 @@ export function GlassCard({
 }) {
   return (
     <div
-      className={cn("flex h-full flex-col overflow-hidden rounded-2xl p-6 backdrop-blur-xl", className)}
+      className={cn(
+        "flex h-full flex-col overflow-hidden rounded-2xl p-6 backdrop-blur-xl",
+        className,
+      )}
       style={{
         background: "var(--w3-glass-bg)",
         border: "1px solid var(--w3-glass-border)",
