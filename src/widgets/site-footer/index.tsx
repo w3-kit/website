@@ -1,6 +1,7 @@
 import { Separator } from "../../shared/ui/separator";
+import { Logo } from "../../shared/ui/logo";
 import { getSectionUrl, getLandingUrl } from "../../shared/lib/urls";
-import { GitHubIcon } from "../../pages/landing/ui/github-icon";
+import { GitHubIcon } from "../../shared/ui/github-icon";
 import { ThemeToggle } from "./theme-toggle";
 
 const productLinks = [
@@ -56,7 +57,7 @@ export function SiteFooter() {
         {/* Brand column */}
         <div className="flex flex-col gap-4 sm:col-span-2 md:col-span-1">
           <a href={getLandingUrl()} className="flex items-center gap-2">
-            <img src="/logo.png" alt="w3-kit" className="h-7 w-7 rounded-md" />
+            <Logo size={28} className="text-[var(--w3-accent)]" />
             <span className="text-sm font-semibold" style={{ color: "var(--w3-gray-900)" }}>
               w3-kit
             </span>

@@ -2,6 +2,29 @@ import React, { useState } from "react";
 import { Button } from "../../../../shared/ui/button";
 import { NetworkSwitcherProps } from "./types";
 
+function StatusIndicator({ status }: { status: "connected" | "connecting" | "error" }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className={`w-2 h-2 rounded-full ${
+          status === "connected"
+            ? "bg-green-500"
+            : status === "connecting"
+              ? "bg-yellow-500"
+              : "bg-red-500"
+        }`}
+      />
+      <span className="text-sm text-muted-foreground">
+        {status === "connected"
+          ? "Connected"
+          : status === "connecting"
+            ? "Connecting..."
+            : "Error"}
+      </span>
+    </div>
+  );
+}
+
 export function NetworkSwitcher({
   networks,
   testNetworks,
@@ -35,29 +58,6 @@ export function NetworkSwitcher({
   };
 
   const selectedNetwork = [...networks, ...testNetworks].find((n) => n.chainId === selectedChainId);
-
-  function StatusIndicator() {
-    return (
-      <div className="flex items-center gap-2">
-        <div
-          className={`w-2 h-2 rounded-full ${
-            networkStatus === "connected"
-              ? "bg-green-500"
-              : networkStatus === "connecting"
-                ? "bg-yellow-500"
-                : "bg-red-500"
-          }`}
-        />
-        <span className="text-sm text-muted-foreground">
-          {networkStatus === "connected"
-            ? "Connected"
-            : networkStatus === "connecting"
-              ? "Connecting..."
-              : "Error"}
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -120,7 +120,7 @@ export function NetworkSwitcher({
         border-b"
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <StatusIndicator />
+          <StatusIndicator status={networkStatus} />
           {gasPrice && (
             <div className="flex items-center gap-2">
               <svg

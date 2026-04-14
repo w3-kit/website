@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "../../shared/ui/button";
+import { Logo } from "../../shared/ui/logo";
 import { cn } from "../../shared/lib/utils";
 import { getSectionUrl, getLandingUrl } from "../../shared/lib/urls";
 import type { Section } from "../../shared/lib/theme";
@@ -59,8 +60,11 @@ export function SiteHeader({ currentSection, variant = "default" }: SiteHeaderPr
         }}
       >
         {/* Logo */}
-        <a href={getLandingUrl()} className="flex items-center">
-          <img src="/logo.png" alt="w3-kit" className="h-7 w-7 rounded-md" />
+        <a href={getLandingUrl()} className="flex items-center gap-2">
+          <Logo size={24} className="text-[var(--w3-accent)]" />
+          <span className="text-sm font-semibold" style={{ color: "var(--w3-gray-900)" }}>
+            w3-kit
+          </span>
         </a>
 
         {/* Desktop nav */}

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { Token, TokenSwapWidgetProps } from "./types";
 import { animationStyles, defaultTokens, getMockExchangeRate } from "./utils";
+
+let styleInjected = false;
 
 const TokenIcon = ({ token, size = "md" }: { token?: Token; size?: "sm" | "md" | "lg" }) => {
   const [hasError, setHasError] = useState(false);
@@ -48,6 +50,123 @@ const TokenIcon = ({ token, size = "md" }: { token?: Token; size?: "sm" | "md" |
   );
 };
 
+const TokenInputField = ({
+  value,
+  onChange,
+  token,
+  isReadOnly = false,
+  onSelectToken,
+  selectorActive,
+  label,
+  showBalance = true,
+  animateSwitch,
+  tokens,
+  excludeSymbol,
+  onTokenSelect,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  token?: Token;
+  isReadOnly?: boolean;
+  onSelectToken: () => void;
+  selectorActive: boolean;
+  label: string;
+  showBalance?: boolean;
+  animateSwitch: boolean;
+  tokens: Token[];
+  excludeSymbol?: string;
+  onTokenSelect: (token: Token) => void;
+}) => (
+  <div
+    className={`space-y-2 transition-all duration-300 ${animateSwitch ? "opacity-0 transform translate-y-4" : "opacity-100"}`}
+  >
+    <div className="flex justify-between items-center">
+      <label className="text-sm font-medium opacity-80">{label}</label>
+      {token && showBalance && (
+        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+          <span>Balance: 0.00</span>
+          {!isReadOnly && (
+            <button
+              className="text-blue-500 dark:text-blue-400 font-medium hover:underline transition-colors"
+              onClick={() => onChange("1.0")}
+            >
+              MAX
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+    <div className="flex flex-col space-y-2 p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 transition-all duration-200 hover:shadow-md">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 flex-1">
+          {token && <TokenIcon token={token} size="md" />}
+          <input
+            type="text"
+            inputMode="decimal"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-transparent outline-none text-lg sm:text-xl font-medium placeholder-gray-400 dark:placeholder-gray-500 transition-all"
+            placeholder="0.0"
+            readOnly={isReadOnly}
+          />
+        </div>
+        <button
+          onClick={onSelectToken}
+          className={`flex items-center gap-2 py-1.5 px-2 sm:px-3 rounded-lg
+            ${token ? "bg-gray-100 dark:bg-gray-600" : "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300"}
+            hover:bg-opacity-80 transition-all duration-200 hover:shadow-sm`}
+        >
+          {token ? (
+            <>
+              <TokenIcon token={token} size="sm" />
+              <span className="font-medium">{token.symbol}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-4 w-4 transition-transform duration-200 ${selectorActive ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </>
+          ) : (
+            <span className="font-medium">Select token</span>
+          )}
+        </button>
+      </div>
+
+      {selectorActive && (
+        <div className="mt-2 bg-white dark:bg-gray-600 rounded-lg p-2 shadow-md animate-slideDown">
+          <div className="grid grid-cols-2 gap-2">
+            {tokens
+              .filter((t) => t.symbol !== excludeSymbol)
+              .map((t) => (
+                <button
+                  key={t.symbol}
+                  onClick={() => onTokenSelect(t)}
+                  className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                    token?.symbol === t.symbol
+                      ? "bg-blue-100 dark:bg-blue-900/50"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-500"
+                  }`}
+                >
+                  <TokenIcon token={t} size="sm" />
+                  <span className="text-sm font-medium">{t.symbol}</span>
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 export function TokenSwapWidget({
   onSwap,
   defaultSlippage = 0.5,
@@ -63,8 +182,18 @@ export function TokenSwapWidget({
   const [showSlippageSettings, setShowSlippageSettings] = useState(false);
   const [activeSelector, setActiveSelector] = useState<"from" | "to" | null>(null);
   const [animateSwitch, setAnimateSwitch] = useState(false);
+  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    return () => {
+      if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (styleInjected) return;
+    styleInjected = true;
+
     const styleTag = document.createElement("style");
     styleTag.innerHTML = animationStyles;
     document.head.appendChild(styleTag);
@@ -105,7 +234,8 @@ export function TokenSwapWidget({
 
     setAnimateSwitch(true);
 
-    setTimeout(() => {
+    if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+    switchTimeoutRef.current = setTimeout(() => {
       const tempFromToken = fromToken;
       const tempToToken = toToken;
       const tempFromAmount = fromAmount;
@@ -146,119 +276,6 @@ export function TokenSwapWidget({
       setFromAmount(value);
     }
   };
-
-  const TokenInputField = ({
-    value,
-    onChange,
-    token,
-    isReadOnly = false,
-    onSelectToken,
-    selectorActive,
-    label,
-    showBalance = true,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-    token?: Token;
-    isReadOnly?: boolean;
-    onSelectToken: () => void;
-    selectorActive: boolean;
-    label: string;
-    showBalance?: boolean;
-  }) => (
-    <div
-      className={`space-y-2 transition-all duration-300 ${animateSwitch ? "opacity-0 transform translate-y-4" : "opacity-100"}`}
-    >
-      <div className="flex justify-between items-center">
-        <label className="text-sm font-medium opacity-80">{label}</label>
-        {token && showBalance && (
-          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-            <span>Balance: 0.00</span>
-            {!isReadOnly && (
-              <button
-                className="text-blue-500 dark:text-blue-400 font-medium hover:underline transition-colors"
-                onClick={() => onChange("1.0")}
-              >
-                MAX
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-2 p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 transition-all duration-200 hover:shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-1">
-            {token && <TokenIcon token={token} size="md" />}
-            <input
-              type="text"
-              inputMode="decimal"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              className="w-full bg-transparent outline-none text-lg sm:text-xl font-medium placeholder-gray-400 dark:placeholder-gray-500 transition-all"
-              placeholder="0.0"
-              readOnly={isReadOnly}
-            />
-          </div>
-          <button
-            onClick={onSelectToken}
-            className={`flex items-center gap-2 py-1.5 px-2 sm:px-3 rounded-lg
-              ${token ? "bg-gray-100 dark:bg-gray-600" : "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300"}
-              hover:bg-opacity-80 transition-all duration-200 hover:shadow-sm`}
-          >
-            {token ? (
-              <>
-                <TokenIcon token={token} size="sm" />
-                <span className="font-medium">{token.symbol}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 transition-transform duration-200 ${selectorActive ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </>
-            ) : (
-              <span className="font-medium">Select token</span>
-            )}
-          </button>
-        </div>
-
-        {selectorActive && (
-          <div className="mt-2 bg-white dark:bg-gray-600 rounded-lg p-2 shadow-md animate-slideDown">
-            <div className="grid grid-cols-2 gap-2">
-              {tokens
-                .filter(
-                  (t) => t.symbol !== (label === "From" ? toToken?.symbol : fromToken?.symbol),
-                )
-                .map((t) => (
-                  <button
-                    key={t.symbol}
-                    onClick={() =>
-                      label === "From" ? handleFromTokenSelect(t) : handleToTokenSelect(t)
-                    }
-                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                      token?.symbol === t.symbol
-                        ? "bg-blue-100 dark:bg-blue-900/50"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-500"
-                    }`}
-                  >
-                    <TokenIcon token={t} size="sm" />
-                    <span className="text-sm font-medium">{t.symbol}</span>
-                  </button>
-                ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   const getExchangeRateDisplay = () => {
     if (!fromToken || !toToken) return null;
@@ -314,6 +331,10 @@ export function TokenSwapWidget({
           onSelectToken={() => setActiveSelector(activeSelector === "from" ? null : "from")}
           selectorActive={activeSelector === "from"}
           label="From"
+          animateSwitch={animateSwitch}
+          tokens={tokens}
+          excludeSymbol={toToken?.symbol}
+          onTokenSelect={handleFromTokenSelect}
         />
 
         <div className="relative h-8 sm:h-10 flex items-center justify-center">
@@ -337,6 +358,10 @@ export function TokenSwapWidget({
           onSelectToken={() => setActiveSelector(activeSelector === "to" ? null : "to")}
           selectorActive={activeSelector === "to"}
           label="To"
+          animateSwitch={animateSwitch}
+          tokens={tokens}
+          excludeSymbol={fromToken?.symbol}
+          onTokenSelect={handleToTokenSelect}
         />
 
         {fromToken && toToken && (

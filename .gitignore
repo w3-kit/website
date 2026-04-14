@@ -9,3 +9,4 @@ dist
 !.env.example
 src/routeTree.gen.ts
 .vercel
+test-results/

@@ -12,7 +12,10 @@ interface PageShellProps {
 
 export function PageShell({ section, children, transparentHeader }: PageShellProps) {
   return (
-    <div className="flex min-h-screen flex-col" style={{ background: "var(--w3-gray-100)" }}>
+    <div
+      className="flex min-h-screen flex-col overflow-x-hidden"
+      style={{ background: "var(--w3-gray-100)" }}
+    >
       <SiteHeader
         currentSection={section}
         variant={transparentHeader ? "transparent" : "default"}

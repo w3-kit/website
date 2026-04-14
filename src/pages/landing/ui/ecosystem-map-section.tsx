@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ArrowRight, Blocks, BookOpen, Database, GraduationCap } from "lucide-react";
 import { SectionContainer } from "../../../shared/ui/section-container";
+import { Logo } from "../../../shared/ui/logo";
 import { useScrollReveal } from "../../../shared/lib/use-scroll-animation";
 import { getSectionUrl } from "../../../shared/lib/urls";
+import { GlassCard } from "./bento-cells";
 import { ConnectWalletButton } from "./connect-wallet/connect-wallet";
 import { NetworkSwitcher } from "./network-switcher/network-switcher";
 import { WalletBalance } from "./wallet-balance/wallet-balance";
@@ -151,10 +153,10 @@ export function EcosystemMapSection() {
           {/* Center hub — floating on top of the grid gap */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div
-              className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-2xl text-xs font-bold text-white shadow-lg md:h-16 md:w-16 md:text-sm"
+              className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg md:h-16 md:w-16"
               style={{ background: "var(--w3-accent)" }}
             >
-              w3-kit
+              <Logo size={32} className="text-white" />
             </div>
           </div>
         </div>
@@ -172,13 +174,8 @@ export function EcosystemMapSection() {
 
 function EcosystemDetail({ sub }: { sub: (typeof subdomains)[number] }) {
   return (
-    <div
-      className="w-full max-w-2xl overflow-hidden rounded-xl backdrop-blur-xl"
-      style={{
-        background: "var(--w3-glass-bg)",
-        border: "1px solid var(--w3-glass-border)",
-        boxShadow: "var(--w3-glass-shadow)",
-      }}
+    <GlassCard
+      className="w-full max-w-2xl overflow-hidden rounded-xl p-0"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-5">
@@ -217,7 +214,7 @@ function EcosystemDetail({ sub }: { sub: (typeof subdomains)[number] }) {
           {sub.section === "learn" && <LearnPreview />}
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -286,14 +283,15 @@ const DEMO_NFT: NFT = {
   attributes: [{ trait_type: "Type", value: "Alien" }],
 };
 
+const UI_PREVIEW_COMPS = ["Wallet", "Network", "Balance", "Swap", "NFT"];
+
 function UiPreview() {
   const [activeComp, setActiveComp] = useState(0);
-  const comps = ["Wallet", "Network", "Balance", "Swap", "NFT"];
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-1">
-        {comps.map((name, i) => (
+        {UI_PREVIEW_COMPS.map((name, i) => (
           <button
             key={name}
             onClick={() => setActiveComp(i)}
@@ -326,21 +324,21 @@ function UiPreview() {
   );
 }
 
-function DocsPreview() {
-  const sections = [
-    { label: "Getting Started", count: "4 guides" },
-    { label: "Components", count: "50+ pages" },
-    { label: "API Reference", count: "Full coverage" },
-    { label: "Deployment", count: "3 guides" },
-  ];
+const DOCS_SECTIONS = [
+  { label: "Getting Started", count: "4 guides" },
+  { label: "Components", count: "50+ pages" },
+  { label: "API Reference", count: "Full coverage" },
+  { label: "Deployment", count: "3 guides" },
+];
 
+function DocsPreview() {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xs" style={{ color: "var(--w3-gray-500)" }}>
         Documentation sections
       </p>
       <div className="grid grid-cols-2 gap-2">
-        {sections.map((s) => (
+        {DOCS_SECTIONS.map((s) => (
           <div
             key={s.label}
             className="flex items-center justify-between rounded-lg px-3 py-2"
@@ -359,14 +357,14 @@ function DocsPreview() {
   );
 }
 
-function RegistryPreview() {
-  const chains = [
-    { name: "Ethereum", logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
-    { name: "Polygon", logo: "https://assets.coingecko.com/coins/images/4713/small/polygon.png" },
-    { name: "Solana", logo: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
-    { name: "Base", logo: "https://assets.coingecko.com/coins/images/25244/small/Optimism.png" },
-  ];
+const REGISTRY_CHAINS = [
+  { name: "Ethereum", logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+  { name: "Polygon", logo: "https://assets.coingecko.com/coins/images/4713/small/polygon.png" },
+  { name: "Solana", logo: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+  { name: "Base", logo: "https://assets.coingecko.com/coins/images/25244/small/Optimism.png" },
+];
 
+function RegistryPreview() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
@@ -378,13 +376,13 @@ function RegistryPreview() {
         </span>
       </div>
       <div className="flex gap-3">
-        {chains.map((c) => (
+        {REGISTRY_CHAINS.map((c) => (
           <div
             key={c.name}
             className="flex items-center gap-2 rounded-lg px-3 py-2"
             style={{ background: "var(--w3-glass-inner-bg)" }}
           >
-            <img src={c.logo} alt={c.name} className="h-5 w-5 rounded-full" />
+            <img src={c.logo} alt={c.name} loading="lazy" className="h-5 w-5 rounded-full" />
             <span className="text-xs font-medium" style={{ color: "var(--w3-gray-900)" }}>
               {c.name}
             </span>
@@ -403,20 +401,20 @@ function RegistryPreview() {
   );
 }
 
-function LearnPreview() {
-  const paths = [
-    { label: "Web3 Fundamentals", level: "Beginner", lessons: "8 lessons" },
-    { label: "Build a dApp", level: "Intermediate", lessons: "12 lessons" },
-    { label: "DeFi Development", level: "Advanced", lessons: "10 lessons" },
-  ];
+const LEARN_PATHS = [
+  { label: "Web3 Fundamentals", level: "Beginner", lessons: "8 lessons" },
+  { label: "Build a dApp", level: "Intermediate", lessons: "12 lessons" },
+  { label: "DeFi Development", level: "Advanced", lessons: "10 lessons" },
+];
 
+function LearnPreview() {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xs" style={{ color: "var(--w3-gray-500)" }}>
         Learning paths
       </p>
       <div className="flex flex-col gap-2">
-        {paths.map((p) => (
+        {LEARN_PATHS.map((p) => (
           <div
             key={p.label}
             className="flex items-center justify-between rounded-lg px-3 py-2.5"

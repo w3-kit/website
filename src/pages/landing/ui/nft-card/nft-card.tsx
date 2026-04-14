@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { NFTCardProps } from "./types";
 import { formatAddress, getChainName, getExplorerUrl } from "./utils";
 
@@ -13,6 +13,13 @@ export function NFTCard({
   const [imageError, setImageError] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
 
   const handleOwnerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,7 +40,8 @@ export function NFTCard({
     e.stopPropagation();
     navigator.clipboard.writeText(nft.name).then(() => {
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopySuccess(false), 2000);
     });
   };
 

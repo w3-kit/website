@@ -2,23 +2,24 @@ import { useState } from "react";
 import { ArrowRight, Check, Star } from "lucide-react";
 import { Button } from "../../../shared/ui/button";
 import { getSectionUrl } from "../../../shared/lib/urls";
-import { GitHubIcon } from "./github-icon";
+import { cn } from "../../../shared/lib/utils";
+import { GitHubIcon } from "../../../shared/ui/github-icon";
 import { SmartContractScanner } from "./smart-contract-scanner/smart-contract-scanner";
 
 /* ------------------------------------------------------------------ */
 /*  Shared glass card wrapper                                          */
 /* ------------------------------------------------------------------ */
 
-function GlassCard({
+export function GlassCard({
   children,
-  className = "",
+  className,
 }: {
   children: React.ReactNode;
   className?: string;
 }) {
   return (
     <div
-      className={`flex h-full flex-col overflow-hidden rounded-2xl p-6 backdrop-blur-xl ${className}`}
+      className={cn("flex h-full flex-col overflow-hidden rounded-2xl p-6 backdrop-blur-xl", className)}
       style={{
         background: "var(--w3-glass-bg)",
         border: "1px solid var(--w3-glass-border)",
@@ -138,7 +139,7 @@ const TOKENS = [
   { symbol: "DAI", logo: "https://assets.coingecko.com/coins/images/9956/small/Badge_Dai.png" },
   {
     symbol: "LINK",
-    logo: "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
+    logo: "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.svg",
   },
 ];
 
@@ -179,6 +180,7 @@ export function RegistryCell() {
             key={"name" in item ? item.name : item.symbol}
             src={item.logo}
             alt={"name" in item ? item.name : item.symbol}
+            loading="lazy"
             className="h-6 w-6 rounded-full ring-2 ring-white dark:ring-black"
             style={{ marginLeft: i > 0 ? "-4px" : "0", zIndex: 10 - i }}
           />

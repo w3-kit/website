@@ -1,24 +1,18 @@
-import { useState } from "react";
 import { ArrowRight, Check, Copy } from "lucide-react";
 import { Button } from "../../../shared/ui/button";
 import { Badge } from "../../../shared/ui/badge";
 import { SectionContainer } from "../../../shared/ui/section-container";
 import { useEntranceAnimation } from "../../../shared/lib/use-scroll-animation";
+import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { HeroVisual } from "./hero-visual";
-import { GitHubIcon } from "./github-icon";
+import { GitHubIcon } from "../../../shared/ui/github-icon";
 
 export function HeroSection() {
   const containerRef = useEntranceAnimation({ stagger: 0.18, y: 30, delay: 0.3 });
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText("npx w3-kit init");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const [copied, handleCopy] = useCopyToClipboard("npx w3-kit init");
 
   return (
-    <div className="relative flex min-h-[100svh] items-center overflow-hidden pb-32 md:pb-40">
+    <div className="relative flex min-h-[100svh] items-center pb-32 md:pb-40">
       <HeroVisual />
 
       <SectionContainer className="relative z-10">
