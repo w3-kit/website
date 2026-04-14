@@ -2,20 +2,7 @@ import { Terminal, LayoutTemplate, BookMarked, Component } from "lucide-react";
 import { SectionContainer } from "../../../shared/ui/section-container";
 import { useScrollReveal } from "../../../shared/lib/use-scroll-animation";
 import { DeepDiveRow } from "./deep-dive-row";
-
-function PlaceholderVisual({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="h-16 w-16 rounded-xl" style={{ background: "var(--w3-accent-subtle)" }} />
-      <span
-        className="text-sm font-medium"
-        style={{ color: "var(--w3-gray-500)", fontFamily: '"Geist Mono", ui-monospace, monospace' }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
+import { CliVisual, TemplatesVisual, RecipesVisual, ComponentsVisual } from "./deep-dive-visuals";
 
 const features = [
   {
@@ -26,7 +13,7 @@ const features = [
       "One command sets up your project with the right chain configs, wallet providers, and component scaffolding. No boilerplate, no guesswork — just the code you need.",
     href: "https://docs.w3-kit.com/cli",
     linkLabel: "Learn about the CLI",
-    visual: <PlaceholderVisual label="w3-kit init" />,
+    visual: <CliVisual />,
   },
   {
     icon: <LayoutTemplate size={20} />,
@@ -36,7 +23,7 @@ const features = [
       "Pre-configured project templates for Next.js, Vite, and more. Each template comes wired with wallet connection, chain switching, and a clean component architecture.",
     href: "https://docs.w3-kit.com/templates",
     linkLabel: "Browse templates",
-    visual: <PlaceholderVisual label="templates/" />,
+    visual: <TemplatesVisual />,
   },
   {
     icon: <BookMarked size={20} />,
@@ -46,7 +33,7 @@ const features = [
       "Step-by-step guides that solve real problems — from connecting a wallet to building a full token dashboard. Each recipe is a self-contained, copy-paste-ready pattern.",
     href: "https://docs.w3-kit.com/recipes",
     linkLabel: "Explore recipes",
-    visual: <PlaceholderVisual label="recipes/" />,
+    visual: <RecipesVisual />,
   },
   {
     icon: <Component size={20} />,
@@ -56,7 +43,7 @@ const features = [
       "Connect wallet buttons, chain selectors, token displays, address formatters, and more. Every component is typed, accessible, theme-aware, and works with any wallet provider.",
     href: "https://ui.w3-kit.com",
     linkLabel: "View components",
-    visual: <PlaceholderVisual label="components/" />,
+    visual: <ComponentsVisual />,
   },
 ];
 
