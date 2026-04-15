@@ -1,8 +1,44 @@
 import { useState } from "react";
 import { SectionContainer } from "../../../shared/ui/section-container";
 import { useScrollReveal } from "../../../shared/lib/use-scroll-animation";
-import { ComponentCard, componentRegistry, primitivesRegistry } from "../../../entities/component";
+import { getSectionUrl } from "../../../shared/lib/urls";
+import { Badge } from "../../../shared/ui/badge";
+import { componentRegistry } from "../../../entities/component";
 import type { ComponentCategory } from "../../../entities/component";
+import {
+  ConnectWalletButton,
+  NetworkSwitcher,
+  WalletBalance,
+  TokenSwapWidget,
+  SmartContractScanner,
+  NFTCard,
+  AddressBookPreview,
+  MultisigWalletPreview,
+  StakingInterfacePreview,
+  BridgePreview,
+  DefiPositionPreview,
+  FlashLoanPreview,
+  LimitOrderPreview,
+  LiquidityPoolPreview,
+  NFTCollectionPreview,
+  NFTMarketplacePreview,
+  AssetPortfolioPreview,
+  PriceTickerPreview,
+  TokenCardPreview,
+  TokenListPreview,
+  TransactionHistoryPreview,
+  ContractInteractionPreview,
+  ENSResolverPreview,
+  GasCalculatorPreview,
+  SubscriptionPreview,
+  TokenAirdropPreview,
+  TokenVestingPreview,
+} from "../../../shared/ui/previews";
+import {
+  DEMO_NETWORKS,
+  DEMO_BALANCE_TOKENS,
+  DEMO_NFT,
+} from "../../../shared/ui/previews/demo-data";
 
 const categories: { label: string; value: ComponentCategory | "all" }[] = [
   { label: "All", value: "all" },
@@ -12,6 +48,75 @@ const categories: { label: string; value: ComponentCategory | "all" }[] = [
   { label: "Data", value: "data" },
   { label: "Utility", value: "utility" },
 ];
+
+const categoryLabels: Record<ComponentCategory, string> = {
+  wallet: "Wallet",
+  defi: "DeFi",
+  nft: "NFT",
+  data: "Data",
+  utility: "Utility",
+};
+
+function getPreview(id: string): React.ReactNode {
+  switch (id) {
+    case "connect-wallet":
+      return <ConnectWalletButton className="w-full" />;
+    case "network-switcher":
+      return <NetworkSwitcher networks={DEMO_NETWORKS} testNetworks={[]} onSwitch={() => {}} />;
+    case "wallet-balance":
+      return <WalletBalance tokens={DEMO_BALANCE_TOKENS} variant="compact" />;
+    case "address-book":
+      return <AddressBookPreview />;
+    case "multisig-wallet":
+      return <MultisigWalletPreview />;
+    case "token-swap":
+      return <TokenSwapWidget onSwap={async () => {}} />;
+    case "staking-interface":
+      return <StakingInterfacePreview />;
+    case "bridge":
+      return <BridgePreview />;
+    case "defi-position-manager":
+      return <DefiPositionPreview />;
+    case "flash-loan-executor":
+      return <FlashLoanPreview />;
+    case "limit-order-manager":
+      return <LimitOrderPreview />;
+    case "liquidity-pool-stats":
+      return <LiquidityPoolPreview />;
+    case "nft-card":
+      return <NFTCard nft={DEMO_NFT} variant="default" />;
+    case "nft-collection-grid":
+      return <NFTCollectionPreview />;
+    case "nft-marketplace-aggregator":
+      return <NFTMarketplacePreview />;
+    case "asset-portfolio":
+      return <AssetPortfolioPreview />;
+    case "price-ticker":
+      return <PriceTickerPreview />;
+    case "token-card":
+      return <TokenCardPreview />;
+    case "token-list":
+      return <TokenListPreview />;
+    case "transaction-history":
+      return <TransactionHistoryPreview />;
+    case "smart-contract-scanner":
+      return <SmartContractScanner variant="compact" />;
+    case "contract-interaction":
+      return <ContractInteractionPreview />;
+    case "ens-resolver":
+      return <ENSResolverPreview />;
+    case "gas-calculator":
+      return <GasCalculatorPreview />;
+    case "subscription-payments":
+      return <SubscriptionPreview />;
+    case "token-airdrop":
+      return <TokenAirdropPreview />;
+    case "token-vesting":
+      return <TokenVestingPreview />;
+    default:
+      return null;
+  }
+}
 
 export function UiComponentGrid() {
   const [active, setActive] = useState<ComponentCategory | "all">("all");
@@ -34,7 +139,7 @@ export function UiComponentGrid() {
             Components
           </h2>
           <p className="text-sm" style={{ color: "var(--w3-gray-600)" }}>
-            {componentRegistry.length} domain components built for web3.
+            {componentRegistry.length} interactive web3 components. Click to explore.
           </p>
         </div>
 
@@ -59,54 +164,58 @@ export function UiComponentGrid() {
           ))}
         </div>
 
-        {/* Component grid */}
+        {/* Live preview grid */}
         <div
           ref={gridRef}
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
           {filtered.map((component) => (
-            <div key={component.id} data-reveal>
-              <ComponentCard component={component} />
-            </div>
-          ))}
-        </div>
-
-        {/* Primitives section */}
-        <div className="mt-20">
-          <div className="mb-8">
-            <h2
-              className="mb-2 text-2xl font-semibold tracking-tight"
-              style={{ color: "var(--w3-gray-900)" }}
+            <a
+              key={component.id}
+              href={`${getSectionUrl("ui")}/${component.id}`}
+              data-reveal
+              className="group flex flex-col overflow-hidden rounded-xl transition-all hover:translate-y-[-2px]"
+              style={{
+                background: "var(--w3-glass-bg)",
+                border: "1px solid var(--w3-glass-border)",
+                boxShadow: "var(--w3-glass-shadow)",
+              }}
             >
-              Primitives
-            </h2>
-            <p className="text-sm" style={{ color: "var(--w3-gray-600)" }}>
-              {primitivesRegistry.length} base UI building blocks. Accessible, composable, themeable.
-            </p>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {primitivesRegistry.map((p) => (
+              {/* Live preview area */}
               <div
-                key={p.id}
-                className="flex flex-col gap-1 rounded-lg p-4 transition-all"
-                style={{
-                  background: "var(--w3-glass-inner-bg)",
-                  border: "1px solid var(--w3-border-subtle)",
-                }}
+                className="pointer-events-none max-h-[260px] overflow-hidden p-3"
+                style={{ background: "var(--w3-glass-inner-bg)" }}
               >
+                <div className="origin-top-left scale-[0.85]">
+                  {getPreview(component.id)}
+                </div>
+              </div>
+
+              {/* Info bar */}
+              <div
+                className="flex items-center justify-between px-4 py-3"
+                style={{ borderTop: "1px solid var(--w3-border-subtle)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ color: "var(--w3-gray-900)" }}
+                  >
+                    {component.name}
+                  </span>
+                  <Badge variant="outline" className="text-[10px]">
+                    {categoryLabels[component.category]}
+                  </Badge>
+                </div>
                 <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--w3-gray-900)" }}
+                  className="text-xs transition-colors group-hover:underline"
+                  style={{ color: "var(--w3-accent)" }}
                 >
-                  {p.name}
-                </span>
-                <span className="text-xs" style={{ color: "var(--w3-gray-600)" }}>
-                  {p.description}
+                  View →
                 </span>
               </div>
-            ))}
-          </div>
+            </a>
+          ))}
         </div>
       </div>
     </SectionContainer>

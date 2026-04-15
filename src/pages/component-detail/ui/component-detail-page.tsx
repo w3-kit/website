@@ -13,6 +13,27 @@ import {
   TokenSwapWidget,
   SmartContractScanner,
   NFTCard,
+  AddressBookPreview,
+  MultisigWalletPreview,
+  StakingInterfacePreview,
+  BridgePreview,
+  DefiPositionPreview,
+  FlashLoanPreview,
+  LimitOrderPreview,
+  LiquidityPoolPreview,
+  NFTCollectionPreview,
+  NFTMarketplacePreview,
+  AssetPortfolioPreview,
+  PriceTickerPreview,
+  TokenCardPreview,
+  TokenListPreview,
+  TransactionHistoryPreview,
+  ContractInteractionPreview,
+  ENSResolverPreview,
+  GasCalculatorPreview,
+  SubscriptionPreview,
+  TokenAirdropPreview,
+  TokenVestingPreview,
 } from "../../../shared/ui/previews";
 import {
   DEMO_NETWORKS,
@@ -42,27 +63,68 @@ const sidebarSections = (
     .map((c) => ({ label: c.name, id: c.id })),
 }));
 
-/** Map component IDs to their live preview JSX */
+/** Map every component ID to its live preview JSX */
 function getPreviewContent(id: string): React.ReactNode | null {
   switch (id) {
+    // Wallet
     case "connect-wallet":
       return <ConnectWalletButton className="w-full" />;
     case "network-switcher":
-      return (
-        <NetworkSwitcher
-          networks={DEMO_NETWORKS}
-          testNetworks={[]}
-          onSwitch={() => {}}
-        />
-      );
+      return <NetworkSwitcher networks={DEMO_NETWORKS} testNetworks={[]} onSwitch={() => {}} />;
     case "wallet-balance":
       return <WalletBalance tokens={DEMO_BALANCE_TOKENS} variant="compact" />;
+    case "address-book":
+      return <AddressBookPreview />;
+    case "multisig-wallet":
+      return <MultisigWalletPreview />;
+    // DeFi
     case "token-swap":
       return <TokenSwapWidget onSwap={async () => {}} />;
-    case "smart-contract-scanner":
-      return <SmartContractScanner variant="compact" />;
+    case "staking-interface":
+      return <StakingInterfacePreview />;
+    case "bridge":
+      return <BridgePreview />;
+    case "defi-position-manager":
+      return <DefiPositionPreview />;
+    case "flash-loan-executor":
+      return <FlashLoanPreview />;
+    case "limit-order-manager":
+      return <LimitOrderPreview />;
+    case "liquidity-pool-stats":
+      return <LiquidityPoolPreview />;
+    // NFT
     case "nft-card":
       return <NFTCard nft={DEMO_NFT} variant="default" />;
+    case "nft-collection-grid":
+      return <NFTCollectionPreview />;
+    case "nft-marketplace-aggregator":
+      return <NFTMarketplacePreview />;
+    // Data
+    case "asset-portfolio":
+      return <AssetPortfolioPreview />;
+    case "price-ticker":
+      return <PriceTickerPreview />;
+    case "token-card":
+      return <TokenCardPreview />;
+    case "token-list":
+      return <TokenListPreview />;
+    case "transaction-history":
+      return <TransactionHistoryPreview />;
+    // Utility
+    case "smart-contract-scanner":
+      return <SmartContractScanner variant="compact" />;
+    case "contract-interaction":
+      return <ContractInteractionPreview />;
+    case "ens-resolver":
+      return <ENSResolverPreview />;
+    case "gas-calculator":
+      return <GasCalculatorPreview />;
+    case "subscription-payments":
+      return <SubscriptionPreview />;
+    case "token-airdrop":
+      return <TokenAirdropPreview />;
+    case "token-vesting":
+      return <TokenVestingPreview />;
     default:
       return null;
   }

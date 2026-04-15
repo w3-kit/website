@@ -12,6 +12,29 @@ export { TokenSwapWidget } from "../../../pages/landing/ui/token-swap/token-swap
 export { SmartContractScanner } from "../../../pages/landing/ui/smart-contract-scanner/smart-contract-scanner";
 export { NFTCard } from "../../../pages/landing/ui/nft-card/nft-card";
 
+// ── Preview components (self-contained with mock data) ──────────────────
+export { LiquidityPoolPreview } from "./liquidity-pool-preview";
+export { NFTCollectionPreview } from "./nft-collection-preview";
+export { NFTMarketplacePreview } from "./nft-marketplace-preview";
+export { AssetPortfolioPreview } from "./asset-portfolio-preview";
+export { PriceTickerPreview } from "./price-ticker-preview";
+export { TokenCardPreview } from "./token-card-preview";
+export { TokenListPreview } from "./token-list-preview";
+export { AddressBookPreview } from "./address-book-preview";
+export { MultisigWalletPreview } from "./multisig-wallet-preview";
+export { StakingInterfacePreview } from "./staking-interface-preview";
+export { BridgePreview } from "./bridge-preview";
+export { DefiPositionPreview } from "./defi-position-preview";
+export { FlashLoanPreview } from "./flash-loan-preview";
+export { LimitOrderPreview } from "./limit-order-preview";
+export { TransactionHistoryPreview } from "./transaction-history-preview";
+export { ContractInteractionPreview } from "./contract-interaction-preview";
+export { ENSResolverPreview } from "./ens-resolver-preview";
+export { GasCalculatorPreview } from "./gas-calculator-preview";
+export { SubscriptionPreview } from "./subscription-preview";
+export { TokenAirdropPreview } from "./token-airdrop-preview";
+export { TokenVestingPreview } from "./token-vesting-preview";
+
 // ── Types ───────────────────────────────────────────────────────────────
 // connect-wallet
 export type {
@@ -63,6 +86,27 @@ export const PREVIEW_COMPONENT_IDS = [
   "token-swap",
   "smart-contract-scanner",
   "nft-card",
+  "liquidity-pool-stats",
+  "nft-collection-grid",
+  "nft-marketplace-aggregator",
+  "asset-portfolio",
+  "price-ticker",
+  "token-card",
+  "token-list",
+  "address-book",
+  "multisig-wallet",
+  "staking-interface",
+  "bridge",
+  "defi-position-manager",
+  "flash-loan-executor",
+  "limit-order-manager",
+  "transaction-history",
+  "contract-interaction",
+  "ens-resolver",
+  "gas-calculator",
+  "subscription-payments",
+  "token-airdrop",
+  "token-vesting",
 ] as const;
 
 export type PreviewComponentId = (typeof PREVIEW_COMPONENT_IDS)[number];
