@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { UnderConstructionLayout } from "../../pages/under-construction";
-import { UiAnimation } from "../../pages/under-construction/ui/ui-animation";
+import { UiExplorerPage } from "../../pages/ui-explorer";
 
 export const Route = createFileRoute("/ui/")({
-  component: () => (
-    <UnderConstructionLayout
-      section="ui"
-      title="UI Library"
-      description="Production-ready web3 React components."
-      animation={<UiAnimation />}
-    />
-  ),
+  head: () => ({
+    meta: [
+      { title: "UI Components — w3-kit" },
+      {
+        name: "description",
+        content:
+          "27 production-ready web3 React components for wallets, DeFi, NFTs, and more. Open source.",
+      },
+    ],
+  }),
+  component: UiExplorerPage,
 });
