@@ -2,7 +2,7 @@ import "../../../shared/lib/gsap-plugins";
 
 import { UiShell } from "../../../widgets/ui-shell";
 import { UiHeroSection } from "./ui-hero-section";
-import { UiFeaturedShowcase } from "./ui-featured-showcase";
+
 import { UiComponentGrid } from "./ui-component-grid";
 
 export function UiExplorerPage() {
@@ -29,7 +29,6 @@ export function UiExplorerPage() {
         </div>
 
         <UiHeroSection />
-        <UiFeaturedShowcase />
         <UiComponentGrid />
       </div>
     </UiShell>
