@@ -72,7 +72,7 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
 
   // Fetch GitHub stars
   useEffect(() => {
-    fetch("https://api.github.com/repos/w3-kit/w3-kit")
+    fetch("https://api.github.com/repos/w3-kit/ui")
       .then((r) => r.json())
       .then((d) => {
         if (typeof d.stargazers_count === "number") setStars(d.stargazers_count);
@@ -214,7 +214,7 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
 
           {/* GitHub with live stars */}
           <a
-            href="https://github.com/w3-kit/w3-kit"
+            href="https://github.com/w3-kit/ui"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
@@ -283,7 +283,7 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
                 Docs
               </a>
               <a
-                href="https://github.com/w3-kit/w3-kit"
+                href="https://github.com/w3-kit/ui"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium transition-colors text-muted-foreground"

@@ -44,6 +44,7 @@ import { ComponentHeader } from "./component-header";
 import { ComponentPreview } from "./component-preview";
 import { PropsTable } from "./props-table";
 import { QuickInfo } from "./quick-info";
+import { DOC_PAGES, DOC_PAGE_IDS } from "./doc-pages";
 
 // Group components by category for sidebar
 const categoryLabels: Record<ComponentCategory, string> = {
@@ -62,6 +63,8 @@ const sidebarSections = (
     .filter((c) => c.category === cat)
     .map((c) => ({ label: c.name, id: c.id })),
 }));
+
+const docPageIds = new Set<string>(DOC_PAGE_IDS);
 
 /** Map every component ID to its live preview JSX */
 function getPreviewContent(id: string): React.ReactNode | null {
@@ -160,9 +163,116 @@ function SidebarLink({
   );
 }
 
+function Sidebar({ activeId }: { activeId: string }) {
+  return (
+    <aside className="hidden w-56 shrink-0 md:block">
+      <div className="sticky top-20 flex max-h-[calc(100vh-6rem)] flex-col gap-5 overflow-y-auto py-8 pr-2">
+        {/* Getting Started */}
+        <div className="flex flex-col gap-1">
+          <span
+            className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+            style={{ color: "var(--w3-gray-500)" }}
+          >
+            Getting Started
+          </span>
+          <SidebarLink label="Introduction" id="introduction" active={activeId === "introduction"} />
+          <SidebarLink label="Installation" id="installation" active={activeId === "installation"} />
+          <SidebarLink label="Usage" id="usage" active={activeId === "usage"} />
+          <SidebarLink label="Theming" id="theming" active={activeId === "theming"} />
+          <SidebarLink label="Dark Mode" id="dark-mode" active={activeId === "dark-mode"} />
+        </div>
+
+        {/* CLI */}
+        <div className="flex flex-col gap-1">
+          <span
+            className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+            style={{ color: "var(--w3-gray-500)" }}
+          >
+            CLI
+          </span>
+          <SidebarLink label="w3-kit init" id="cli-init" active={activeId === "cli-init"} />
+          <SidebarLink label="w3-kit add" id="cli-add" active={activeId === "cli-add"} />
+        </div>
+
+        {/* Integrations */}
+        <div className="flex flex-col gap-1">
+          <span
+            className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+            style={{ color: "var(--w3-gray-500)" }}
+          >
+            Integrations
+          </span>
+          <SidebarLink label="MCP Server" id="mcp" active={activeId === "mcp"} />
+          <SidebarLink label="shadcn Registry" id="shadcn" active={activeId === "shadcn"} />
+          <SidebarLink label="Figma" id="figma" active={activeId === "figma"} />
+        </div>
+
+        {/* Separator */}
+        <div className="mx-3" style={{ borderTop: "1px solid var(--w3-border-subtle)" }} />
+
+        {/* Components */}
+        <div className="flex flex-col gap-1">
+          <a
+            href={getSectionUrl("ui")}
+            className="px-3 text-[10px] font-semibold uppercase tracking-wider transition-colors hover:underline"
+            style={{ color: "var(--w3-gray-500)" }}
+          >
+            Components
+          </a>
+        </div>
+
+        {sidebarSections.map((section) => (
+          <div key={section.title} className="flex flex-col gap-1">
+            <span
+              className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+              style={{ color: "var(--w3-gray-500)" }}
+            >
+              {section.title}
+            </span>
+            {section.items.map((item) => (
+              <SidebarLink
+                key={item.id}
+                label={item.label}
+                id={item.id}
+                active={activeId === item.id}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </aside>
+  );
+}
+
 export function ComponentDetailPage() {
   const { componentId } = useParams({ strict: false });
-  const component = useComponent(componentId ?? "");
+  const slug = componentId ?? "";
+
+  // Check if this is a documentation page
+  const isDocPage = docPageIds.has(slug);
+
+  if (isDocPage) {
+    const DocPageComponent = DOC_PAGES[slug as keyof typeof DOC_PAGES];
+    return (
+      <UiShell>
+        <div className="mx-auto flex max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
+          {/* Left sidebar */}
+          <Sidebar activeId={slug} />
+
+          {/* Main content — wider since no right sidebar */}
+          <main
+            className="min-w-0 flex-1 py-8 md:border-l md:pl-10"
+            style={{ borderColor: "var(--w3-border-subtle)" }}
+          >
+            <DocPageComponent />
+          </main>
+        </div>
+      </UiShell>
+    );
+  }
+
+  // Existing component detail logic
+  const component = useComponent(slug);
 
   if (!component) {
     return (
@@ -176,7 +286,7 @@ export function ComponentDetailPage() {
               Component Not Found
             </h1>
             <p className="mb-6 text-sm" style={{ color: "var(--w3-gray-600)" }}>
-              The component &ldquo;{componentId}&rdquo; doesn&apos;t exist.
+              The component &ldquo;{slug}&rdquo; doesn&apos;t exist.
             </p>
             <a
               href={getSectionUrl("ui")}
@@ -197,82 +307,7 @@ export function ComponentDetailPage() {
     <UiShell>
       <div className="mx-auto flex max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
         {/* Left sidebar */}
-        <aside className="hidden w-56 shrink-0 md:block">
-          <div className="sticky top-20 flex max-h-[calc(100vh-6rem)] flex-col gap-5 overflow-y-auto py-8 pr-2">
-            {/* Getting Started */}
-            <div className="flex flex-col gap-1">
-              <span
-                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
-                style={{ color: "var(--w3-gray-500)" }}
-              >
-                Getting Started
-              </span>
-              <SidebarLink label="Introduction" id="introduction" active={false} />
-              <SidebarLink label="Installation" id="installation" active={false} />
-              <SidebarLink label="Usage" id="usage" active={false} />
-              <SidebarLink label="Theming" id="theming" active={false} />
-              <SidebarLink label="Dark Mode" id="dark-mode" active={false} />
-            </div>
-
-            {/* CLI */}
-            <div className="flex flex-col gap-1">
-              <span
-                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
-                style={{ color: "var(--w3-gray-500)" }}
-              >
-                CLI
-              </span>
-              <SidebarLink label="w3-kit init" id="cli-init" active={false} />
-              <SidebarLink label="w3-kit add" id="cli-add" active={false} />
-            </div>
-
-            {/* Integrations */}
-            <div className="flex flex-col gap-1">
-              <span
-                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
-                style={{ color: "var(--w3-gray-500)" }}
-              >
-                Integrations
-              </span>
-              <SidebarLink label="MCP Server" id="mcp" active={false} />
-              <SidebarLink label="shadcn Registry" id="shadcn" active={false} />
-              <SidebarLink label="Figma" id="figma" active={false} />
-            </div>
-
-            {/* Separator */}
-            <div className="mx-3" style={{ borderTop: "1px solid var(--w3-border-subtle)" }} />
-
-            {/* Components */}
-            <div className="flex flex-col gap-1">
-              <a
-                href={getSectionUrl("ui")}
-                className="px-3 text-[10px] font-semibold uppercase tracking-wider transition-colors hover:underline"
-                style={{ color: "var(--w3-gray-500)" }}
-              >
-                Components
-              </a>
-            </div>
-
-            {sidebarSections.map((section) => (
-              <div key={section.title} className="flex flex-col gap-1">
-                <span
-                  className="px-3 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ color: "var(--w3-gray-500)" }}
-                >
-                  {section.title}
-                </span>
-                {section.items.map((item) => (
-                  <SidebarLink
-                    key={item.id}
-                    label={item.label}
-                    id={item.id}
-                    active={componentId === item.id}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        </aside>
+        <Sidebar activeId={slug} />
 
         {/* Main content */}
         <main
