@@ -196,16 +196,62 @@ export function ComponentDetailPage() {
   return (
     <UiShell>
       <div className="mx-auto flex max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
-        {/* Left sidebar — component nav */}
+        {/* Left sidebar */}
         <aside className="hidden w-56 shrink-0 md:block">
-          <div className="sticky top-20 flex flex-col gap-6 py-8">
-            <a
-              href={getSectionUrl("ui")}
-              className="text-sm font-semibold transition-colors hover:underline"
-              style={{ color: "var(--w3-gray-900)" }}
-            >
-              Components
-            </a>
+          <div className="sticky top-20 flex max-h-[calc(100vh-6rem)] flex-col gap-5 overflow-y-auto py-8 pr-2">
+            {/* Getting Started */}
+            <div className="flex flex-col gap-1">
+              <span
+                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+                style={{ color: "var(--w3-gray-500)" }}
+              >
+                Getting Started
+              </span>
+              <SidebarLink label="Introduction" id="introduction" active={false} />
+              <SidebarLink label="Installation" id="installation" active={false} />
+              <SidebarLink label="Usage" id="usage" active={false} />
+              <SidebarLink label="Theming" id="theming" active={false} />
+              <SidebarLink label="Dark Mode" id="dark-mode" active={false} />
+            </div>
+
+            {/* CLI */}
+            <div className="flex flex-col gap-1">
+              <span
+                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+                style={{ color: "var(--w3-gray-500)" }}
+              >
+                CLI
+              </span>
+              <SidebarLink label="w3-kit init" id="cli-init" active={false} />
+              <SidebarLink label="w3-kit add" id="cli-add" active={false} />
+            </div>
+
+            {/* Integrations */}
+            <div className="flex flex-col gap-1">
+              <span
+                className="px-3 text-[10px] font-semibold uppercase tracking-wider"
+                style={{ color: "var(--w3-gray-500)" }}
+              >
+                Integrations
+              </span>
+              <SidebarLink label="MCP Server" id="mcp" active={false} />
+              <SidebarLink label="shadcn Registry" id="shadcn" active={false} />
+              <SidebarLink label="Figma" id="figma" active={false} />
+            </div>
+
+            {/* Separator */}
+            <div className="mx-3" style={{ borderTop: "1px solid var(--w3-border-subtle)" }} />
+
+            {/* Components */}
+            <div className="flex flex-col gap-1">
+              <a
+                href={getSectionUrl("ui")}
+                className="px-3 text-[10px] font-semibold uppercase tracking-wider transition-colors hover:underline"
+                style={{ color: "var(--w3-gray-500)" }}
+              >
+                Components
+              </a>
+            </div>
 
             {sidebarSections.map((section) => (
               <div key={section.title} className="flex flex-col gap-1">
