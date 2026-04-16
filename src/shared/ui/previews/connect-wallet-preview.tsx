@@ -43,6 +43,7 @@ export function ConnectWalletPreview({ variant: initialVariant = "default" }: { 
   const [copied, setCopied] = useState(false);
   const [chainsOpen, setChainsOpen] = useState(false);
   const [recent, setRecent] = useState<WalletId | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Clear timers on unmount
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -87,7 +88,7 @@ export function ConnectWalletPreview({ variant: initialVariant = "default" }: { 
   };
 
   const variantBar = (
-    <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+    <div style={{ display: "flex", gap: 6, marginBottom: 12, justifyContent: "center" }}>
       {(["default", "compact"] as Variant[]).map((v) => (
         <button
           key={v}
@@ -110,66 +111,123 @@ export function ConnectWalletPreview({ variant: initialVariant = "default" }: { 
     </div>
   );
 
-  /* ── COMPACT VARIANT — single button that shows wallet info ────── */
+  /* ── COMPACT VARIANT — button with dropdown picker ───────────────── */
   if (variant === "compact") {
-    if (state === "connected" && wallet) {
-      return (
-        <div>
-          {variantBar}
-          <button
-            onClick={disconnect}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "10px 16px",
-              borderRadius: 10,
-              border: "1px solid var(--w3-border-subtle)",
-              background: "var(--w3-surface-elevated)",
-              cursor: "pointer",
-              fontFamily: '"Geist Sans", system-ui, sans-serif',
-            }}
-          >
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
-            <Logo domain={wallet.domain} size={20} />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)", fontFamily: monoFont }}>{truncateAddress(MOCK_ADDRESS)}</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 5, background: chain.color + "12", fontSize: 11, fontWeight: 500, color: chain.color }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: chain.color }} />
-              {chain.name}
-            </div>
-          </button>
+    const triggerButton = state === "connected" && wallet ? (
+      <button
+        onClick={() => setPickerOpen(!pickerOpen)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "10px 16px",
+          borderRadius: 10,
+          border: "1px solid var(--w3-border-subtle)",
+          background: "var(--w3-surface-elevated)",
+          cursor: "pointer",
+          fontFamily: '"Geist Sans", system-ui, sans-serif',
+        }}
+      >
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
+        <Logo domain={wallet.domain} size={20} />
+        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)", fontFamily: monoFont }}>{truncateAddress(MOCK_ADDRESS)}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 5, background: chain.color + "12", fontSize: 11, fontWeight: 500, color: chain.color }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: chain.color }} />
+          {chain.name}
         </div>
-      );
-    }
+        <ChevronDown size={14} style={{ color: "var(--w3-gray-500)", transition: "transform 0.2s", transform: pickerOpen ? "rotate(180deg)" : "none" }} />
+      </button>
+    ) : (
+      <button
+        onClick={() => setPickerOpen(!pickerOpen)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "10px 20px",
+          borderRadius: 10,
+          border: "none",
+          background: "var(--w3-accent)",
+          color: "#fff",
+          fontSize: 14,
+          fontWeight: 600,
+          cursor: "pointer",
+          fontFamily: '"Geist Sans", system-ui, sans-serif',
+        }}
+      >
+        <Wallet size={16} />
+        Connect Wallet
+        <ChevronDown size={14} style={{ transition: "transform 0.2s", transform: pickerOpen ? "rotate(180deg)" : "none" }} />
+      </button>
+    );
 
     return (
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {variantBar}
-        <button
-          onClick={() => connect("metamask")}
-          disabled={state === "connecting"}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "10px 20px",
-            borderRadius: 10,
-            border: "none",
-            background: "var(--w3-accent)",
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: state === "connecting" ? "wait" : "pointer",
-            fontFamily: '"Geist Sans", system-ui, sans-serif',
-          }}
-        >
-          {state === "connecting" ? (
-            <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
-          ) : (
-            <Wallet size={16} />
-          )}
-          {state === "connecting" ? "Connecting..." : "Connect Wallet"}
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          {triggerButton}
+
+          <div
+            style={{
+              width: 320,
+              borderRadius: 12,
+              border: pickerOpen ? "1px solid var(--w3-border-subtle)" : "1px solid transparent",
+              background: pickerOpen ? "var(--w3-surface-elevated)" : "transparent",
+              overflow: "hidden",
+              maxHeight: pickerOpen ? 400 : 0,
+              opacity: pickerOpen ? 1 : 0,
+              transition: "max-height 0.25s ease, opacity 0.2s ease, border-color 0.2s ease",
+            }}
+          >
+              {state === "connected" ? (
+                <div style={{ padding: 8 }}>
+                  <button
+                    onClick={() => { disconnect(); setPickerOpen(false); }}
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "none", background: "transparent", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "var(--w3-gray-700)", textAlign: "left" }}
+                  >
+                    <LogOut size={16} />
+                    Disconnect
+                  </button>
+                </div>
+              ) : (
+                <div style={{ padding: 8 }}>
+                  {WALLETS.map((w) => {
+                    const isConnecting = state === "connecting" && walletId === w.id;
+                    const isDisabled = state === "connecting" && walletId !== w.id;
+                    return (
+                      <button
+                        key={w.id}
+                        onClick={() => { connect(w.id); safeTimeout(() => setPickerOpen(false), 1500); }}
+                        disabled={isDisabled}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          padding: "10px 12px",
+                          borderRadius: 10,
+                          border: "none",
+                          background: isConnecting ? "var(--w3-accent-subtle)" : "transparent",
+                          cursor: isDisabled ? "not-allowed" : "pointer",
+                          opacity: isDisabled ? 0.3 : 1,
+                          width: "100%",
+                          textAlign: "left",
+                          transition: "opacity 0.15s, background 0.15s",
+                        }}
+                      >
+                        <Logo domain={w.domain} size={28} />
+                        <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: "var(--w3-gray-900)" }}>{w.name}</span>
+                        {isConnecting ? (
+                          <Loader2 size={16} style={{ color: "var(--w3-accent)", animation: "spin 1s linear infinite" }} />
+                        ) : (
+                          <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>→</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+          </div>
+        </div>
       </div>
     );
   }
@@ -177,9 +235,9 @@ export function ConnectWalletPreview({ variant: initialVariant = "default" }: { 
   /* ── DEFAULT VARIANT — full picker ────────────────────────────── */
   if (state === "connected" && wallet) {
     return (
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {variantBar}
-        <div style={previewCard}>
+        <div style={{ ...previewCard, maxWidth: 380, width: "100%" }}>
           <div style={{ ...previewHeader }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
@@ -253,9 +311,9 @@ export function ConnectWalletPreview({ variant: initialVariant = "default" }: { 
   }
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       {variantBar}
-      <div style={previewCard}>
+      <div style={{ ...previewCard, maxWidth: 380, width: "100%" }}>
         <div style={{ ...previewHeader, justifyContent: "flex-start", gap: 10 }}>
           <Wallet size={18} style={{ color: "var(--w3-accent)" }} />
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>Connect Wallet</span>

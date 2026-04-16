@@ -256,7 +256,7 @@ export function ComponentDetailPage() {
 
           {/* Main content — wider since no right sidebar */}
           <main
-            className="min-w-0 flex-1 py-8 md:border-l md:pl-10"
+            className="min-w-0 flex-1 py-8 md:border-l md:px-10"
             style={{ borderColor: "var(--w3-border-subtle)" }}
           >
             <DocPageComponent />
@@ -306,7 +306,7 @@ export function ComponentDetailPage() {
 
         {/* Main content */}
         <main
-          className="min-w-0 flex-1 py-8 md:border-l md:pl-10"
+          className="min-w-0 flex-1 py-8 md:border-l md:px-10"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <ComponentHeader component={component} />
@@ -318,7 +318,7 @@ export function ComponentDetailPage() {
 
         {/* Right sidebar — quick info */}
         <aside
-          className="hidden w-48 shrink-0 border-l lg:block"
+          className="hidden w-44 shrink-0 border-l xl:block"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <div className="pl-8">
