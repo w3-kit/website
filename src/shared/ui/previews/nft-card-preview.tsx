@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Image } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
-import { NOUNS } from "../../lib/nft-images";
+import { NOUNS, preloadNFTImage, getCachedNFTImage } from "../../lib/nft-images";
 
 export function NFTCardPreview() {
   const [loaded, setLoaded] = useState(false);
+  useEffect(() => { preloadNFTImage(NOUNS["42"]); }, []);
 
   return (
     <div style={{ ...previewCard, maxWidth: 400, width: "100%", margin: "0 auto" }}>
@@ -19,7 +20,7 @@ export function NFTCardPreview() {
         <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--w3-border-subtle)" }}>
           <div style={{ position: "relative", aspectRatio: "1", background: "var(--w3-surface-elevated)" }}>
             <img
-              src={NOUNS["42"]}
+              src={getCachedNFTImage(NOUNS["42"])}
               alt="Noun #42"
               onLoad={() => setLoaded(true)}
               style={{ width: "100%", height: "100%", objectFit: "cover", opacity: loaded ? 1 : 0, transition: "opacity 0.3s" }}

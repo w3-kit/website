@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Store } from "lucide-react";
 import { domainLogo } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
-import { NFT_COLLECTIONS } from "../../lib/nft-images";
+import { NFT_COLLECTIONS, preloadAllNFTImages, getCachedNFTImage } from "../../lib/nft-images";
 
 const LISTINGS = NFT_COLLECTIONS.marketplace;
 const bestId = LISTINGS.reduce((b, l) => (parseFloat(l.price) < parseFloat(b.price) ? l : b), LISTINGS[0]).id;
 
 export function NFTMarketplacePreview() {
   const [loaded, setLoaded] = useState<Set<string>>(new Set());
+  useEffect(() => { preloadAllNFTImages(); }, []);
 
   return (
     <div style={{ ...previewCard, maxWidth: 400, width: "100%", margin: "0 auto" }}>
@@ -29,7 +30,7 @@ export function NFTMarketplacePreview() {
           >
             <div style={{ position: "relative", width: 48, height: 48, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: "var(--w3-surface-elevated)" }}>
               <img
-                src={listing.image}
+                src={getCachedNFTImage(listing.image)}
                 alt={listing.name}
                 onLoad={() => setLoaded((p) => new Set(p).add(listing.id))}
                 style={{ width: "100%", height: "100%", objectFit: "cover", opacity: loaded.has(listing.id) ? 1 : 0, transition: "opacity 0.3s" }}
