@@ -1,18 +1,52 @@
-import { useState } from "react";
-import { Clock } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { Clock, ChevronDown, Loader2, Check, Lock, Unlock } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
+import { cryptoLogo, preloadCryptoLogos } from "../../lib/logos";
+
+interface Schedule {
+  id: string;
+  token: string;
+  ticker: string;
+  total: number;
+  vested: number;
+  claimable: number;
+  claimed: number;
+  cliff: string;
+  end: string;
+  status: "active" | "completed" | "pending";
+}
+
+const SCHEDULES: Schedule[] = [
+  { id: "1", token: "W3K Token", ticker: "ETH", total: 100000, vested: 42500, claimable: 12500, claimed: 30000, cliff: "Jun 2025", end: "Jun 2027", status: "active" },
+  { id: "2", token: "Governance", ticker: "ARB", total: 50000, vested: 50000, claimable: 0, claimed: 50000, cliff: "Jan 2025", end: "Jan 2026", status: "completed" },
+];
+
+const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  active: { bg: "rgba(34,197,94,0.1)", color: "#22c55e", label: "Active" },
+  completed: { bg: "var(--w3-surface-elevated)", color: "var(--w3-gray-600)", label: "Complete" },
+  pending: { bg: "rgba(245,158,11,0.1)", color: "#f59e0b", label: "Pending" },
+};
+
+function fmt(n: number) { return n.toLocaleString("en-US"); }
 
 export function TokenVestingPreview() {
-  const [claiming, setClaiming] = useState(false);
+  useEffect(() => { preloadCryptoLogos(SCHEDULES.map((s) => s.ticker)); }, []);
 
-  const totalAmount = 100_000;
-  const vestedAmount = 42_500;
-  const claimableAmount = 12_500;
-  const progress = (vestedAmount / totalAmount) * 100;
+  const [expanded, setExpanded] = useState<string | null>("1");
+  const [claiming, setClaiming] = useState<string | null>(null);
+  const [claimedExtra, setClaimedExtra] = useState<Record<string, number>>({});
 
-  const handleClaim = () => {
-    setClaiming(true);
-    setTimeout(() => setClaiming(false), 1200);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  const safe = useCallback((fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); }, []);
+
+  const handleClaim = (s: Schedule) => {
+    if (s.claimable <= 0) return;
+    setClaiming(s.id);
+    safe(() => {
+      setClaimedExtra((prev) => ({ ...prev, [s.id]: (prev[s.id] ?? 0) + s.claimable }));
+      setClaiming(null);
+    }, 1200);
   };
 
   return (
@@ -21,166 +55,102 @@ export function TokenVestingPreview() {
       <div style={{ ...previewHeader }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Clock size={18} style={{ color: "var(--w3-accent)" }} />
-          <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>
-            Vesting
-          </span>
+          <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>Vesting</span>
+          <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>{SCHEDULES.length}</span>
         </div>
       </div>
 
-      <div style={{ padding: 14 }}>
-        {/* Token name + amounts */}
-        <div style={{ marginBottom: 14 }}>
-          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--w3-gray-900)", display: "block" }}>
-            W3K Token
-          </span>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 4 }}>
-            <span style={{ fontSize: 13, fontFamily: monoFont, color: "var(--w3-gray-600)" }}>
-              {vestedAmount.toLocaleString()} / {totalAmount.toLocaleString()} vested
-            </span>
-          </div>
-        </div>
+      {/* Schedule list */}
+      <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+        {SCHEDULES.map((s) => {
+          const isExpanded = expanded === s.id;
+          const extra = claimedExtra[s.id] ?? 0;
+          const effectiveClaimable = Math.max(0, s.claimable - extra);
+          const effectiveClaimed = s.claimed + extra;
+          const progress = (s.vested / s.total) * 100;
+          const st = STATUS_STYLE[s.status];
+          const isClaiming = claiming === s.id;
 
-        {/* Progress bar */}
-        <div
-          style={{
-            width: "100%",
-            height: 6,
-            borderRadius: 3,
-            background: "var(--w3-glass-inner-bg)",
-            overflow: "hidden",
-            marginBottom: 6,
-          }}
-        >
-          <div
-            style={{
-              width: `${progress}%`,
-              height: "100%",
-              borderRadius: 3,
-              background: "var(--w3-accent)",
-              transition: "width 0.3s",
-            }}
-          />
-        </div>
-
-        {/* Progress label */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: 13,
-            fontWeight: 400,
-            color: "var(--w3-gray-600)",
-            marginBottom: 14,
-            fontFamily: monoFont,
-          }}
-        >
-          <span>{progress.toFixed(1)}%</span>
-          <span>{(totalAmount - vestedAmount).toLocaleString()} remaining</span>
-        </div>
-
-        {/* Detail grid */}
-        <div
-          style={{
-            borderRadius: 12,
-            background: "var(--w3-glass-inner-bg)",
-            padding: 14,
-            marginBottom: 14,
-          }}
-        >
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {/* Cliff Date */}
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 500,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: "var(--w3-gray-500)",
-                  marginBottom: 4,
-                }}
+          return (
+            <div key={s.id} style={{ borderRadius: 12, overflow: "hidden", background: isExpanded ? "var(--w3-glass-inner-bg)" : "transparent", transition: "background 0.15s" }}>
+              {/* Row */}
+              <button
+                onClick={() => setExpanded(isExpanded ? null : s.id)}
+                style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", padding: "12px 14px", border: "none", background: "transparent", cursor: "pointer", textAlign: "left" }}
               >
-                Cliff Date
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 400, color: "var(--w3-gray-600)" }}>
-                Jun 15, 2025
-              </div>
+                <img src={cryptoLogo(s.ticker)} alt="" width={32} height={32} style={{ borderRadius: "50%", flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 15, fontWeight: 500, color: "var(--w3-gray-900)" }}>{s.token}</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 6px", borderRadius: 5, background: st.bg, color: st.color }}>{st.label}</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: "var(--w3-gray-600)", fontFamily: monoFont }}>{fmt(s.vested)} / {fmt(s.total)}</span>
+                </div>
+                <ChevronDown size={14} style={{ color: "var(--w3-gray-400)", transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "none", flexShrink: 0 }} />
+              </button>
+
+              {/* Expanded details */}
+              {isExpanded && (
+                <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  {/* Progress bar */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, color: "var(--w3-gray-500)", fontFamily: monoFont }}>{progress.toFixed(1)}% vested</span>
+                      <span style={{ fontSize: 12, color: "var(--w3-gray-500)", fontFamily: monoFont }}>{fmt(s.total - s.vested)} remaining</span>
+                    </div>
+                    <div style={{ height: 6, borderRadius: 3, background: "var(--w3-border-subtle)", overflow: "hidden" }}>
+                      <div style={{ height: "100%", borderRadius: 3, background: s.status === "completed" ? "#22c55e" : "var(--w3-accent)", width: `${progress}%`, transition: "width 0.3s" }} />
+                    </div>
+                  </div>
+
+                  {/* Stats grid */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--w3-surface-elevated)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Cliff</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>{s.cliff}</div>
+                    </div>
+                    <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--w3-surface-elevated)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>End</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>{s.end}</div>
+                    </div>
+                    <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--w3-surface-elevated)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Claimed</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)", fontFamily: monoFont }}>{fmt(effectiveClaimed)}</div>
+                    </div>
+                    <div style={{ padding: "10px 12px", borderRadius: 10, background: effectiveClaimable > 0 ? "rgba(34,197,94,0.06)" : "var(--w3-surface-elevated)", border: effectiveClaimable > 0 ? "1px solid rgba(34,197,94,0.15)" : "none" }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Claimable</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: effectiveClaimable > 0 ? "#22c55e" : "var(--w3-gray-900)", fontFamily: monoFont }}>{fmt(effectiveClaimable)}</div>
+                    </div>
+                  </div>
+
+                  {/* Claim button */}
+                  {effectiveClaimable > 0 && (
+                    <button
+                      onClick={() => handleClaim(s)}
+                      disabled={isClaiming}
+                      style={{ width: "100%", padding: 10, borderRadius: 10, border: "none", background: "var(--w3-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    >
+                      {isClaiming ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> : <Unlock size={14} />}
+                      {isClaiming ? "Claiming..." : `Claim ${fmt(effectiveClaimable)}`}
+                    </button>
+                  )}
+
+                  {effectiveClaimable === 0 && s.status === "completed" && (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 10, borderRadius: 10, background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)" }}>
+                      <Check size={14} style={{ color: "#22c55e" }} />
+                      <span style={{ fontSize: 13, fontWeight: 500, color: "#22c55e" }}>Fully vested & claimed</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-
-            {/* End Date */}
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 500,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: "var(--w3-gray-500)",
-                  marginBottom: 4,
-                }}
-              >
-                End Date
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 400, color: "var(--w3-gray-600)" }}>
-                Jun 15, 2027
-              </div>
-            </div>
-
-            {/* Claimable */}
-            <div style={{ gridColumn: "1 / -1" }}>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 500,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: "var(--w3-gray-500)",
-                  marginBottom: 4,
-                }}
-              >
-                Claimable Now
-              </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 500,
-                  fontFamily: monoFont,
-                  color: "#22c55e",
-                }}
-              >
-                {claimableAmount.toLocaleString()} W3K
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Claim button */}
-        <button
-          onClick={handleClaim}
-          disabled={claiming}
-          style={{
-            width: "100%",
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "none",
-            background: "var(--w3-accent)",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: claiming ? "not-allowed" : "pointer",
-            opacity: claiming ? 0.6 : 1,
-            transition: "opacity 0.15s",
-          }}
-        >
-          {claiming ? "Claiming..." : `Claim ${claimableAmount.toLocaleString()} W3K`}
-        </button>
+          );
+        })}
       </div>
 
       {/* Footer */}
       <div style={{ padding: "12px 20px", borderTop: "1px solid var(--w3-border-subtle)", textAlign: "center" }}>
-        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>
-          1 schedule
-        </span>
+        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>{SCHEDULES.length} schedules</span>
       </div>
     </div>
   );
