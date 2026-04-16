@@ -95,7 +95,11 @@ export function ContractInteractionPreview() {
               <ChevronLeft size={18} />
             </button>
           )}
-          <Code size={18} style={{ color: "var(--w3-accent)" }} />
+          {contract ? (
+            <img src={cryptoLogo(contract.ticker)} alt="" width={20} height={20} style={{ borderRadius: "50%" }} />
+          ) : (
+            <Code size={18} style={{ color: "var(--w3-accent)" }} />
+          )}
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>
             {contract ? contract.name : "Contract"}
           </span>
