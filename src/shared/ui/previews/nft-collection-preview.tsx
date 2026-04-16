@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { Grid3X3 } from "lucide-react";
 import { previewCard, previewHeader } from "./_shared";
-import { BAYC } from "../../lib/nft-images";
+import { NFT_COLLECTIONS } from "../../lib/nft-images";
 
-const NFTS = [
-  { id: "1", name: "BAYC #3749", image: BAYC["3749"] },
-  { id: "2", name: "BAYC #8585", image: BAYC["8585"] },
-  { id: "3", name: "BAYC #7090", image: BAYC["7090"] },
-  { id: "4", name: "BAYC #4671", image: BAYC["4671"] },
-];
+const NFTS = NFT_COLLECTIONS.nouns.items;
 
 export function NFTCollectionPreview() {
   const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
@@ -18,7 +13,7 @@ export function NFTCollectionPreview() {
       <div style={{ ...previewHeader }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Grid3X3 size={18} style={{ color: "var(--w3-accent)" }} />
-          <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>Collection</span>
+          <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>Nouns</span>
           <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>{NFTS.length}</span>
         </div>
       </div>
@@ -31,7 +26,7 @@ export function NFTCollectionPreview() {
             onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "none"; }}
           >
-            <div style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
+            <div style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", background: "var(--w3-surface-elevated)" }}>
               <img
                 src={nft.image}
                 alt={nft.name}
@@ -39,13 +34,16 @@ export function NFTCollectionPreview() {
                 style={{ width: "100%", height: "100%", objectFit: "cover", opacity: loadedIds.has(nft.id) ? 1 : 0, transition: "opacity 0.3s" }}
               />
             </div>
-            <span style={{ display: "block", fontSize: 13, color: "var(--w3-gray-600)", marginTop: 6 }}>{nft.name}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: "var(--w3-gray-900)" }}>{nft.name}</span>
+              <span style={{ fontSize: 12, color: "var(--w3-gray-600)" }}>{nft.price} ETH</span>
+            </div>
           </div>
         ))}
       </div>
 
       <div style={{ padding: "12px 20px", borderTop: "1px solid var(--w3-border-subtle)", textAlign: "center" }}>
-        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>4 items</span>
+        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>{NFTS.length} items</span>
       </div>
     </div>
   );

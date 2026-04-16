@@ -1,34 +1,35 @@
 /**
- * Reliable NFT image URLs from permanent IPFS storage.
- * These are pinned on multiple gateways and will not expire.
+ * Reliable NFT image URLs for previews.
+ *
+ * Nouns: noun.pics generates PNGs on-the-fly from on-chain data.
+ * Always available, no IPFS/CDN issues.
  */
 
-// BAYC — official IPFS CID: QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq
-const BAYC_BASE = "https://cloudflare-ipfs.com/ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq";
-
-export const BAYC = {
-  "7842": `${BAYC_BASE}/7842`,
-  "3749": `${BAYC_BASE}/3749`,
-  "8585": `${BAYC_BASE}/8585`,
-  "7090": `${BAYC_BASE}/7090`,
-  "4671": `${BAYC_BASE}/4671`,
+// Nouns DAO — instant PNG generation from on-chain SVG
+export const NOUNS: Record<string, string> = {
+  "1": "https://noun.pics/1",
+  "42": "https://noun.pics/42",
+  "100": "https://noun.pics/100",
+  "200": "https://noun.pics/200",
+  "300": "https://noun.pics/300",
+  "400": "https://noun.pics/400",
 };
 
-// Azuki — official IPFS CID via Pinata
-const AZUKI_BASE = "https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg";
-
-export const AZUKI = {
-  "4209": `${AZUKI_BASE}/4209.png`,
-  "7712": `${AZUKI_BASE}/7712.png`,
-  "1033": `${AZUKI_BASE}/1033.png`,
-};
-
-// Doodles — official IPFS
-const DOODLES_BASE = "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS";
-
-export const DOODLES = {
-  "1": `${DOODLES_BASE}/1`,
-  "42": `${DOODLES_BASE}/42`,
-  "100": `${DOODLES_BASE}/100`,
-  "500": `${DOODLES_BASE}/500`,
+// Collection metadata for previews
+export const NFT_COLLECTIONS = {
+  nouns: {
+    name: "Nouns",
+    description: "One Noun, every day, forever.",
+    items: [
+      { id: "1", name: "Noun #1", image: NOUNS["1"], price: "42.5", currency: "ETH" },
+      { id: "42", name: "Noun #42", image: NOUNS["42"], price: "38.2", currency: "ETH" },
+      { id: "100", name: "Noun #100", image: NOUNS["100"], price: "45.0", currency: "ETH" },
+      { id: "200", name: "Noun #200", image: NOUNS["200"], price: "35.8", currency: "ETH" },
+    ],
+  },
+  marketplace: [
+    { id: "1", name: "Noun #1", collection: "Nouns", marketplace: "OpenSea", domain: "opensea.io", image: NOUNS["1"], price: "42.5" },
+    { id: "2", name: "Noun #42", collection: "Nouns", marketplace: "Blur", domain: "blur.io", image: NOUNS["42"], price: "38.2" },
+    { id: "3", name: "Noun #100", collection: "Nouns", marketplace: "OpenSea", domain: "opensea.io", image: NOUNS["100"], price: "45.0" },
+  ],
 };
