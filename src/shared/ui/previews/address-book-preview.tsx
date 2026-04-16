@@ -13,6 +13,25 @@ export function AddressBookPreview() {
   const [entries, setEntries] = useState(MOCK_ENTRIES);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newAddr, setNewAddr] = useState("");
+  const [addrError, setAddrError] = useState("");
+
+  const isValidAddr = (a: string) => /^0x[a-fA-F0-9]{40}$/.test(a) || a.toLowerCase().endsWith(".eth");
+  const canAdd = newName.trim().length > 0 && newAddr.trim().length > 0 && !addrError;
+
+  const handleAdd = useCallback(() => {
+    if (!newName.trim() || !newAddr.trim()) return;
+    if (!isValidAddr(newAddr.trim())) {
+      setAddrError("Invalid address or ENS name");
+      return;
+    }
+    setEntries((prev) => [...prev, { id: String(Date.now()), name: newName.trim(), address: newAddr.trim() }]);
+    setNewName("");
+    setNewAddr("");
+    setAddrError("");
+    setShowAdd(false);
+  }, [newName, newAddr]);
 
   const handleCopy = useCallback((id: string) => {
     setCopiedId(id);
@@ -55,6 +74,8 @@ export function AddressBookPreview() {
         <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--w3-border-subtle)", display: "flex", flexDirection: "column", gap: 10 }}>
           <input
             placeholder="Name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
             style={{
               width: "100%",
               padding: "10px 12px",
@@ -65,30 +86,48 @@ export function AddressBookPreview() {
               color: "var(--w3-gray-900)",
               outline: "none",
             }}
+            autoFocus
           />
-          <input
-            placeholder="0x... or ENS name"
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: 10,
-              border: "1px solid var(--w3-border-subtle)",
-              background: "transparent",
-              fontSize: 13,
-              fontFamily: monoFont,
-              color: "var(--w3-gray-900)",
-              outline: "none",
-            }}
-          />
+          <div>
+            <input
+              placeholder="0x... or ENS name"
+              value={newAddr}
+              onChange={(e) => {
+                setNewAddr(e.target.value);
+                if (addrError) setAddrError("");
+                if (e.target.value.trim() && !isValidAddr(e.target.value.trim())) {
+                  setAddrError("Enter a valid 0x address or .eth name");
+                }
+              }}
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: addrError ? "1px solid #ef4444" : "1px solid var(--w3-border-subtle)",
+                background: "transparent",
+                fontSize: 13,
+                fontFamily: monoFont,
+                color: "var(--w3-gray-900)",
+                outline: "none",
+              }}
+            />
+            {addrError && (
+              <span style={{ fontSize: 12, color: "#ef4444", marginTop: 4, display: "block" }}>
+                {addrError}
+              </span>
+            )}
+          </div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
             <button
-              onClick={() => setShowAdd(false)}
+              onClick={() => { setShowAdd(false); setNewName(""); setNewAddr(""); setAddrError(""); }}
               style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "transparent", fontSize: 13, fontWeight: 500, color: "var(--w3-gray-600)", cursor: "pointer" }}
             >
               Cancel
             </button>
             <button
-              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "var(--w3-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+              onClick={handleAdd}
+              disabled={!canAdd}
+              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: canAdd ? "var(--w3-accent)" : "var(--w3-gray-300)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: canAdd ? "pointer" : "not-allowed", opacity: canAdd ? 1 : 0.5 }}
             >
               Add
             </button>
