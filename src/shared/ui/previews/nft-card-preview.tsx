@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Image } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
-
-const NFT_IMAGE = "https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR0qKbTVt-OLCGMXSsqvbFGATgtZN-_5TT4UjBVTo6FVaUiVCaZRoNiAN5tA4XVw_Fs4YdVD-mEJA3rag?auto=format&w=400";
+import { BAYC } from "../../lib/nft-images";
 
 export function NFTCardPreview() {
   const [loaded, setLoaded] = useState(false);
@@ -18,26 +17,18 @@ export function NFTCardPreview() {
 
       <div style={{ padding: "16px 20px" }}>
         <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--w3-border-subtle)" }}>
-          {/* Real NFT image */}
           <div style={{ position: "relative", aspectRatio: "1", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
             <img
-              src={NFT_IMAGE}
+              src={BAYC["7842"]}
               alt="Bored Ape #7842"
               onLoad={() => setLoaded(true)}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                opacity: loaded ? 1 : 0,
-                transition: "opacity 0.3s",
-              }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", opacity: loaded ? 1 : 0, transition: "opacity 0.3s" }}
             />
             <div style={{ position: "absolute", top: 10, left: 10, padding: "4px 10px", borderRadius: 8, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", fontSize: 11, fontWeight: 600, color: "#fff", letterSpacing: "0.04em" }}>
               BAYC
             </div>
           </div>
 
-          {/* Info */}
           <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
             <span style={{ fontSize: 15, fontWeight: 500, color: "var(--w3-gray-900)" }}>Bored Ape #7842</span>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

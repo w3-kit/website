@@ -2,35 +2,12 @@ import { useState } from "react";
 import { Store } from "lucide-react";
 import { domainLogo } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
+import { AZUKI } from "../../lib/nft-images";
 
 const LISTINGS = [
-  {
-    id: "1",
-    name: "Azuki #4209",
-    collection: "Azuki",
-    marketplace: "Blur",
-    marketplaceDomain: "blur.io",
-    image: "https://i.seadn.io/gcs/files/1603fbfdeb8f708bfde2e6a46f0323f9.png?auto=format&w=128",
-    price: "6.8",
-  },
-  {
-    id: "2",
-    name: "Azuki #7712",
-    collection: "Azuki",
-    marketplace: "OpenSea",
-    marketplaceDomain: "opensea.io",
-    image: "https://i.seadn.io/gcs/files/a4b0c782b3ca3dd9a37c61a6f3c24fd3.png?auto=format&w=128",
-    price: "7.2",
-  },
-  {
-    id: "3",
-    name: "Azuki #1033",
-    collection: "Azuki",
-    marketplace: "Blur",
-    marketplaceDomain: "blur.io",
-    image: "https://i.seadn.io/gcs/files/3ef2fef76ee3a60b10d871b23e15d5dc.png?auto=format&w=128",
-    price: "7.5",
-  },
+  { id: "1", name: "Azuki #4209", collection: "Azuki", marketplace: "Blur", domain: "blur.io", image: AZUKI["4209"], price: "6.8" },
+  { id: "2", name: "Azuki #7712", collection: "Azuki", marketplace: "OpenSea", domain: "opensea.io", image: AZUKI["7712"], price: "7.2" },
+  { id: "3", name: "Azuki #1033", collection: "Azuki", marketplace: "Blur", domain: "blur.io", image: AZUKI["1033"], price: "7.5" },
 ];
 
 const bestId = LISTINGS.reduce((b, l) => (parseFloat(l.price) < parseFloat(b.price) ? l : b), LISTINGS[0]).id;
@@ -55,7 +32,7 @@ export function NFTMarketplacePreview() {
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--w3-accent-subtle)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
           >
-            {/* Real NFT thumbnail */}
+            {/* NFT thumbnail */}
             <div style={{ position: "relative", width: 48, height: 48, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, #667eea, #764ba2)" }}>
               <img
                 src={listing.image}
@@ -72,7 +49,7 @@ export function NFTMarketplacePreview() {
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
                 <span style={{ fontSize: 13, color: "var(--w3-gray-600)" }}>{listing.collection}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "2px 6px", borderRadius: 5, background: "var(--w3-accent-subtle)" }}>
-                  <img src={domainLogo(listing.marketplaceDomain, 14)} alt="" width={12} height={12} style={{ borderRadius: 3 }} />
+                  <img src={domainLogo(listing.domain, 14)} alt="" width={12} height={12} style={{ borderRadius: 3 }} />
                   <span style={{ fontSize: 10, fontWeight: 500, color: "var(--w3-accent)" }}>{listing.marketplace}</span>
                 </div>
               </div>
@@ -84,9 +61,7 @@ export function NFTMarketplacePreview() {
                   Best
                 </span>
               )}
-              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--w3-gray-900)", fontFamily: monoFont }}>
-                {listing.price} ETH
-              </span>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--w3-gray-900)", fontFamily: monoFont }}>{listing.price} ETH</span>
             </div>
           </div>
         ))}
