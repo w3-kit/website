@@ -162,7 +162,7 @@ export function UiComponentGrid() {
         {/* Masonry preview grid */}
         <div
           ref={gridRef}
-          className="columns-1 gap-5 sm:columns-2 lg:columns-3"
+          className="columns-1 gap-5 sm:columns-2 xl:columns-3"
         >
           {filtered.map((component) => (
             <a
