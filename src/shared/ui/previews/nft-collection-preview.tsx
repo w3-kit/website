@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Grid3X3, ArrowUpDown } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 import { NFT_COLLECTIONS, preloadAllNFTImages, getCachedNFTImage } from "../../lib/nft-images";
-import type { NFTItem } from "../../lib/nft-images";
 
 const ALL_ITEMS = NFT_COLLECTIONS.nouns.items;
 

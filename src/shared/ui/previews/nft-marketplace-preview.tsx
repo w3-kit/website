@@ -3,7 +3,6 @@ import { Store, ArrowUpDown, ShoppingCart, Check } from "lucide-react";
 import { domainLogo } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 import { NFT_COLLECTIONS, preloadAllNFTImages, getCachedNFTImage } from "../../lib/nft-images";
-import type { MarketplaceListing } from "../../lib/nft-images";
 
 const ALL = NFT_COLLECTIONS.marketplace;
 type Marketplace = "all" | "OpenSea" | "Blur" | "LooksRare";
@@ -18,7 +17,7 @@ export function NFTMarketplacePreview() {
   const [bought, setBought] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    let items = market === "all" ? ALL : ALL.filter((l) => l.marketplace === market);
+    const items = market === "all" ? ALL : ALL.filter((l) => l.marketplace === market);
     return [...items].sort((a, b) =>
       sort === "price-asc"
         ? parseFloat(a.price) - parseFloat(b.price)

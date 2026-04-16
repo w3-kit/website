@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PieChart, TrendingUp, TrendingDown } from "lucide-react";
+import { PieChart } from "lucide-react";
 import { cryptoLogo, preloadCryptoLogos } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 

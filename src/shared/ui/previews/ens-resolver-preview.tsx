@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { AtSign, Search, Copy, Check, Loader2, ArrowDownUp, ExternalLink } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
-import { truncateAddress } from "../../lib/format";
 
 type State = "idle" | "resolving" | "resolved" | "error";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Droplets, Plus, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Plus, Minus } from "lucide-react";
 import { cryptoLogo } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 

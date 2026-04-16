@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Wallet } from "lucide-react";
 import { cryptoLogo, preloadCryptoLogos } from "../../lib/logos";
-import { previewCard, previewHeader, monoFont } from "./_shared";
+import { previewCard, previewHeader } from "./_shared";
 
 const tokens = [
   { symbol: "ETH", name: "Ethereum", balance: "1.4201", price: 3834.27, change: 2.41, color: "#627EEA" },

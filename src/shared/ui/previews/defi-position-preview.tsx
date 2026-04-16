@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { BarChart3, Shield, TrendingUp } from "lucide-react";
-import { domainLogo, cryptoLogo, preloadDomainLogos, preloadCryptoLogos } from "../../lib/logos";
+import { domainLogo, preloadDomainLogos, preloadCryptoLogos } from "../../lib/logos";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 
 const POSITIONS = [

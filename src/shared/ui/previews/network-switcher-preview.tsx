@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Check, Globe } from "lucide-react";
 import { cryptoLogo, preloadCryptoLogos } from "../../lib/logos";
-import { previewCard, previewHeader, monoFont } from "./_shared";
+import { previewCard, previewHeader } from "./_shared";
 
 const networks = [
   { chainId: 1, name: "Ethereum", ticker: "ETH", currency: "ETH" },

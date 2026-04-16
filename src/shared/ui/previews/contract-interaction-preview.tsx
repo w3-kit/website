@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Code, Send, ShieldCheck, Eye, ArrowRight, Loader2, Check, ChevronLeft, Wallet, FileCode, Plus } from "lucide-react";
+import { Code, Send, ShieldCheck, Eye, ArrowRight, Loader2, Check, ChevronLeft, Wallet } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 import { truncateAddress } from "../../lib/format";
 import { cryptoLogo } from "../../lib/logos";

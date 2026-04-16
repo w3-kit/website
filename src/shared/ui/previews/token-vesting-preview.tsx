@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Clock, ChevronDown, Loader2, Check, Lock, Unlock } from "lucide-react";
+import { Clock, ChevronDown, Loader2, Check, Unlock } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 import { cryptoLogo, preloadCryptoLogos } from "../../lib/logos";
 

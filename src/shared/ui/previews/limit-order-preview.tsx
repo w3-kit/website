@@ -109,7 +109,7 @@ export function LimitOrderPreview() {
       </div>
 
       {/* Orders */}
-      {ORDERS.map((order, i) => {
+      {ORDERS.map((order, _i) => {
         const sStyle = statusStyle(order.status);
         const tStyle = typeBadgeStyle(order.type);
 
