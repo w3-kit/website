@@ -23,6 +23,17 @@ export interface NFTItem {
   rarity: "common" | "rare" | "legendary";
 }
 
+export interface MarketplaceListing {
+  id: string;
+  name: string;
+  collection: string;
+  marketplace: "OpenSea" | "Blur" | "LooksRare";
+  domain: string;
+  image: string;
+  price: string;
+  lastSale?: string;
+}
+
 export const NFT_COLLECTIONS = {
   nouns: {
     name: "Nouns",
@@ -37,21 +48,20 @@ export const NFT_COLLECTIONS = {
     ],
   },
   marketplace: [
-    { id: "1", name: "Noun #1", collection: "Nouns", marketplace: "OpenSea", domain: "opensea.io", image: NOUNS["1"], price: "42.5" },
-    { id: "2", name: "Noun #42", collection: "Nouns", marketplace: "Blur", domain: "blur.io", image: NOUNS["42"], price: "38.2" },
-    { id: "3", name: "Noun #100", collection: "Nouns", marketplace: "OpenSea", domain: "opensea.io", image: NOUNS["100"], price: "45.0" },
-  ],
+    { id: "1", name: "Noun #1", collection: "Nouns", marketplace: "OpenSea" as const, domain: "opensea.io", image: NOUNS["1"], price: "42.5", lastSale: "40.0" },
+    { id: "2", name: "Noun #42", collection: "Nouns", marketplace: "Blur" as const, domain: "blur.io", image: NOUNS["42"], price: "38.2", lastSale: "41.5" },
+    { id: "3", name: "Noun #100", collection: "Nouns", marketplace: "OpenSea" as const, domain: "opensea.io", image: NOUNS["100"], price: "45.0", lastSale: "43.0" },
+    { id: "4", name: "Noun #200", collection: "Nouns", marketplace: "LooksRare" as const, domain: "looksrare.org", image: NOUNS["200"], price: "35.8", lastSale: "37.2" },
+    { id: "5", name: "Noun #300", collection: "Nouns", marketplace: "Blur" as const, domain: "blur.io", image: NOUNS["300"], price: "29.5", lastSale: "32.0" },
+  ] as MarketplaceListing[],
 };
 
 /* ── Image cache ─────────────────────────────────────────────────────── */
 
 const imageCache = new Map<string, string>();
 
-/** Preload an image and cache the blob URL for instant rendering */
 export function preloadNFTImage(url: string): void {
   if (imageCache.has(url) || typeof window === "undefined") return;
-
-  // Mark as loading to prevent duplicate fetches
   imageCache.set(url, url);
 
   const img = new window.Image();
@@ -65,24 +75,18 @@ export function preloadNFTImage(url: string): void {
       if (ctx) {
         ctx.drawImage(img, 0, 0);
         canvas.toBlob((blob) => {
-          if (blob) {
-            imageCache.set(url, URL.createObjectURL(blob));
-          }
+          if (blob) imageCache.set(url, URL.createObjectURL(blob));
         });
       }
-    } catch {
-      // CORS or canvas taint — keep original URL
-    }
+    } catch { /* CORS — keep original */ }
   };
   img.src = url;
 }
 
-/** Get cached blob URL or original URL */
 export function getCachedNFTImage(url: string): string {
   return imageCache.get(url) ?? url;
 }
 
-/** Preload all NFT images used in previews */
 export function preloadAllNFTImages(): void {
   Object.values(NOUNS).forEach(preloadNFTImage);
 }
