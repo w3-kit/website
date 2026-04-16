@@ -1,30 +1,62 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Code, Eye, Edit3, Play, Loader2, Check, ChevronDown } from "lucide-react";
+import { Code, Eye, Edit3, Play, Loader2, Check, ChevronDown, Plus, FileCode } from "lucide-react";
 import { previewCard, previewHeader, monoFont } from "./_shared";
 import { truncateAddress } from "../../lib/format";
 
 type Tab = "read" | "write";
 
-interface Fn {
+interface AbiFunction {
   name: string;
   type: Tab;
-  inputs: { name: string; type: string; placeholder: string }[];
+  inputs: { name: string; type: string }[];
+  outputs?: string;
   mockResult?: string;
 }
 
-const CONTRACT = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+interface PresetContract {
+  name: string;
+  address: string;
+  standard: string;
+  functions: AbiFunction[];
+}
 
-const FUNCTIONS: Fn[] = [
-  { name: "balanceOf", type: "read", inputs: [{ name: "account", type: "address", placeholder: "0xd8dA...6045" }], mockResult: "1,420,000.00" },
-  { name: "totalSupply", type: "read", inputs: [], mockResult: "26,183,421,907.54" },
-  { name: "decimals", type: "read", inputs: [], mockResult: "6" },
-  { name: "transfer", type: "write", inputs: [{ name: "to", type: "address", placeholder: "0x1a2B...9fC4" }, { name: "amount", type: "uint256", placeholder: "1000000" }], mockResult: "0x7f3a...b2c1" },
-  { name: "approve", type: "write", inputs: [{ name: "spender", type: "address", placeholder: "0xDef1...C0de" }, { name: "amount", type: "uint256", placeholder: "115792...9999" }], mockResult: "0x8e4b...a3d2" },
+const PRESETS: PresetContract[] = [
+  {
+    name: "USDC", address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", standard: "ERC-20",
+    functions: [
+      { name: "balanceOf", type: "read", inputs: [{ name: "account", type: "address" }], outputs: "uint256", mockResult: "1,420,000.00 USDC" },
+      { name: "totalSupply", type: "read", inputs: [], outputs: "uint256", mockResult: "26,183,421,907.54 USDC" },
+      { name: "decimals", type: "read", inputs: [], outputs: "uint8", mockResult: "6" },
+      { name: "allowance", type: "read", inputs: [{ name: "owner", type: "address" }, { name: "spender", type: "address" }], outputs: "uint256", mockResult: "0" },
+      { name: "transfer", type: "write", inputs: [{ name: "to", type: "address" }, { name: "amount", type: "uint256" }], mockResult: "0x7f3a...b2c1" },
+      { name: "approve", type: "write", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], mockResult: "0x8e4b...a3d2" },
+    ],
+  },
+  {
+    name: "WETH", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", standard: "ERC-20 + Wrap",
+    functions: [
+      { name: "balanceOf", type: "read", inputs: [{ name: "account", type: "address" }], outputs: "uint256", mockResult: "4.2100 WETH" },
+      { name: "totalSupply", type: "read", inputs: [], outputs: "uint256", mockResult: "2,847,291.45 WETH" },
+      { name: "deposit", type: "write", inputs: [], mockResult: "0xc1d2...e3f4" },
+      { name: "withdraw", type: "write", inputs: [{ name: "wad", type: "uint256" }], mockResult: "0xd5e6...f7a8" },
+    ],
+  },
+  {
+    name: "ENS Registry", address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e", standard: "Registry",
+    functions: [
+      { name: "owner", type: "read", inputs: [{ name: "node", type: "bytes32" }], outputs: "address", mockResult: "0xd8dA...6045" },
+      { name: "resolver", type: "read", inputs: [{ name: "node", type: "bytes32" }], outputs: "address", mockResult: "0x4976...1d0F" },
+      { name: "setOwner", type: "write", inputs: [{ name: "node", type: "bytes32" }, { name: "owner", type: "address" }], mockResult: "0xa1b2...c3d4" },
+    ],
+  },
 ];
 
 export function ContractInteractionPreview() {
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [showSelector, setShowSelector] = useState(false);
+  const [customAddress, setCustomAddress] = useState("");
   const [tab, setTab] = useState<Tab>("read");
-  const [expanded, setExpanded] = useState<string | null>("balanceOf");
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [inputValues, setInputValues] = useState<Record<string, string[]>>({});
   const [executing, setExecuting] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, string>>({});
@@ -33,9 +65,21 @@ export function ContractInteractionPreview() {
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
   const safe = useCallback((fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); }, []);
 
-  const fns = FUNCTIONS.filter((f) => f.type === tab);
+  const contract = PRESETS[selectedIdx];
+  const fns = contract.functions.filter((f) => f.type === tab);
+  const readCount = contract.functions.filter((f) => f.type === "read").length;
+  const writeCount = contract.functions.filter((f) => f.type === "write").length;
 
-  const handleExecute = (fn: Fn) => {
+  const selectContract = (idx: number) => {
+    setSelectedIdx(idx);
+    setShowSelector(false);
+    setTab("read");
+    setExpanded(null);
+    setResults({});
+    setInputValues({});
+  };
+
+  const handleExecute = (fn: AbiFunction) => {
     setExecuting(fn.name);
     safe(() => {
       setResults((prev) => ({ ...prev, [fn.name]: fn.mockResult ?? "Success" }));
@@ -59,9 +103,50 @@ export function ContractInteractionPreview() {
           <Code size={18} style={{ color: "var(--w3-accent)" }} />
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--w3-gray-900)" }}>Contract</span>
         </div>
-        <span style={{ fontSize: 12, fontFamily: monoFont, color: "var(--w3-gray-600)", padding: "3px 8px", borderRadius: 6, background: "var(--w3-surface-elevated)" }}>
-          {truncateAddress(CONTRACT)}
-        </span>
+        <button
+          onClick={() => setShowSelector(!showSelector)}
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 8, border: "1px solid var(--w3-border-subtle)", background: "transparent", cursor: "pointer", fontSize: 12, fontWeight: 500, color: "var(--w3-gray-700)" }}
+        >
+          <FileCode size={12} />
+          {contract.name}
+          <ChevronDown size={12} style={{ color: "var(--w3-gray-400)", transition: "transform 0.2s", transform: showSelector ? "rotate(180deg)" : "none" }} />
+        </button>
+      </div>
+
+      {/* Contract selector */}
+      {showSelector && (
+        <div style={{ padding: "12px 20px", borderBottom: "1px solid var(--w3-border-subtle)", display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Select Contract</div>
+          {PRESETS.map((p, i) => (
+            <button
+              key={p.name}
+              onClick={() => selectContract(i)}
+              style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "none",
+                background: i === selectedIdx ? "var(--w3-accent-subtle)" : "transparent",
+                cursor: "pointer", width: "100%", textAlign: "left", transition: "background 0.15s",
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: 14, fontWeight: 500, color: "var(--w3-gray-900)", display: "block" }}>{p.name}</span>
+                <span style={{ fontSize: 12, color: "var(--w3-gray-500)", fontFamily: monoFont }}>{truncateAddress(p.address)}</span>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 500, padding: "2px 6px", borderRadius: 5, background: "var(--w3-surface-elevated)", color: "var(--w3-gray-600)" }}>{p.standard}</span>
+            </button>
+          ))}
+
+          {/* Custom address hint */}
+          <div style={{ marginTop: 4, padding: "8px 12px", borderRadius: 8, background: "var(--w3-glass-inner-bg)", display: "flex", alignItems: "center", gap: 6 }}>
+            <Plus size={12} style={{ color: "var(--w3-gray-400)" }} />
+            <span style={{ fontSize: 12, color: "var(--w3-gray-500)" }}>Paste any address + ABI to interact</span>
+          </div>
+        </div>
+      )}
+
+      {/* Contract info bar */}
+      <div style={{ padding: "10px 20px", borderBottom: "1px solid var(--w3-border-subtle)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ fontSize: 12, fontFamily: monoFont, color: "var(--w3-gray-600)" }}>{truncateAddress(contract.address)}</span>
+        <span style={{ fontSize: 11, fontWeight: 500, padding: "2px 8px", borderRadius: 6, background: "var(--w3-surface-elevated)", color: "var(--w3-gray-600)" }}>{contract.standard}</span>
       </div>
 
       {/* Tabs */}
@@ -81,9 +166,7 @@ export function ContractInteractionPreview() {
           >
             {t === "read" ? <Eye size={14} /> : <Edit3 size={14} />}
             {t === "read" ? "Read" : "Write"}
-            <span style={{ fontSize: 11, color: "var(--w3-gray-400)", marginLeft: 2 }}>
-              {FUNCTIONS.filter((f) => f.type === t).length}
-            </span>
+            <span style={{ fontSize: 11, color: "var(--w3-gray-400)" }}>{t === "read" ? readCount : writeCount}</span>
           </button>
         ))}
       </div>
@@ -99,14 +182,11 @@ export function ContractInteractionPreview() {
             <div key={fn.name} style={{ borderRadius: 12, overflow: "hidden", background: isExpanded ? "var(--w3-glass-inner-bg)" : "transparent", transition: "background 0.15s" }}>
               <button
                 onClick={() => setExpanded(isExpanded ? null : fn.name)}
-                style={{ display: "flex", alignItems: "center", width: "100%", padding: "10px 14px", border: "none", background: "transparent", cursor: "pointer", textAlign: "left", gap: 10 }}
+                style={{ display: "flex", alignItems: "center", width: "100%", padding: "10px 14px", border: "none", background: "transparent", cursor: "pointer", textAlign: "left", gap: 8 }}
               >
-                <span style={{ fontSize: 14, fontWeight: 500, fontFamily: monoFont, color: "var(--w3-accent)", flex: 1 }}>
-                  {fn.name}
-                </span>
-                <span style={{ fontSize: 11, color: "var(--w3-gray-400)" }}>
-                  {fn.inputs.length > 0 ? `${fn.inputs.length} param${fn.inputs.length > 1 ? "s" : ""}` : "no params"}
-                </span>
+                <span style={{ fontSize: 14, fontWeight: 500, fontFamily: monoFont, color: "var(--w3-accent)", flex: 1 }}>{fn.name}</span>
+                {fn.outputs && <span style={{ fontSize: 10, color: "var(--w3-gray-400)", fontFamily: monoFont }}>→ {fn.outputs}</span>}
+                <span style={{ fontSize: 11, color: "var(--w3-gray-400)" }}>{fn.inputs.length > 0 ? `${fn.inputs.length}p` : "∅"}</span>
                 <ChevronDown size={14} style={{ color: "var(--w3-gray-400)", transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "none" }} />
               </button>
 
@@ -114,14 +194,13 @@ export function ContractInteractionPreview() {
                 <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
                   {fn.inputs.map((input, idx) => (
                     <div key={idx}>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", marginBottom: 4, display: "flex", gap: 4 }}>
-                        <span>{input.name}</span>
-                        <span style={{ color: "var(--w3-gray-400)" }}>({input.type})</span>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--w3-gray-500)", marginBottom: 4 }}>
+                        {input.name} <span style={{ color: "var(--w3-gray-400)", fontFamily: monoFont }}>{input.type}</span>
                       </div>
                       <input
                         value={inputValues[fn.name]?.[idx] ?? ""}
                         onChange={(e) => updateInput(fn.name, idx, e.target.value)}
-                        placeholder={input.placeholder}
+                        placeholder={`Enter ${input.type}`}
                         style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid var(--w3-border-subtle)", background: "transparent", fontSize: 12, fontFamily: monoFont, color: "var(--w3-gray-900)", outline: "none" }}
                       />
                     </div>
@@ -159,8 +238,8 @@ export function ContractInteractionPreview() {
 
       {/* Footer */}
       <div style={{ padding: "12px 20px", borderTop: "1px solid var(--w3-border-subtle)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>USDC · ERC-20</span>
-        <span style={{ fontSize: 12, color: "var(--w3-gray-400)" }}>{FUNCTIONS.length} functions</span>
+        <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>{contract.name} · {contract.standard}</span>
+        <span style={{ fontSize: 12, color: "var(--w3-gray-400)" }}>{contract.functions.length} functions</span>
       </div>
     </div>
   );
