@@ -35,11 +35,11 @@ const PRESETS: ContractPreset[] = [
       { id: "approve", icon: ShieldCheck, label: "Approve Spending", description: "Allow a contract to spend your tokens", category: "action",
         inputs: [{ label: "Spender", type: "address", placeholder: "Uniswap Router or 0x..." }, { label: "Limit", type: "amount", placeholder: "1000.00", helper: "USDC" }],
         previewTemplate: (v, c) => `Allow **${v[0] || "..."}** to spend up to **${v[1] || "0"} ${c}**`, mockResult: "Approval set" },
-      { id: "balance", icon: Eye, label: "Check Balance", description: "View token balance of any address", category: "view",
-        inputs: [{ label: "Address", type: "address", placeholder: "Any address or ENS name" }],
-        previewTemplate: (v) => `Check balance of **${v[0] || "your wallet"}**`, mockResult: "1,420,000.00 USDC" },
-      { id: "supply", icon: Eye, label: "Total Supply", description: "View total tokens in circulation", category: "view",
-        inputs: [], previewTemplate: () => `Query total supply`, mockResult: "26,183,421,907.54 USDC" },
+      { id: "balance", icon: Eye, label: "Check Balance", description: "View token balance of any wallet", category: "view",
+        inputs: [{ label: "Wallet to check", type: "address", placeholder: "vitalik.eth or 0x...", helper: "Whose balance?" }],
+        previewTemplate: (v) => `Check USDC balance of **${v[0] || "your wallet"}**`, mockResult: "1,420,000.00 USDC" },
+      { id: "supply", icon: Eye, label: "Total Supply", description: "View total USDC in circulation", category: "view",
+        inputs: [], previewTemplate: () => `Query total USDC supply`, mockResult: "26,183,421,907.54 USDC" },
     ],
   },
   {
@@ -51,8 +51,8 @@ const PRESETS: ContractPreset[] = [
       { id: "withdraw", icon: Send, label: "Unwrap WETH", description: "Convert WETH back to ETH", category: "action",
         inputs: [{ label: "Amount", type: "amount", placeholder: "1.0", helper: "WETH" }],
         previewTemplate: (v) => `Unwrap **${v[0] || "0"} WETH** into ETH`, mockResult: "1.0 ETH received" },
-      { id: "balance", icon: Eye, label: "Check Balance", description: "View WETH balance", category: "view",
-        inputs: [{ label: "Address", type: "address", placeholder: "Any address" }],
+      { id: "balance", icon: Eye, label: "Check Balance", description: "View WETH balance of any wallet", category: "view",
+        inputs: [{ label: "Wallet to check", type: "address", placeholder: "vitalik.eth or 0x...", helper: "Whose balance?" }],
         previewTemplate: (v) => `Check WETH balance of **${v[0] || "your wallet"}**`, mockResult: "4.2100 WETH" },
     ],
   },
@@ -67,6 +67,7 @@ export function ContractInteractionPreview() {
   const [inputValues, setInputValues] = useState<string[]>([]);
   const [executing, setExecuting] = useState(false);
   const [result, setResult] = useState("");
+  const [customAddress, setCustomAddress] = useState("");
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -126,12 +127,19 @@ export function ContractInteractionPreview() {
             </button>
           ))}
 
-          <div style={{ margin: "8px 14px 0", padding: "10px 12px", borderRadius: 10, border: "1px dashed var(--w3-border-subtle)", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--w3-surface-elevated)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-          >
-            <Plus size={14} style={{ color: "var(--w3-gray-400)" }} />
-            <span style={{ fontSize: 13, color: "var(--w3-gray-500)" }}>Paste address + ABI</span>
+          <div style={{ margin: "8px 14px 0" }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: "var(--w3-gray-500)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 8 }}>Custom</div>
+            <div style={{ padding: "12px", borderRadius: 10, border: "1px dashed var(--w3-border-subtle)", display: "flex", flexDirection: "column", gap: 8 }}>
+              <input
+                value={customAddress}
+                onChange={(e) => setCustomAddress(e.target.value)}
+                placeholder="Paste contract address (0x...)"
+                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid var(--w3-border-subtle)", background: "transparent", fontSize: 12, fontFamily: monoFont, color: "var(--w3-gray-900)", outline: "none" }}
+              />
+              <span style={{ fontSize: 11, color: "var(--w3-gray-500)" }}>
+                ABI will be auto-fetched from Etherscan, or paste your own
+              </span>
+            </div>
           </div>
         </div>
       )}
