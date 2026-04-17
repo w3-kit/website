@@ -150,8 +150,8 @@ function SidebarLink({ label, id, active }: { label: string; id: string; active:
 
 function Sidebar({ activeId }: { activeId: string }) {
   return (
-    <aside className="hidden w-56 shrink-0 md:block">
-      <div className="sticky top-20 flex max-h-[calc(100vh-6rem)] flex-col gap-5 overflow-y-auto py-8 pr-2">
+    <aside className="hidden w-56 shrink-0 overflow-y-auto md:block">
+      <div className="flex flex-col gap-5 py-8 pr-2">
         {/* Getting Started */}
         <div className="flex flex-col gap-1">
           <span
@@ -248,13 +248,13 @@ export function ComponentDetailPage() {
     const DocPageComponent = DOC_PAGES[slug as keyof typeof DOC_PAGES];
     return (
       <UiShell>
-        <div className="mx-auto flex max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
+        <div className="mx-auto flex h-[calc(100vh-57px)] max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
           {/* Left sidebar */}
           <Sidebar activeId={slug} />
 
           {/* Main content — wider since no right sidebar */}
           <main
-            className="min-w-0 flex-1 py-8 md:border-l md:px-10"
+            className="min-w-0 flex-1 overflow-y-auto py-8 md:border-l md:px-10"
             style={{ borderColor: "var(--w3-border-subtle)" }}
           >
             <DocPageComponent />
@@ -295,13 +295,13 @@ export function ComponentDetailPage() {
 
   return (
     <UiShell>
-      <div className="mx-auto flex max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
+      <div className="mx-auto flex h-[calc(100vh-57px)] max-w-[1200px] gap-0 px-6 md:px-8 lg:px-16">
         {/* Left sidebar */}
         <Sidebar activeId={slug} />
 
         {/* Main content */}
         <main
-          className="min-w-0 flex-1 py-8 md:border-l md:px-10"
+          className="min-w-0 flex-1 overflow-y-auto py-8 md:border-l md:px-10"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <ComponentHeader component={component} />
@@ -311,7 +311,7 @@ export function ComponentDetailPage() {
 
         {/* Right sidebar — quick info */}
         <aside
-          className="hidden w-44 shrink-0 border-l xl:block"
+          className="hidden w-44 shrink-0 overflow-y-auto border-l xl:block"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <div className="pl-8">

@@ -1,11 +1,12 @@
 /**
  * Auto-discovery script for the learn repo.
  *
- * Scans ../learn/guides/ and ../learn/recipes/ at build time,
+ * Scans ../learn/guides/, ../learn/recipes/, and ../learn/docs/ at build time,
  * then generates:
  *   - src/entities/guide/model/guide-registry.gen.ts
  *   - src/entities/recipe/model/recipe-registry.gen.ts
  *   - src/entities/guide/model/docs-nav.gen.ts
+ *   - src/entities/guide/model/doc-content.gen.ts
  *
  * Run: npx tsx scripts/generate-learn-registry.ts
  * Wired into: "prebuild" and "predev" npm scripts
@@ -13,10 +14,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execSync } from "node:child_process";
 
 const LEARN_DIR = path.resolve(import.meta.dirname, "../../learn");
 const GUIDES_DIR = path.join(LEARN_DIR, "guides");
 const RECIPES_DIR = path.join(LEARN_DIR, "recipes");
+const DOCS_DIR = path.join(LEARN_DIR, "docs");
 
 const GUIDE_OUT = path.resolve(
   import.meta.dirname,
@@ -29,6 +32,10 @@ const RECIPE_OUT = path.resolve(
 const NAV_OUT = path.resolve(
   import.meta.dirname,
   "../src/entities/guide/model/docs-nav.gen.ts",
+);
+const DOC_CONTENT_OUT = path.resolve(
+  import.meta.dirname,
+  "../src/entities/guide/model/doc-content.gen.ts",
 );
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -45,8 +52,27 @@ function categoryToTitle(cat: string): string {
 }
 
 function toCamelCase(slug: string): string {
-  // Replace hyphens followed by any character (including digits) with uppercase
   return slug.replace(/-(.)/g, (_, c) => c.toUpperCase());
+}
+
+// Map git author names to GitHub usernames
+const GIT_NAME_TO_GITHUB: Record<string, string> = {
+  "Petar Stoev": "PetarStoev02",
+  "Raad05": "Raad05",
+};
+
+function getGitAuthor(filePath: string): string {
+  try {
+    const result = execSync(
+      `git -C ${JSON.stringify(LEARN_DIR)} log --diff-filter=A --format=%an -- ${JSON.stringify(filePath)}`,
+      { encoding: "utf-8" },
+    ).trim();
+    if (!result) return "PetarStoev02";
+    // Map git name to GitHub username
+    return GIT_NAME_TO_GITHUB[result] ?? result;
+  } catch {
+    return "PetarStoev02";
+  }
 }
 
 // ── Discover Guides ─────────────────────────────────────────────────────────
@@ -56,6 +82,7 @@ interface GuideInfo {
   category: string;
   filePath: string; // relative to learn repo for @learn alias
   title: string;
+  author: string;
 }
 
 function discoverGuides(): GuideInfo[] {
@@ -82,11 +109,16 @@ function discoverGuides(): GuideInfo[] {
       const titleMatch = content.match(/^#\s+(.+)$/m);
       const title = titleMatch ? titleMatch[1].trim() : slugToTitle(slug);
 
+      // Resolve author from git log on the original file commit
+      const relPath = path.join("guides", category, file);
+      const author = getGitAuthor(relPath);
+
       guides.push({
         slug,
         category,
         filePath: `@learn/guides/${category}/${file}`,
         title,
+        author,
       });
     }
   }
@@ -104,6 +136,7 @@ interface RecipeInfo {
   hasLearn: boolean;
   learnFilename: string;
   category: string; // derived from meta.json chains or manual grouping
+  author: string;
 }
 
 // Recipe category grouping based on the recipe name patterns
@@ -163,10 +196,37 @@ function discoverRecipes(): RecipeInfo[] {
       hasLearn: !!learnFile,
       learnFilename: learnFile || "",
       category: getRecipeCategory(dir, meta),
+      author: meta.author ?? "",
     });
   }
 
   return recipes;
+}
+
+// ── Discover Docs ────────────────────────────────────────────────────────────
+
+interface DocInfo {
+  slug: string;
+  filename: string; // e.g. "introduction.md"
+}
+
+function discoverDocs(): DocInfo[] {
+  const docs: DocInfo[] = [];
+  if (!fs.existsSync(DOCS_DIR)) return docs;
+
+  const files = fs
+    .readdirSync(DOCS_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .sort();
+
+  for (const file of files) {
+    docs.push({
+      slug: file.replace(/\.md$/, ""),
+      filename: file,
+    });
+  }
+
+  return docs;
 }
 
 // ── Generate guide-registry.gen.ts ──────────────────────────────────────────
@@ -198,6 +258,7 @@ function generateGuideRegistry(guides: GuideInfo[]): string {
     lines.push(`    category: ${JSON.stringify(g.category)} as GuideMeta["category"],`);
     lines.push(`    slug: ${JSON.stringify(g.slug)},`);
     lines.push(`    content: ${varName},`);
+    lines.push(`    author: ${JSON.stringify(g.author)},`);
     lines.push("  },");
   }
 
@@ -249,6 +310,7 @@ function generateRecipeRegistry(recipes: RecipeInfo[]): string {
     lines.push(`    evmCode: ${r.hasEvm ? `${prefix}Evm` : '""'},`);
     lines.push(`    solanaCode: ${r.hasSolana ? `${prefix}Solana` : '""'},`);
     lines.push(`    learnContent: ${r.hasLearn ? `${prefix}Learn` : '""'},`);
+    lines.push(`    author: ${prefix}Meta.author ?? "",`);
     lines.push("  },");
   }
 
@@ -257,9 +319,58 @@ function generateRecipeRegistry(recipes: RecipeInfo[]): string {
   return lines.join("\n");
 }
 
+// ── Generate doc-content.gen.ts ──────────────────────────────────────────────
+
+function generateDocContent(docs: DocInfo[]): string {
+  const lines: string[] = [
+    '// AUTO-GENERATED by scripts/generate-learn-registry.ts — do not edit manually',
+    "",
+  ];
+
+  for (const doc of docs) {
+    const varName = toCamelCase(doc.slug) + "Doc";
+    lines.push(`import ${varName} from "@learn/docs/${doc.filename}?raw";`);
+  }
+
+  lines.push("");
+  lines.push("export const docContentMap: Record<string, string> = {");
+
+  for (const doc of docs) {
+    const varName = toCamelCase(doc.slug) + "Doc";
+    lines.push(`  ${JSON.stringify(doc.slug)}: ${varName},`);
+  }
+
+  lines.push("};");
+  lines.push("");
+  return lines.join("\n");
+}
+
 // ── Generate docs-nav.gen.ts ────────────────────────────────────────────────
 
+// Static mapping of doc slug → section title
+const DOC_SECTION_MAP: Record<string, string> = {
+  introduction: "Getting Started",
+  installation: "Getting Started",
+  "project-structure": "Getting Started",
+  configuration: "Getting Started",
+  components: "Core Concepts",
+  theming: "Core Concepts",
+  "design-tokens": "Core Concepts",
+  accessibility: "Core Concepts",
+  "ui-library": "Ecosystem",
+  registry: "Ecosystem",
+  cli: "Ecosystem",
+  contracts: "Ecosystem",
+  "components-api": "API Reference",
+  "hooks-utilities": "API Reference",
+  "cli-commands": "API Reference",
+};
+
+// Preserve display order within each section
+const SECTION_ORDER = ["Getting Started", "Core Concepts", "Ecosystem", "API Reference", "Other"];
+
 function generateDocsNav(
+  docs: DocInfo[],
   guides: GuideInfo[],
   recipes: RecipeInfo[],
 ): string {
@@ -280,52 +391,24 @@ function generateDocsNav(
     "export const docsNavSections: DocNavSection[] = [",
   ];
 
-  // Static doc sections (these don't change with learn repo)
-  const staticSections = [
-    {
-      title: "Getting Started",
-      items: [
-        { label: "Introduction", slug: "introduction", type: "markdown" },
-        { label: "Installation", slug: "installation", type: "markdown" },
-        { label: "Project Structure", slug: "project-structure", type: "markdown" },
-        { label: "Configuration", slug: "configuration", type: "markdown" },
-      ],
-    },
-    {
-      title: "Core Concepts",
-      items: [
-        { label: "Components", slug: "components", type: "markdown" },
-        { label: "Theming", slug: "theming", type: "markdown" },
-        { label: "Design Tokens", slug: "design-tokens", type: "markdown" },
-        { label: "Accessibility", slug: "accessibility", type: "markdown" },
-      ],
-    },
-    {
-      title: "Ecosystem",
-      items: [
-        { label: "UI Library", slug: "ui-library", type: "markdown" },
-        { label: "Registry", slug: "registry", type: "markdown" },
-        { label: "CLI", slug: "cli", type: "markdown" },
-        { label: "Contracts", slug: "contracts", type: "markdown" },
-      ],
-    },
-    {
-      title: "API Reference",
-      items: [
-        { label: "Components API", slug: "components-api", type: "markdown" },
-        { label: "Hooks & Utilities", slug: "hooks-utilities", type: "markdown" },
-        { label: "CLI Commands", slug: "cli-commands", type: "markdown" },
-      ],
-    },
-  ];
+  // Build doc sections from discovered docs, grouped by the static map
+  const sectionMap = new Map<string, DocInfo[]>();
+  for (const doc of docs) {
+    const section = DOC_SECTION_MAP[doc.slug] ?? "Other";
+    const list = sectionMap.get(section) ?? [];
+    list.push(doc);
+    sectionMap.set(section, list);
+  }
 
-  for (const section of staticSections) {
+  for (const sectionTitle of SECTION_ORDER) {
+    const sectionDocs = sectionMap.get(sectionTitle);
+    if (!sectionDocs?.length) continue;
     lines.push("  {");
-    lines.push(`    title: ${JSON.stringify(section.title)},`);
+    lines.push(`    title: ${JSON.stringify(sectionTitle)},`);
     lines.push("    items: [");
-    for (const item of section.items) {
+    for (const doc of sectionDocs) {
       lines.push(
-        `      { label: ${JSON.stringify(item.label)}, slug: ${JSON.stringify(item.slug)}, type: ${JSON.stringify(item.type)} },`,
+        `      { label: ${JSON.stringify(slugToTitle(doc.slug))}, slug: ${JSON.stringify(doc.slug)}, type: "markdown" },`,
       );
     }
     lines.push("    ],");
@@ -404,6 +487,9 @@ console.log(`  Found ${guides.length} guides`);
 const recipes = discoverRecipes();
 console.log(`  Found ${recipes.length} recipes`);
 
+const docs = discoverDocs();
+console.log(`  Found ${docs.length} doc pages`);
+
 // Write files
 fs.writeFileSync(GUIDE_OUT, generateGuideRegistry(guides));
 console.log(`  Wrote ${path.relative(process.cwd(), GUIDE_OUT)}`);
@@ -411,7 +497,10 @@ console.log(`  Wrote ${path.relative(process.cwd(), GUIDE_OUT)}`);
 fs.writeFileSync(RECIPE_OUT, generateRecipeRegistry(recipes));
 console.log(`  Wrote ${path.relative(process.cwd(), RECIPE_OUT)}`);
 
-fs.writeFileSync(NAV_OUT, generateDocsNav(guides, recipes));
+fs.writeFileSync(NAV_OUT, generateDocsNav(docs, guides, recipes));
 console.log(`  Wrote ${path.relative(process.cwd(), NAV_OUT)}`);
+
+fs.writeFileSync(DOC_CONTENT_OUT, generateDocContent(docs));
+console.log(`  Wrote ${path.relative(process.cwd(), DOC_CONTENT_OUT)}`);
 
 console.log("Done!");

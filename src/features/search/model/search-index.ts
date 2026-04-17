@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { docContentMap } from "../../../entities/guide/content";
+import { docContentMap } from "../../../entities/guide/model/doc-content.gen";
 import { guideRegistry } from "../../../entities/guide";
 import { recipeRegistry } from "../../../entities/recipe";
 import { allDocNavItems } from "../../../entities/guide/model/docs-nav.gen";

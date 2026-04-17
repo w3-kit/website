@@ -9,7 +9,7 @@ import { DocsCtaSection } from "./docs-cta-section";
 
 export function DocsHomePage() {
   return (
-    <DocsShell transparentHeader>
+    <DocsShell>
       <div className="relative">
         {/* Global background gradient layer */}
         <div

@@ -96,6 +96,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: approveSpendingEvm,
     solanaCode: approveSpendingSolana,
     learnContent: approveSpendingLearn,
+    author: approveSpendingMeta.author ?? "",
   },
   {
     id: buyNftMeta.name,
@@ -107,6 +108,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: buyNftEvm,
     solanaCode: buyNftSolana,
     learnContent: buyNftLearn,
+    author: buyNftMeta.author ?? "",
   },
   {
     id: claimRewardsMeta.name,
@@ -118,6 +120,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: claimRewardsEvm,
     solanaCode: claimRewardsSolana,
     learnContent: claimRewardsLearn,
+    author: claimRewardsMeta.author ?? "",
   },
   {
     id: connectWalletMeta.name,
@@ -129,6 +132,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: connectWalletEvm,
     solanaCode: connectWalletSolana,
     learnContent: connectWalletLearn,
+    author: connectWalletMeta.author ?? "",
   },
   {
     id: createTokenMeta.name,
@@ -140,6 +144,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: createTokenEvm,
     solanaCode: createTokenSolana,
     learnContent: createTokenLearn,
+    author: createTokenMeta.author ?? "",
   },
   {
     id: disconnectWalletMeta.name,
@@ -151,6 +156,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: disconnectWalletEvm,
     solanaCode: disconnectWalletSolana,
     learnContent: disconnectWalletLearn,
+    author: disconnectWalletMeta.author ?? "",
   },
   {
     id: displayNftMetadataMeta.name,
@@ -162,6 +168,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: displayNftMetadataEvm,
     solanaCode: displayNftMetadataSolana,
     learnContent: displayNftMetadataLearn,
+    author: displayNftMetadataMeta.author ?? "",
   },
   {
     id: estimateFeesMeta.name,
@@ -173,6 +180,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: estimateFeesEvm,
     solanaCode: estimateFeesSolana,
     learnContent: estimateFeesLearn,
+    author: estimateFeesMeta.author ?? "",
   },
   {
     id: fetchMetadataMeta.name,
@@ -184,6 +192,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: fetchMetadataEvm,
     solanaCode: fetchMetadataSolana,
     learnContent: fetchMetadataLearn,
+    author: fetchMetadataMeta.author ?? "",
   },
   {
     id: fetchNftCollectionMeta.name,
@@ -195,6 +204,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: fetchNftCollectionEvm,
     solanaCode: fetchNftCollectionSolana,
     learnContent: fetchNftCollectionLearn,
+    author: fetchNftCollectionMeta.author ?? "",
   },
   {
     id: getBalanceMeta.name,
@@ -206,6 +216,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: getBalanceEvm,
     solanaCode: getBalanceSolana,
     learnContent: getBalanceLearn,
+    author: getBalanceMeta.author ?? "",
   },
   {
     id: mintNftMeta.name,
@@ -217,6 +228,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: mintNftEvm,
     solanaCode: mintNftSolana,
     learnContent: mintNftLearn,
+    author: mintNftMeta.author ?? "",
   },
   {
     id: onchainSvgNftMeta.name,
@@ -228,6 +240,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: onchainSvgNftEvm,
     solanaCode: "",
     learnContent: onchainSvgNftLearn,
+    author: onchainSvgNftMeta.author ?? "",
   },
   {
     id: provideLiquidityMeta.name,
@@ -239,6 +252,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: provideLiquidityEvm,
     solanaCode: provideLiquiditySolana,
     learnContent: provideLiquidityLearn,
+    author: provideLiquidityMeta.author ?? "",
   },
   {
     id: resolveAddressMeta.name,
@@ -250,6 +264,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: resolveAddressEvm,
     solanaCode: resolveAddressSolana,
     learnContent: resolveAddressLearn,
+    author: resolveAddressMeta.author ?? "",
   },
   {
     id: signMessageMeta.name,
@@ -261,6 +276,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: signMessageEvm,
     solanaCode: signMessageSolana,
     learnContent: signMessageLearn,
+    author: signMessageMeta.author ?? "",
   },
   {
     id: stakeTokensMeta.name,
@@ -272,6 +288,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: stakeTokensEvm,
     solanaCode: stakeTokensSolana,
     learnContent: stakeTokensLearn,
+    author: stakeTokensMeta.author ?? "",
   },
   {
     id: swapTokensMeta.name,
@@ -283,6 +300,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: swapTokensEvm,
     solanaCode: swapTokensSolana,
     learnContent: swapTokensLearn,
+    author: swapTokensMeta.author ?? "",
   },
   {
     id: switchNetworkMeta.name,
@@ -294,6 +312,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: switchNetworkEvm,
     solanaCode: switchNetworkSolana,
     learnContent: switchNetworkLearn,
+    author: switchNetworkMeta.author ?? "",
   },
   {
     id: transferTokensMeta.name,
@@ -305,6 +324,7 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: transferTokensEvm,
     solanaCode: transferTokensSolana,
     learnContent: transferTokensLearn,
+    author: transferTokensMeta.author ?? "",
   },
   {
     id: watchTransfersMeta.name,
@@ -316,5 +336,6 @@ export const recipeRegistry: RecipeMeta[] = [
     evmCode: watchTransfersEvm,
     solanaCode: watchTransfersSolana,
     learnContent: watchTransfersLearn,
+    author: watchTransfersMeta.author ?? "",
   },
 ];

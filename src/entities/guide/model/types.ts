@@ -7,4 +7,5 @@ export interface GuideMeta {
   category: GuideCategory;
   slug: string;
   content: string;
+  author: string;
 }

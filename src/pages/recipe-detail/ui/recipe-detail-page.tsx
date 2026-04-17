@@ -54,11 +54,12 @@ export function RecipeDetailPage() {
 
   return (
     <DocsShell>
-      <div className="mx-auto flex max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
+      <div className="mx-auto flex h-[calc(100vh-57px)] max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
         <DocsSidebar sections={docsNavSections} activeSlug={slug} />
 
         <div
-          className="min-w-0 flex-1 py-8 md:border-l md:px-10"
+          data-docs-content
+          className="min-w-0 flex-1 overflow-y-auto py-8 md:border-l md:px-10"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <MobileSidebar sections={docsNavSections} activeSlug={slug} />
@@ -84,6 +85,23 @@ export function RecipeDetailPage() {
           >
             {recipe.description}
           </p>
+
+          {recipe.author && (
+            <a
+              href={`https://github.com/${recipe.author}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-4 inline-flex items-center gap-1.5 text-xs transition-colors hover:underline"
+              style={{ color: "var(--w3-gray-500)" }}
+            >
+              <img
+                src={`https://github.com/${recipe.author}.png?size=40`}
+                alt={recipe.author}
+                className="h-4 w-4 rounded-full"
+              />
+              by {recipe.author}
+            </a>
+          )}
 
           {/* Chain badges */}
           <div className="mb-6 flex items-center gap-2">

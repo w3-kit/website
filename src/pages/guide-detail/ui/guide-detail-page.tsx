@@ -48,11 +48,12 @@ export function GuideDetailPage() {
 
   return (
     <DocsShell>
-      <div className="mx-auto flex max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
+      <div className="mx-auto flex h-[calc(100vh-57px)] max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
         <DocsSidebar sections={docsNavSections} activeSlug={slug} />
 
         <div
-          className="min-w-0 flex-1 py-8 md:border-l md:px-10"
+          data-docs-content
+          className="min-w-0 flex-1 overflow-y-auto py-8 md:border-l md:px-10"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           <MobileSidebar sections={docsNavSections} activeSlug={slug} />
@@ -79,6 +80,22 @@ export function GuideDetailPage() {
             <span className="text-xs" style={{ color: "var(--w3-gray-500)" }}>
               {readTime} min read
             </span>
+            {guide.author && (
+              <a
+                href={`https://github.com/${guide.author}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs transition-colors hover:underline"
+                style={{ color: "var(--w3-gray-500)" }}
+              >
+                <img
+                  src={`https://github.com/${guide.author}.png?size=40`}
+                  alt={guide.author}
+                  className="h-4 w-4 rounded-full"
+                />
+                {guide.author}
+              </a>
+            )}
           </div>
 
           <MarkdownRenderer content={guide.content} />

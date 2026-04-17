@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, Search, BookOpen, Code, FileText } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Search } from "lucide-react";
 import { Button } from "../../shared/ui/button";
 import { Logo } from "../../shared/ui/logo";
 import { cn } from "../../shared/lib/utils";
@@ -7,15 +7,11 @@ import { getSectionUrl } from "../../shared/lib/urls";
 import { docsNavSections, type DocNavSection } from "../../entities/guide/model/docs-nav.gen";
 import { GitHubIcon } from "../../shared/ui/github-icon";
 
-interface DocsHeaderProps {
-  variant?: "default" | "transparent";
-}
-
 // Group nav sections for the mega menu columns
 const docsSections = docsNavSections.filter(
-  (s) => !s.title.startsWith("Recipes:") && s.title !== "Guides",
+  (s) => !s.title.startsWith("Recipes:") && !s.title.startsWith("Guides"),
 );
-const guideSection = docsNavSections.find((s) => s.title === "Guides");
+const guideSections = docsNavSections.filter((s) => s.title.startsWith("Guides"));
 const recipeSections = docsNavSections.filter((s) => s.title.startsWith("Recipes:"));
 
 function getItemHref(item: { slug: string; type: string }): string {
@@ -25,43 +21,48 @@ function getItemHref(item: { slug: string; type: string }): string {
   return `${base}/${item.slug}`;
 }
 
-function MegaMenuColumn({ section }: { section: DocNavSection }) {
+function CollapsibleMegaSection({ section }: { section: DocNavSection }) {
+  const [open, setOpen] = useState(true);
+
+  // Strip prefix like "Guides: " or "Recipes: " for cleaner display
+  const displayTitle = section.title.replace(/^(Guides|Recipes):\s*/i, "");
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <span
-        className="px-2 text-[10px] font-semibold uppercase tracking-wider"
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1 px-1 text-[11px] font-medium uppercase tracking-wider transition-colors"
         style={{ color: "var(--w3-gray-500)" }}
       >
-        {section.title}
-      </span>
-      {section.items.map((item) => (
-        <a
-          key={item.slug}
-          href={getItemHref(item)}
-          className="rounded-md px-2 py-1 text-sm transition-colors hover:bg-[var(--w3-surface-elevated)]"
-          style={{ color: "var(--w3-gray-700)" }}
-        >
-          {item.label}
-        </a>
-      ))}
+        <ChevronRight
+          size={10}
+          className={cn("shrink-0 transition-transform", open && "rotate-90")}
+          style={{ color: "var(--w3-gray-400)" }}
+        />
+        {displayTitle}
+      </button>
+      {open && (
+        <div className="ml-3 flex flex-col gap-0.5">
+          {section.items.map((item) => (
+            <a
+              key={item.slug}
+              href={getItemHref(item)}
+              className="rounded-md px-2 py-1 text-[13px] transition-colors hover:bg-[var(--w3-surface-elevated)]"
+              style={{ color: "var(--w3-gray-600)" }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-export function DocsHeader({ variant = "default" }: DocsHeaderProps) {
-  const [scrolled, setScrolled] = useState(false);
+export function DocsHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const megaRef = useRef<HTMLDivElement>(null);
-  const isTransparent = variant === "transparent";
-
-  useEffect(() => {
-    if (!isTransparent) return;
-    const onScroll = () => setScrolled(window.scrollY > 80);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [isTransparent]);
 
   useEffect(() => {
     const onResize = () => {
@@ -83,21 +84,13 @@ export function DocsHeader({ variant = "default" }: DocsHeaderProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, [megaOpen]);
 
-  const showBackground = !isTransparent || scrolled;
-
   return (
     <>
       <header
-        className={cn(
-          "z-50 flex items-center justify-between px-6 py-4 transition-all duration-300",
-          isTransparent ? "fixed inset-x-0 top-0" : "sticky top-0",
-          showBackground && "border-b backdrop-blur-xl",
-        )}
+        className="sticky top-0 z-50 flex shrink-0 items-center justify-between border-b px-6 py-3 backdrop-blur-xl"
         style={{
-          borderColor: showBackground ? "var(--w3-border-subtle)" : "transparent",
-          background: showBackground
-            ? "color-mix(in srgb, var(--w3-gray-100) 80%, transparent)"
-            : "transparent",
+          borderColor: "var(--w3-border-subtle)",
+          background: "color-mix(in srgb, var(--w3-gray-100) 80%, transparent)",
         }}
       >
         {/* Logo */}
@@ -160,8 +153,6 @@ export function DocsHeader({ variant = "default" }: DocsHeaderProps) {
           {/* Search trigger */}
           <button
             onClick={() => {
-              document.getElementById("docs-search-trigger")?.click();
-              // Also dispatch Cmd+K manually
               document.dispatchEvent(
                 new KeyboardEvent("keydown", { key: "k", metaKey: true }),
               );
@@ -186,36 +177,62 @@ export function DocsHeader({ variant = "default" }: DocsHeaderProps) {
           {/* Mega menu dropdown */}
           {megaOpen && (
             <div
-              className="absolute inset-x-0 top-full z-50 border-b backdrop-blur-xl"
+              className="absolute inset-x-0 top-full z-50 max-h-[70vh] overflow-y-auto border-b backdrop-blur-xl"
               style={{
                 background: "color-mix(in srgb, var(--w3-gray-100) 95%, transparent)",
                 borderColor: "var(--w3-border-subtle)",
               }}
             >
-              <div className="mx-auto grid max-w-[1200px] gap-8 px-6 py-8 sm:grid-cols-2 md:grid-cols-4 lg:px-16">
-                {/* Column 1: Docs sections */}
-                <div className="flex flex-col gap-6">
+              <div className="mx-auto grid max-w-[1200px] gap-10 px-6 py-8 sm:grid-cols-2 md:grid-cols-4 lg:px-16">
+                {/* Column 1: Documentation */}
+                <div className="flex flex-col gap-5">
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--w3-gray-900)" }}
+                  >
+                    Documentation
+                  </span>
                   {docsSections.map((section) => (
-                    <MegaMenuColumn key={section.title} section={section} />
+                    <CollapsibleMegaSection key={section.title} section={section} />
                   ))}
                 </div>
 
                 {/* Column 2: Guides */}
-                <div className="flex flex-col gap-6">
-                  {guideSection && <MegaMenuColumn section={guideSection} />}
-                </div>
-
-                {/* Column 3: Recipes (Wallet + Tokens) */}
-                <div className="flex flex-col gap-6">
-                  {recipeSections.slice(0, 2).map((section) => (
-                    <MegaMenuColumn key={section.title} section={section} />
+                <div className="flex flex-col gap-5">
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--w3-gray-900)" }}
+                  >
+                    Guides
+                  </span>
+                  {guideSections.map((section) => (
+                    <CollapsibleMegaSection key={section.title} section={section} />
                   ))}
                 </div>
 
-                {/* Column 4: Recipes (NFTs + DeFi + Utils) */}
-                <div className="flex flex-col gap-6">
+                {/* Column 3: Recipes */}
+                <div className="flex flex-col gap-5">
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--w3-gray-900)" }}
+                  >
+                    Recipes
+                  </span>
+                  {recipeSections.slice(0, 2).map((section) => (
+                    <CollapsibleMegaSection key={section.title} section={section} />
+                  ))}
+                </div>
+
+                {/* Column 4: More Recipes */}
+                <div className="flex flex-col gap-5">
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--w3-gray-900)" }}
+                  >
+                    &nbsp;
+                  </span>
                   {recipeSections.slice(2).map((section) => (
-                    <MegaMenuColumn key={section.title} section={section} />
+                    <CollapsibleMegaSection key={section.title} section={section} />
                   ))}
                 </div>
               </div>
@@ -239,36 +256,49 @@ export function DocsHeader({ variant = "default" }: DocsHeaderProps) {
       {/* Mobile menu overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 flex flex-col overflow-y-auto pt-16 backdrop-blur-xl md:hidden"
+          className="fixed inset-0 z-40 flex flex-col overflow-y-auto pt-14 backdrop-blur-xl md:hidden"
           style={{
             background: "color-mix(in srgb, var(--w3-gray-100) 95%, transparent)",
           }}
         >
-          <nav className="flex flex-col gap-6 px-6 py-6">
+          <nav className="flex flex-col gap-4 px-6 py-6">
             {docsNavSections.map((section) => (
-              <div key={section.title} className="flex flex-col gap-1">
-                <span
-                  className="px-4 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ color: "var(--w3-gray-500)" }}
-                >
-                  {section.title}
-                </span>
-                {section.items.map((item) => (
-                  <a
-                    key={item.slug}
-                    href={getItemHref(item)}
-                    className="rounded-lg px-4 py-2 text-sm transition-colors"
-                    style={{ color: "var(--w3-gray-700)" }}
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
+              <CollapsibleMobileSection key={section.title} section={section} />
             ))}
           </nav>
         </div>
       )}
     </>
+  );
+}
+
+function CollapsibleMobileSection({ section }: { section: DocNavSection }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-wider"
+        style={{ color: "var(--w3-gray-500)" }}
+      >
+        {section.title}
+        <ChevronDown
+          size={12}
+          className={cn("transition-transform", open && "rotate-180")}
+        />
+      </button>
+      {open &&
+        section.items.map((item) => (
+          <a
+            key={item.slug}
+            href={getItemHref(item)}
+            className="rounded-lg px-4 py-2 text-sm transition-colors"
+            style={{ color: "var(--w3-gray-700)" }}
+          >
+            {item.label}
+          </a>
+        ))}
+    </div>
   );
 }

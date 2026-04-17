@@ -20,6 +20,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "cheatsheets" as GuideMeta["category"],
     slug: "solidity-vs-rust",
     content: solidityVsRustContent,
+    author: "Raad05",
   },
   {
     id: "accounts-model",
@@ -28,6 +29,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "concepts" as GuideMeta["category"],
     slug: "accounts-model",
     content: accountsModelContent,
+    author: "PetarStoev02",
   },
   {
     id: "how-transactions-work",
@@ -36,6 +38,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "concepts" as GuideMeta["category"],
     slug: "how-transactions-work",
     content: howTransactionsWorkContent,
+    author: "PetarStoev02",
   },
   {
     id: "public-vs-private-keys",
@@ -44,6 +47,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "concepts" as GuideMeta["category"],
     slug: "public-vs-private-keys",
     content: publicVsPrivateKeysContent,
+    author: "PetarStoev02",
   },
   {
     id: "what-are-smart-contracts",
@@ -52,6 +56,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "concepts" as GuideMeta["category"],
     slug: "what-are-smart-contracts",
     content: whatAreSmartContractsContent,
+    author: "PetarStoev02",
   },
   {
     id: "what-is-a-wallet",
@@ -60,6 +65,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "concepts" as GuideMeta["category"],
     slug: "what-is-a-wallet",
     content: whatIsAWalletContent,
+    author: "PetarStoev02",
   },
   {
     id: "gas-explained",
@@ -68,6 +74,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "evm" as GuideMeta["category"],
     slug: "gas-explained",
     content: gasExplainedContent,
+    author: "PetarStoev02",
   },
   {
     id: "glossary",
@@ -76,6 +83,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "glossary" as GuideMeta["category"],
     slug: "glossary",
     content: glossaryContent,
+    author: "PetarStoev02",
   },
   {
     id: "top-10-vulnerabilities",
@@ -84,6 +92,7 @@ export const guideRegistry: GuideMeta[] = [
     category: "security" as GuideMeta["category"],
     slug: "top-10-vulnerabilities",
     content: top10VulnerabilitiesContent,
+    author: "PetarStoev02",
   },
   {
     id: "pdas-explained",
@@ -92,5 +101,6 @@ export const guideRegistry: GuideMeta[] = [
     category: "solana" as GuideMeta["category"],
     slug: "pdas-explained",
     content: pdasExplainedContent,
+    author: "PetarStoev02",
   },
 ];

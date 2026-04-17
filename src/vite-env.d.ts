@@ -19,6 +19,7 @@ declare module "*/meta.json" {
   const value: {
     name: string;
     description: string;
+    author?: string;
     chains: string[];
     dependencies: Record<string, string[]>;
   };

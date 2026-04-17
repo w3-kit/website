@@ -15,36 +15,36 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Getting Started",
     items: [
-      { label: "Introduction", slug: "introduction", type: "markdown" },
-      { label: "Installation", slug: "installation", type: "markdown" },
-      { label: "Project Structure", slug: "project-structure", type: "markdown" },
       { label: "Configuration", slug: "configuration", type: "markdown" },
+      { label: "Installation", slug: "installation", type: "markdown" },
+      { label: "Introduction", slug: "introduction", type: "markdown" },
+      { label: "Project Structure", slug: "project-structure", type: "markdown" },
     ],
   },
   {
     title: "Core Concepts",
     items: [
-      { label: "Components", slug: "components", type: "markdown" },
-      { label: "Theming", slug: "theming", type: "markdown" },
-      { label: "Design Tokens", slug: "design-tokens", type: "markdown" },
       { label: "Accessibility", slug: "accessibility", type: "markdown" },
+      { label: "Components", slug: "components", type: "markdown" },
+      { label: "Design Tokens", slug: "design-tokens", type: "markdown" },
+      { label: "Theming", slug: "theming", type: "markdown" },
     ],
   },
   {
     title: "Ecosystem",
     items: [
-      { label: "UI Library", slug: "ui-library", type: "markdown" },
-      { label: "Registry", slug: "registry", type: "markdown" },
-      { label: "CLI", slug: "cli", type: "markdown" },
+      { label: "Cli", slug: "cli", type: "markdown" },
       { label: "Contracts", slug: "contracts", type: "markdown" },
+      { label: "Registry", slug: "registry", type: "markdown" },
+      { label: "Ui Library", slug: "ui-library", type: "markdown" },
     ],
   },
   {
     title: "API Reference",
     items: [
-      { label: "Components API", slug: "components-api", type: "markdown" },
-      { label: "Hooks & Utilities", slug: "hooks-utilities", type: "markdown" },
-      { label: "CLI Commands", slug: "cli-commands", type: "markdown" },
+      { label: "Cli Commands", slug: "cli-commands", type: "markdown" },
+      { label: "Components Api", slug: "components-api", type: "markdown" },
+      { label: "Hooks Utilities", slug: "hooks-utilities", type: "markdown" },
     ],
   },
   {

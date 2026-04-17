@@ -8,7 +8,7 @@ import { extractHeadings } from "../../../widgets/markdown-renderer/extract-head
 import { Breadcrumbs } from "../../../shared/ui/breadcrumbs";
 import { DocsPrevNext } from "../../../widgets/docs-prev-next";
 import { docsNavSections, allDocNavItems } from "../../../entities/guide/model/docs-nav.gen";
-import { docContentMap } from "../../../entities/guide/content";
+import { docContentMap } from "../../../entities/guide/model/doc-content.gen";
 import { getSectionUrl } from "../../../shared/lib/urls";
 
 function getItemHref(item: { slug: string; type: string }): string {
@@ -64,13 +64,14 @@ export function DocPage() {
 
   return (
     <DocsShell>
-      <div className="mx-auto flex max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
+      <div className="mx-auto flex h-[calc(100vh-57px)] max-w-[1440px] gap-0 px-6 md:px-8 lg:px-12">
         {/* Left sidebar - desktop */}
         <DocsSidebar sections={docsNavSections} activeSlug={currentSlug} />
 
         {/* Main content */}
         <div
-          className="min-w-0 flex-1 py-8 md:border-l md:px-10"
+          data-docs-content
+          className="min-w-0 flex-1 overflow-y-auto py-8 md:border-l md:px-10"
           style={{ borderColor: "var(--w3-border-subtle)" }}
         >
           {/* Mobile sidebar */}

@@ -8,4 +8,5 @@ export interface RecipeMeta {
   evmCode: string;
   solanaCode: string;
   learnContent: string;
+  author: string;
 }
