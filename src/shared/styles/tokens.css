@@ -233,7 +233,7 @@
   --color-w3-surface-alt: var(--w3-surface-alt);
   --color-w3-accent-wash: var(--w3-accent-wash);
   --color-w3-grid-line: var(--w3-grid-line);
-  --font-serif-display: "Instrument Serif", Georgia, serif;
+  --font-serif-display: "Geist Sans", system-ui, -apple-system, sans-serif;
 }
 
 @utility glass-bg {
@@ -244,7 +244,7 @@
 }
 
 @utility font-serif-display {
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: "Geist Sans", system-ui, -apple-system, sans-serif;
 }
 
 @utility nav-link-underline {

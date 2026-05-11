@@ -5,7 +5,7 @@ const TOKENS = ["USDC", "USDT", "DAI", "WETH", "WBTC", "LINK", "UNI", "AAVE", "A
 
 export function ChainsSection() {
   return (
-    <section className="grid grid-cols-[200px_1fr] items-center gap-10 border-b border-w3-border-subtle px-10 py-9">
+    <section className="grid grid-cols-[200px_1fr] items-center gap-10 border-b border-w3-border-subtle px-20 py-9">
       <div>
         <div className="font-mono text-[11px] text-w3-gray-500">03 — REGISTRY</div>
         <div className="mt-1 text-lg font-medium">

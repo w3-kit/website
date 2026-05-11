@@ -1,32 +1,35 @@
-import { useState, type ComponentType } from "react";
+import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import {
-  ConnectWalletMini, TokenSwapMini, NetworkSwitcherMini,
-  WalletBalanceMini, NFTCardMini, GasTrackerMini,
-  ContractCallMini, ENSResolverMini, TxHistoryMini,
-  StakingMini, MultisigMini, PriceTickerMini,
-} from "./catalog-cards";
+import { DEMOS } from "../../../shared/ui/w3-kit-demos";
 
 interface CatalogItem {
+  /** Display index ("001", …) */
   id: string;
+  /** Slug from the ui registry — used to look up the real component demo. */
+  slug: string;
+  /** Component display name */
   name: string;
+  /** Catalog category (informational chip) */
   cat: string;
-  C: ComponentType;
+  /** Render scale for the preview. Default 0.55. */
+  scale?: number;
+  /** Width of the inner stage in pixels at 1× before scaling. Default 380. */
+  stage?: number;
 }
 
 const ITEMS: CatalogItem[] = [
-  { id: "001", name: "ConnectWallet", cat: "wallet", C: ConnectWalletMini },
-  { id: "002", name: "TokenSwap", cat: "defi", C: TokenSwapMini },
-  { id: "003", name: "NetworkSwitcher", cat: "chain", C: NetworkSwitcherMini },
-  { id: "004", name: "WalletBalance", cat: "wallet", C: WalletBalanceMini },
-  { id: "005", name: "NFTCard", cat: "nft", C: NFTCardMini },
-  { id: "006", name: "GasTracker", cat: "chain", C: GasTrackerMini },
-  { id: "007", name: "ContractCall", cat: "smart", C: ContractCallMini },
-  { id: "008", name: "ENSResolver", cat: "identity", C: ENSResolverMini },
-  { id: "009", name: "TxHistory", cat: "wallet", C: TxHistoryMini },
-  { id: "010", name: "Staking", cat: "defi", C: StakingMini },
-  { id: "011", name: "Multisig", cat: "wallet", C: MultisigMini },
-  { id: "012", name: "PriceTicker", cat: "market", C: PriceTickerMini },
+  { id: "001", slug: "connect-wallet", name: "ConnectWallet", cat: "wallet", scale: 0.55, stage: 360 },
+  { id: "002", slug: "token-swap", name: "TokenSwap", cat: "defi", scale: 0.5, stage: 380 },
+  { id: "003", slug: "network-switcher", name: "NetworkSwitcher", cat: "chain", scale: 0.6, stage: 360 },
+  { id: "004", slug: "wallet-balance", name: "WalletBalance", cat: "wallet", scale: 0.45, stage: 420 },
+  { id: "005", slug: "nft-card", name: "NFTCard", cat: "nft", scale: 0.7, stage: 280 },
+  { id: "006", slug: "gas-calculator", name: "GasCalculator", cat: "chain", scale: 0.6, stage: 380 },
+  { id: "007", slug: "contract-interaction", name: "ContractInteraction", cat: "smart", scale: 0.6, stage: 360 },
+  { id: "008", slug: "ens-resolver", name: "EnsResolver", cat: "identity", scale: 0.7, stage: 360 },
+  { id: "009", slug: "transaction-history", name: "TransactionHistory", cat: "wallet", scale: 0.55, stage: 380 },
+  { id: "010", slug: "staking-interface", name: "Staking", cat: "defi", scale: 0.45, stage: 440 },
+  { id: "011", slug: "multisig-wallet", name: "Multisig", cat: "wallet", scale: 0.45, stage: 420 },
+  { id: "012", slug: "price-ticker", name: "PriceTicker", cat: "market", scale: 0.55, stage: 380 },
 ];
 
 const CATS = ["all", "wallet", "defi", "chain", "nft", "smart", "identity", "market"];
@@ -38,7 +41,7 @@ export function CatalogSection() {
   return (
     <section className="border-b border-w3-border-subtle">
       {/* Section header */}
-      <div className="flex items-end justify-between border-b border-w3-border-subtle px-10 pb-5 pt-12">
+      <div className="flex items-end justify-between border-b border-w3-border-subtle px-20 pb-5 pt-12">
         <div>
           <div className="font-mono text-[11px] tracking-[0.1em] text-w3-gray-500">
             02 — UI / CATALOG
@@ -71,7 +74,7 @@ export function CatalogSection() {
       </div>
 
       {/* Grid with coordinate labels */}
-      <div className="grid grid-cols-[60px_repeat(4,1fr)] auto-rows-[220px]">
+      <div className="grid grid-cols-[60px_repeat(4,1fr)] auto-rows-[260px]">
         {/* Column headers */}
         <div />
         {["A", "B", "C", "D"].map((c) => (
@@ -100,9 +103,22 @@ export function CatalogSection() {
                 <div className="absolute right-3 top-2.5 z-[2] font-mono text-[9px] text-w3-gray-500">
                   {item.id}
                 </div>
-                {/* Component preview */}
-                <div className="flex-1 overflow-hidden">
-                  <item.C />
+                {/* Component preview — real component, scaled to fit */}
+                <div className="pointer-events-none relative flex-1 select-none overflow-hidden">
+                  <div
+                    className="absolute left-1/2 top-3 origin-top"
+                    style={{
+                      transform: `translateX(-50%) scale(${item.scale ?? 0.55})`,
+                      width: item.stage ?? 380,
+                    }}
+                  >
+                    {(() => {
+                      const Demo = DEMOS[item.slug];
+                      return Demo ? <Demo /> : null;
+                    })()}
+                  </div>
+                  {/* Soft fade so cropping reads as deliberate */}
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-w3-surface to-transparent group-hover:from-w3-surface-alt" />
                 </div>
                 {/* Name bar */}
                 <div className="relative z-[2] flex items-center justify-between border-t border-w3-border-subtle bg-w3-gray-100 px-3.5 py-2">
@@ -135,7 +151,7 @@ export function CatalogSection() {
       </div>
 
       {/* Footer bar */}
-      <div className="flex items-center justify-between border-t border-w3-border-subtle px-10 py-3.5">
+      <div className="flex items-center justify-between border-t border-w3-border-subtle px-20 py-3.5">
         <span className="font-mono text-[11px] text-w3-gray-500">
           Showing {shown.length} of 54
         </span>

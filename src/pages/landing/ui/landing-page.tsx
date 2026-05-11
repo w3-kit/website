@@ -2,7 +2,6 @@ import { LandingNav } from "./landing-nav";
 import { HeroSection } from "./hero-section";
 import { CatalogSection } from "./catalog-section";
 import { ChainsSection } from "./chains-section";
-import { CompareSection } from "./compare-section";
 import { RecipesSection } from "./recipes-section";
 import { StatsSection } from "./stats-section";
 import { CtaSection } from "./cta-section";
@@ -15,7 +14,6 @@ export function LandingPage() {
       <HeroSection />
       <CatalogSection />
       <ChainsSection />
-      <CompareSection />
       <RecipesSection />
       <StatsSection />
       <CtaSection />

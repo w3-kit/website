@@ -7,7 +7,7 @@ const RECIPES = [
 
 export function RecipesSection() {
   return (
-    <section className="border-b border-w3-border-subtle px-10 py-16">
+    <section className="border-b border-w3-border-subtle px-20 py-16">
       <div className="mb-8">
         <div className="font-mono text-[11px] text-w3-gray-500">05 — RECIPES</div>
         <h2 className="mt-2 text-[32px] font-medium leading-tight tracking-[-0.03em]">

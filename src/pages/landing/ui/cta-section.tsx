@@ -5,7 +5,7 @@ export function CtaSection() {
   const [copied, copy] = useCopyToClipboard("npx w3-kit init");
 
   return (
-    <section className="grid grid-cols-2 items-center gap-20 px-10 py-[100px]">
+    <section className="grid grid-cols-2 items-center gap-20 px-20 py-[100px]">
       {/* Left — headline */}
       <div>
         <div className="font-mono text-[11px] text-w3-gray-500">06 — SHIP IT</div>

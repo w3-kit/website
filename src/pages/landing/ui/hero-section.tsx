@@ -9,7 +9,7 @@ export function HeroSection() {
   const [copied, copy] = useCopyToClipboard("npx w3-kit init");
 
   return (
-    <section className="grid grid-cols-2 items-end gap-20 border-b border-w3-border-subtle px-10 pb-12 pt-[88px]">
+    <section className="grid grid-cols-2 items-end gap-20 border-b border-w3-border-subtle px-20 pb-12 pt-[88px]">
       {/* Left — headline */}
       <div>
         <div className="mb-8 font-mono text-[11px] tracking-[0.1em] text-w3-gray-500">

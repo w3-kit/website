@@ -5,35 +5,7 @@ import { getSectionUrl } from "../../../shared/lib/urls";
 import { Badge } from "../../../shared/ui/badge";
 import { componentRegistry } from "../../../entities/component";
 import type { ComponentCategory } from "../../../entities/component";
-import {
-  ConnectWalletPreview,
-  NetworkSwitcherPreview,
-  WalletBalancePreview,
-  TokenSwapPreview,
-  SmartContractScannerPreview,
-  NFTCardPreview,
-  AddressBookPreview,
-  MultisigWalletPreview,
-  StakingInterfacePreview,
-  BridgePreview,
-  DefiPositionPreview,
-  FlashLoanPreview,
-  LimitOrderPreview,
-  LiquidityPoolPreview,
-  NFTCollectionPreview,
-  NFTMarketplacePreview,
-  AssetPortfolioPreview,
-  PriceTickerPreview,
-  TokenCardPreview,
-  TokenListPreview,
-  TransactionHistoryPreview,
-  ContractInteractionPreview,
-  ENSResolverPreview,
-  GasCalculatorPreview,
-  SubscriptionPreview,
-  TokenAirdropPreview,
-  TokenVestingPreview,
-} from "../../../shared/ui/previews";
+import { DEMOS } from "../../../shared/ui/w3-kit-demos";
 
 const categories: { label: string; value: ComponentCategory | "all" }[] = [
   { label: "All", value: "all" },
@@ -53,64 +25,8 @@ const categoryLabels: Record<ComponentCategory, string> = {
 };
 
 function getPreview(id: string): React.ReactNode {
-  switch (id) {
-    case "connect-wallet":
-      return <ConnectWalletPreview />;
-    case "network-switcher":
-      return <NetworkSwitcherPreview />;
-    case "wallet-balance":
-      return <WalletBalancePreview />;
-    case "address-book":
-      return <AddressBookPreview />;
-    case "multisig-wallet":
-      return <MultisigWalletPreview />;
-    case "token-swap":
-      return <TokenSwapPreview />;
-    case "staking-interface":
-      return <StakingInterfacePreview />;
-    case "bridge":
-      return <BridgePreview />;
-    case "defi-position-manager":
-      return <DefiPositionPreview />;
-    case "flash-loan-executor":
-      return <FlashLoanPreview />;
-    case "limit-order-manager":
-      return <LimitOrderPreview />;
-    case "liquidity-pool-stats":
-      return <LiquidityPoolPreview />;
-    case "nft-card":
-      return <NFTCardPreview />;
-    case "nft-collection-grid":
-      return <NFTCollectionPreview />;
-    case "nft-marketplace-aggregator":
-      return <NFTMarketplacePreview />;
-    case "asset-portfolio":
-      return <AssetPortfolioPreview />;
-    case "price-ticker":
-      return <PriceTickerPreview />;
-    case "token-card":
-      return <TokenCardPreview />;
-    case "token-list":
-      return <TokenListPreview />;
-    case "transaction-history":
-      return <TransactionHistoryPreview />;
-    case "smart-contract-scanner":
-      return <SmartContractScannerPreview />;
-    case "contract-interaction":
-      return <ContractInteractionPreview />;
-    case "ens-resolver":
-      return <ENSResolverPreview />;
-    case "gas-calculator":
-      return <GasCalculatorPreview />;
-    case "subscription-payments":
-      return <SubscriptionPreview />;
-    case "token-airdrop":
-      return <TokenAirdropPreview />;
-    case "token-vesting":
-      return <TokenVestingPreview />;
-    default:
-      return null;
-  }
+  const Demo = DEMOS[id];
+  return Demo ? <Demo /> : null;
 }
 
 export function UiComponentGrid() {

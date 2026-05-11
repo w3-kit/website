@@ -25,10 +25,10 @@ const FOOTER_COLS = [
   {
     h: "Community",
     links: [
-      { label: "GitHub", href: "https://github.com/pswk1/w3-kit" },
+      { label: "GitHub", href: "https://github.com/w3-kit" },
       { label: "Discord", href: "#" },
       { label: "X / Twitter", href: "#" },
-      { label: "Contribute", href: "https://github.com/pswk1/w3-kit" },
+      { label: "Contribute", href: "https://github.com/w3-kit" },
       { label: "Roadmap", href: "#" },
     ],
   },
@@ -37,7 +37,7 @@ const FOOTER_COLS = [
 export function LandingFooter() {
   return (
     <footer className="border-t border-w3-border-subtle bg-w3-surface-alt">
-      <div className="grid grid-cols-[1.4fr_repeat(3,1fr)] gap-16 px-10 pb-12 pt-[72px]">
+      <div className="grid grid-cols-[1.4fr_repeat(3,1fr)] gap-16 px-20 pb-12 pt-[72px]">
         {/* Brand column */}
         <div>
           <div className="mb-3.5 flex items-center gap-2.5">
@@ -83,14 +83,14 @@ export function LandingFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="flex items-center justify-between border-t border-w3-border-subtle px-10 py-5">
+      <div className="flex items-center justify-between border-t border-w3-border-subtle px-20 py-5">
         <span className="font-mono text-[11px] text-w3-gray-500">
           w3-kit © 2026 · Made with ♥ by builders, for builders · No accounts, no
           telemetry, no catches
         </span>
         <div className="flex gap-[18px]">
           {[
-            { label: "GitHub", href: "https://github.com/pswk1/w3-kit" },
+            { label: "GitHub", href: "https://github.com/w3-kit" },
             { label: "Discord", href: "#" },
             { label: "X", href: "#" },
           ].map((l) => (

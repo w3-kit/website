@@ -1,15 +1,10 @@
-const STATS = [
-  { big: "1.4k", sml: "GitHub stars", sub: "+120 this week" },
-  { big: "48k", sml: "npm downloads / week", sub: "across @w3-kit/*" },
-  { big: "312", sml: "projects building", sub: "tracked on-chain" },
-  { big: "99.2%", sml: "type coverage", sub: "strict mode, always" },
-];
+import { LANDING_STATS } from "../../../entities/stats/model/stats.gen";
 
 export function StatsSection() {
   return (
-    <section className="border-b border-w3-border-subtle bg-w3-surface-alt px-10 py-16">
+    <section className="border-b border-w3-border-subtle bg-w3-surface-alt px-20 py-16">
       <div className="grid grid-cols-4">
-        {STATS.map((s, i) => (
+        {LANDING_STATS.map((s, i) => (
           <div
             key={i}
             className="px-6"
