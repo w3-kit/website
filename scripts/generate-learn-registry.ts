@@ -243,11 +243,251 @@ interface DocInfo {
   content: string;
 }
 
+const LOCAL_DOC_FALLBACKS: Record<string, string> = {
+  introduction: `# Introduction
+
+w3-kit is an open-source toolkit for shipping web3 interfaces faster.
+
+## What is included
+
+- Typed React components for wallet, DeFi, NFT, data, and utility flows
+- A CLI for bootstrapping and adding code into your project
+- Registry data for chains, tokens, and explorer metadata
+- Guides and recipes for common web3 product patterns
+
+## Recommended path
+
+1. Start with \`npx w3-kit init\`
+2. Add one component with \`npx w3-kit add <component>\`
+3. Open the UI explorer to inspect props and install commands
+4. Wire the generated UI to your own wallet, RPC, and backend logic
+`,
+  installation: `# Installation
+
+You can adopt w3-kit incrementally.
+
+## Prerequisites
+
+- Node.js 20+
+- npm
+- A React app that already uses Tailwind CSS
+
+## Bootstrap a project
+
+\`\`\`bash
+npx w3-kit init
+\`\`\`
+
+## Add a component
+
+\`\`\`bash
+npx w3-kit add connect-wallet
+\`\`\`
+
+The CLI copies source into your app so you can read it, edit it, and own the final implementation.
+`,
+  "project-structure": `# Project Structure
+
+w3-kit is designed to stay source-first.
+
+## Typical layout
+
+\`\`\`text
+src/
+  components/
+  lib/
+  styles/
+\`\`\`
+
+## What the toolkit gives you
+
+- UI components with explicit props
+- Small utility helpers instead of framework lock-in
+- Registry-backed data that can be queried from your own app
+
+Keep blockchain state, API clients, and product-specific business logic in your application layer.
+`,
+  configuration: `# Configuration
+
+Most setup work in w3-kit is about connecting product state to presentational UI.
+
+## Common configuration points
+
+- Wallet adapter or wagmi setup
+- RPC and chain selection
+- Theme variables and design tokens
+- App-specific data fetching for balances, prices, and contract state
+
+## Rule of thumb
+
+Treat w3-kit components as typed surfaces. Your app should remain the source of truth for async state, mutation flows, and permissions.
+`,
+  components: `# Components
+
+The component catalog is grouped around real web3 jobs.
+
+## Categories
+
+- Wallet: connect, switch, balances, address book, multisig
+- DeFi: swap, staking, bridge, liquidity, position management
+- NFT: cards, collections, marketplace views
+- Data: token lists, price views, portfolio views, history
+- Utility: contract interaction, ENS, gas, subscriptions, vesting
+
+Each component page under \`/ui\` shows install commands, props, and a live demo.
+`,
+  theming: `# Theming
+
+w3-kit uses CSS variables so the toolkit can match the rest of your product.
+
+## What to customize
+
+- Surface and border colors
+- Accent color
+- Typography
+- Radius, spacing, and shadows
+
+## Practical advice
+
+Start by overriding tokens, not by forking component structure. That keeps upgrades easier while still letting you fit your brand.
+`,
+  "design-tokens": `# Design Tokens
+
+Tokens provide a stable contract between design and implementation.
+
+## Core groups
+
+- Color tokens for text, surfaces, borders, and accents
+- Typography tokens for size, weight, and tracking
+- Layout tokens for spacing, radius, and shadows
+
+## Usage
+
+Prefer tokens over hard-coded values in product code. That keeps the UI consistent across landing pages, docs, and embedded components.
+`,
+  accessibility: `# Accessibility
+
+w3-kit aims to keep web3 UI usable before product-specific polish is added.
+
+## Defaults
+
+- Keyboard reachable interactive controls
+- Semantic labels and readable text hierarchy
+- Focus styles that remain visible on dense surfaces
+- High-contrast accents against neutral surfaces
+
+## Integration note
+
+If you wrap a component with custom state or motion, re-check focus order, labels, and reduced-motion behavior in your app.
+`,
+  "ui-library": `# UI Library
+
+The UI library is the fastest way to understand the toolkit.
+
+## What you will find
+
+- Typed React components with live examples
+- Install commands on every component page
+- Clear prop tables and usage notes
+
+## Best workflow
+
+Browse \`/ui\`, copy the install command for the component you need, and then wire your own data and wallet logic around the generated source.
+`,
+  registry: `# Registry
+
+The registry packages product data that web3 apps repeatedly need.
+
+## Typical data
+
+- Supported chains
+- Token metadata
+- Explorer and RPC references
+
+## Why it matters
+
+Keeping chain and token facts in one typed layer reduces drift between marketing pages, docs, and runtime UI.
+`,
+  cli: `# CLI
+
+The CLI is the fastest path from idea to working source code.
+
+## Main jobs
+
+- Initialize a project
+- Add components
+- Add recipes for common flows
+
+## Philosophy
+
+The CLI writes code into your app instead of hiding behavior behind a remote runtime. You keep the final source and can adapt it freely.
+`,
+  contracts: `# Contracts
+
+w3-kit supports contract-driven products, but it stays application-friendly.
+
+## How to think about it
+
+- Use your own ABI, address, and signer setup
+- Feed decoded contract state into presentational components
+- Pair contract flows with recipes when you need end-to-end examples
+
+The current public website focuses more on frontend composition than on shipping a monolithic contracts framework.
+`,
+  "components-api": `# Components API
+
+Every component page in the UI explorer is the API reference entry point.
+
+## What is documented there
+
+- Import path
+- Required and optional props
+- Controlled versus uncontrolled behavior
+- Expected callback shapes
+
+When in doubt, prefer the live \`/ui/<component>\` page over marketing copy because it reflects the actual exported surface.
+`,
+  "hooks-utilities": `# Hooks and Utilities
+
+The website ships a small supporting layer around the component catalog.
+
+## Examples
+
+- Clipboard helpers for install commands
+- Theme helpers for light and dark mode
+- URL helpers for section-aware navigation
+
+Keep helpers small and explicit. If a utility starts owning product state, it probably belongs in your application instead.
+`,
+  "cli-commands": `# CLI Commands
+
+The CLI is intentionally small.
+
+## Common commands
+
+\`\`\`bash
+npx w3-kit init
+npx w3-kit add connect-wallet
+npx w3-kit add mint-nft --chain evm
+npx w3-kit add swap-tokens --no-learn
+\`\`\`
+
+## Notes
+
+- Use component slugs for UI installs
+- Use recipe slugs for workflow examples
+- Prefer adding one focused unit at a time instead of scaffolding everything at once
+`,
+};
+
 function discoverDocs(): DocInfo[] {
   if (!fs.existsSync(DOCS_DIR)) {
+    console.warn("  docs source not found, using local fallback docs");
     return Object.keys(DOC_SECTION_MAP).map((slug) => ({
       slug,
-      content: `# ${slugToTitle(slug)}\n\nDocumentation for this page is being migrated into the website build.\n`,
+      content:
+        LOCAL_DOC_FALLBACKS[slug] ??
+        `# ${slugToTitle(slug)}\n\nDocumentation for this section is not available yet.\n`,
     }));
   }
 

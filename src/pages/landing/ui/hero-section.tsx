@@ -4,9 +4,16 @@ import {
   Check,
   Copy,
 } from "lucide-react";
+import { componentRegistry } from "../../../entities/component/model";
+import { LANDING_STATS } from "../../../entities/stats/model/stats.gen";
 
 export function HeroSection() {
   const [copied, copy] = useCopyToClipboard("npx w3-kit init");
+  const totalComponents = componentRegistry.length;
+  const chainsSupported =
+    LANDING_STATS.find((stat) => stat.sml === "chains supported")?.big ?? "14";
+  const githubStars =
+    LANDING_STATS.find((stat) => stat.sml === "GitHub stars")?.big ?? "18";
 
   return (
     <section className="grid grid-cols-2 items-end gap-20 border-b border-w3-border-subtle px-20 pb-12 pt-[88px]">
@@ -45,17 +52,17 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Right — description + stats */}
+      {/* Right - description + stats */}
       <div className="flex flex-col gap-4">
         <p className="m-0 max-w-[440px] text-[17px] leading-relaxed text-w3-gray-800">
-          Fifty-plus typed components. Fourteen chains, eighteen tokens, one CLI.
+          {totalComponents} typed components. {chainsSupported} chains. One CLI.
           Ship your dApp this afternoon, not next quarter.
         </p>
         <div className="mt-4 flex gap-9 border-t border-w3-border-subtle pt-5">
           {[
-            { n: "54", l: "components" },
-            { n: "14", l: "chains" },
-            { n: "18", l: "tokens" },
+            { n: String(totalComponents), l: "components" },
+            { n: chainsSupported, l: "chains" },
+            { n: githubStars, l: "github stars" },
             { n: "MIT", l: "license" },
           ].map((x) => (
             <div key={x.l}>

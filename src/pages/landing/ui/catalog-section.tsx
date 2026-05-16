@@ -44,13 +44,13 @@ export function CatalogSection() {
       <div className="flex items-end justify-between border-b border-w3-border-subtle px-20 pb-5 pt-12">
         <div>
           <div className="font-mono text-[11px] tracking-[0.1em] text-w3-gray-500">
-            02 — UI / CATALOG
+            02 - UI / CATALOG
           </div>
           <h2 className="mt-2 text-[40px] font-medium leading-tight tracking-[-0.03em] text-w3-gray-900">
-            Fifty-four components.
+            Featured demos.
             <br />
             <span className="text-w3-gray-600">
-              Each one does one thing,{" "}
+              Each one previews a real component,{" "}
               <span className="font-serif-display italic text-w3-accent">well</span>.
             </span>
           </h2>
@@ -153,7 +153,7 @@ export function CatalogSection() {
       {/* Footer bar */}
       <div className="flex items-center justify-between border-t border-w3-border-subtle px-20 py-3.5">
         <span className="font-mono text-[11px] text-w3-gray-500">
-          Showing {shown.length} of 54
+          Showing {shown.length} featured demos
         </span>
         <a
           href="/ui"

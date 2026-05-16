@@ -6,7 +6,7 @@ export interface LandingStat {
   sub: string;
 }
 
-export const STATS_GENERATED_AT = "2026-05-16T16:15:58.486Z";
+export const STATS_GENERATED_AT = "2026-05-16T16:33:18.866Z";
 
 export const LANDING_STATS: LandingStat[] = [
   {
