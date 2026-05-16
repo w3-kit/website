@@ -1,0 +1,9 @@
+/* AUTO-GENERATED — mirrored from ui/registry/w3-kit/. Edit the source there. */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}

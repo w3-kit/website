@@ -8,5 +8,11 @@ dist
 .env.*
 !.env.example
 src/routeTree.gen.ts
+src/**/*.gen.ts
+src/shared/ui/w3-kit/
+!src/entities/stats/model/stats.gen.ts
+!src/shared/ui/w3-kit/
+!src/shared/ui/w3-kit/**
+!src/shared/ui/w3-kit/index.gen.ts
 .vercel
 test-results/

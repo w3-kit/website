@@ -2,19 +2,7 @@ import { useState } from "react";
 import { SectionContainer } from "../../../shared/ui/section-container";
 import { useScrollReveal } from "../../../shared/lib/use-scroll-animation";
 import { getSectionUrl } from "../../../shared/lib/urls";
-import {
-  ConnectWalletButton,
-  NetworkSwitcher,
-  WalletBalance,
-  TokenSwapWidget,
-  SmartContractScanner,
-  NFTCard,
-} from "../../../shared/ui/previews";
-import {
-  DEMO_NETWORKS,
-  DEMO_BALANCE_TOKENS,
-  DEMO_NFT,
-} from "../../../shared/ui/previews/demo-data";
+import { DEMOS } from "../../../shared/ui/w3-kit-demos";
 
 const FEATURED = [
   { id: "connect-wallet", label: "Wallet" },
@@ -26,22 +14,8 @@ const FEATURED = [
 ] as const;
 
 function getPreview(id: string) {
-  switch (id) {
-    case "connect-wallet":
-      return <ConnectWalletButton className="w-full" />;
-    case "network-switcher":
-      return <NetworkSwitcher networks={DEMO_NETWORKS} testNetworks={[]} onSwitch={() => {}} />;
-    case "wallet-balance":
-      return <WalletBalance tokens={DEMO_BALANCE_TOKENS} variant="compact" />;
-    case "token-swap":
-      return <TokenSwapWidget onSwap={async () => {}} />;
-    case "smart-contract-scanner":
-      return <SmartContractScanner variant="compact" />;
-    case "nft-card":
-      return <NFTCard nft={DEMO_NFT} variant="default" />;
-    default:
-      return null;
-  }
+  const Demo = DEMOS[id];
+  return Demo ? <Demo /> : null;
 }
 
 export function UiFeaturedShowcase() {

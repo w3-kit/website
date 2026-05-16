@@ -16,10 +16,38 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 
-const LEARN_DIR = path.resolve(import.meta.dirname, "../../learn");
-const GUIDES_DIR = path.join(LEARN_DIR, "guides");
-const RECIPES_DIR = path.join(LEARN_DIR, "recipes");
-const DOCS_DIR = path.join(LEARN_DIR, "docs");
+const REPO_ROOT = path.resolve(import.meta.dirname, "..");
+
+const WORKSPACE_ROOTS = Array.from(
+  new Set(
+    [
+      process.env.W3_KIT_WORKSPACE_ROOT,
+      REPO_ROOT,
+      path.resolve(REPO_ROOT, ".."),
+      path.resolve(REPO_ROOT, "../.."),
+      path.resolve(REPO_ROOT, "../../.."),
+    ]
+      .filter((root): root is string => Boolean(root))
+      .map((root) => path.resolve(root)),
+  ),
+);
+
+function findExistingDirectory(relativePaths: string[]): string | null {
+  for (const relativePath of relativePaths) {
+    for (const root of WORKSPACE_ROOTS) {
+      const candidate = path.join(root, relativePath);
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+        return candidate;
+      }
+    }
+  }
+  return null;
+}
+
+const LEARN_DIR = findExistingDirectory(["learn", "w3-kit-learn/mirror"]);
+const GUIDES_DIR = LEARN_DIR ? path.join(LEARN_DIR, "guides") : "";
+const RECIPES_DIR = LEARN_DIR ? path.join(LEARN_DIR, "recipes") : "";
+const DOCS_DIR = LEARN_DIR ? path.join(LEARN_DIR, "docs") : "";
 
 const GUIDE_OUT = path.resolve(
   import.meta.dirname,
@@ -62,6 +90,7 @@ const GIT_NAME_TO_GITHUB: Record<string, string> = {
 };
 
 function getGitAuthor(filePath: string): string {
+  if (!LEARN_DIR) return "PetarStoev02";
   try {
     const result = execSync(
       `git -C ${JSON.stringify(LEARN_DIR)} log --diff-filter=A --format=%an -- ${JSON.stringify(filePath)}`,
@@ -80,9 +109,9 @@ function getGitAuthor(filePath: string): string {
 interface GuideInfo {
   slug: string;
   category: string;
-  filePath: string; // relative to learn repo for @learn alias
   title: string;
   author: string;
+  content: string;
 }
 
 function discoverGuides(): GuideInfo[] {
@@ -116,9 +145,9 @@ function discoverGuides(): GuideInfo[] {
       guides.push({
         slug,
         category,
-        filePath: `@learn/guides/${category}/${file}`,
         title,
         author,
+        content,
       });
     }
   }
@@ -130,13 +159,17 @@ function discoverGuides(): GuideInfo[] {
 
 interface RecipeInfo {
   slug: string;
-  metaPath: string;
-  hasEvm: boolean;
-  hasSolana: boolean;
-  hasLearn: boolean;
-  learnFilename: string;
   category: string; // derived from meta.json chains or manual grouping
-  author: string;
+  meta: {
+    name: string;
+    description: string;
+    chains: string[];
+    dependencies: Record<string, string[]>;
+    author?: string;
+  };
+  evmCode: string;
+  solanaCode: string;
+  learnContent: string;
 }
 
 // Recipe category grouping based on the recipe name patterns
@@ -182,21 +215,21 @@ function discoverRecipes(): RecipeInfo[] {
     if (!fs.existsSync(metaPath)) continue;
 
     const meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
-    const hasEvm = fs.existsSync(path.join(recipeDir, "evm.tsx"));
-    const hasSolana = fs.existsSync(path.join(recipeDir, "solana.tsx"));
+    const evmPath = path.join(recipeDir, "evm.tsx");
+    const solanaPath = path.join(recipeDir, "solana.tsx");
     const learnFile = fs
       .readdirSync(recipeDir)
       .find((f) => f.endsWith(".learn.md"));
 
     recipes.push({
       slug: dir,
-      metaPath: `@learn/recipes/${dir}/meta.json`,
-      hasEvm,
-      hasSolana,
-      hasLearn: !!learnFile,
-      learnFilename: learnFile || "",
       category: getRecipeCategory(dir, meta),
-      author: meta.author ?? "",
+      meta,
+      evmCode: fs.existsSync(evmPath) ? fs.readFileSync(evmPath, "utf-8") : "",
+      solanaCode: fs.existsSync(solanaPath) ? fs.readFileSync(solanaPath, "utf-8") : "",
+      learnContent: learnFile
+        ? fs.readFileSync(path.join(recipeDir, learnFile), "utf-8")
+        : "",
     });
   }
 
@@ -207,12 +240,258 @@ function discoverRecipes(): RecipeInfo[] {
 
 interface DocInfo {
   slug: string;
-  filename: string; // e.g. "introduction.md"
+  content: string;
 }
 
+const LOCAL_DOC_FALLBACKS: Record<string, string> = {
+  introduction: `# Introduction
+
+w3-kit is an open-source toolkit for shipping web3 interfaces faster.
+
+## What is included
+
+- Typed React components for wallet, DeFi, NFT, data, and utility flows
+- A CLI for bootstrapping and adding code into your project
+- Registry data for chains, tokens, and explorer metadata
+- Guides and recipes for common web3 product patterns
+
+## Recommended path
+
+1. Start with \`npx w3-kit init\`
+2. Add one component with \`npx w3-kit add <component>\`
+3. Open the UI explorer to inspect props and install commands
+4. Wire the generated UI to your own wallet, RPC, and backend logic
+`,
+  installation: `# Installation
+
+You can adopt w3-kit incrementally.
+
+## Prerequisites
+
+- Node.js 20+
+- npm
+- A React app that already uses Tailwind CSS
+
+## Bootstrap a project
+
+\`\`\`bash
+npx w3-kit init
+\`\`\`
+
+## Add a component
+
+\`\`\`bash
+npx w3-kit add connect-wallet
+\`\`\`
+
+The CLI copies source into your app so you can read it, edit it, and own the final implementation.
+`,
+  "project-structure": `# Project Structure
+
+w3-kit is designed to stay source-first.
+
+## Typical layout
+
+\`\`\`text
+src/
+  components/
+  lib/
+  styles/
+\`\`\`
+
+## What the toolkit gives you
+
+- UI components with explicit props
+- Small utility helpers instead of framework lock-in
+- Registry-backed data that can be queried from your own app
+
+Keep blockchain state, API clients, and product-specific business logic in your application layer.
+`,
+  configuration: `# Configuration
+
+Most setup work in w3-kit is about connecting product state to presentational UI.
+
+## Common configuration points
+
+- Wallet adapter or wagmi setup
+- RPC and chain selection
+- Theme variables and design tokens
+- App-specific data fetching for balances, prices, and contract state
+
+## Rule of thumb
+
+Treat w3-kit components as typed surfaces. Your app should remain the source of truth for async state, mutation flows, and permissions.
+`,
+  components: `# Components
+
+The component catalog is grouped around real web3 jobs.
+
+## Categories
+
+- Wallet: connect, switch, balances, address book, multisig
+- DeFi: swap, staking, bridge, liquidity, position management
+- NFT: cards, collections, marketplace views
+- Data: token lists, price views, portfolio views, history
+- Utility: contract interaction, ENS, gas, subscriptions, vesting
+
+Each component page under \`/ui\` shows install commands, props, and a live demo.
+`,
+  theming: `# Theming
+
+w3-kit uses CSS variables so the toolkit can match the rest of your product.
+
+## What to customize
+
+- Surface and border colors
+- Accent color
+- Typography
+- Radius, spacing, and shadows
+
+## Practical advice
+
+Start by overriding tokens, not by forking component structure. That keeps upgrades easier while still letting you fit your brand.
+`,
+  "design-tokens": `# Design Tokens
+
+Tokens provide a stable contract between design and implementation.
+
+## Core groups
+
+- Color tokens for text, surfaces, borders, and accents
+- Typography tokens for size, weight, and tracking
+- Layout tokens for spacing, radius, and shadows
+
+## Usage
+
+Prefer tokens over hard-coded values in product code. That keeps the UI consistent across landing pages, docs, and embedded components.
+`,
+  accessibility: `# Accessibility
+
+w3-kit aims to keep web3 UI usable before product-specific polish is added.
+
+## Defaults
+
+- Keyboard reachable interactive controls
+- Semantic labels and readable text hierarchy
+- Focus styles that remain visible on dense surfaces
+- High-contrast accents against neutral surfaces
+
+## Integration note
+
+If you wrap a component with custom state or motion, re-check focus order, labels, and reduced-motion behavior in your app.
+`,
+  "ui-library": `# UI Library
+
+The UI library is the fastest way to understand the toolkit.
+
+## What you will find
+
+- Typed React components with live examples
+- Install commands on every component page
+- Clear prop tables and usage notes
+
+## Best workflow
+
+Browse \`/ui\`, copy the install command for the component you need, and then wire your own data and wallet logic around the generated source.
+`,
+  registry: `# Registry
+
+The registry packages product data that web3 apps repeatedly need.
+
+## Typical data
+
+- Supported chains
+- Token metadata
+- Explorer and RPC references
+
+## Why it matters
+
+Keeping chain and token facts in one typed layer reduces drift between marketing pages, docs, and runtime UI.
+`,
+  cli: `# CLI
+
+The CLI is the fastest path from idea to working source code.
+
+## Main jobs
+
+- Initialize a project
+- Add components
+- Add recipes for common flows
+
+## Philosophy
+
+The CLI writes code into your app instead of hiding behavior behind a remote runtime. You keep the final source and can adapt it freely.
+`,
+  contracts: `# Contracts
+
+w3-kit supports contract-driven products, but it stays application-friendly.
+
+## How to think about it
+
+- Use your own ABI, address, and signer setup
+- Feed decoded contract state into presentational components
+- Pair contract flows with recipes when you need end-to-end examples
+
+The current public website focuses more on frontend composition than on shipping a monolithic contracts framework.
+`,
+  "components-api": `# Components API
+
+Every component page in the UI explorer is the API reference entry point.
+
+## What is documented there
+
+- Import path
+- Required and optional props
+- Controlled versus uncontrolled behavior
+- Expected callback shapes
+
+When in doubt, prefer the live \`/ui/<component>\` page over marketing copy because it reflects the actual exported surface.
+`,
+  "hooks-utilities": `# Hooks and Utilities
+
+The website ships a small supporting layer around the component catalog.
+
+## Examples
+
+- Clipboard helpers for install commands
+- Theme helpers for light and dark mode
+- URL helpers for section-aware navigation
+
+Keep helpers small and explicit. If a utility starts owning product state, it probably belongs in your application instead.
+`,
+  "cli-commands": `# CLI Commands
+
+The CLI is intentionally small.
+
+## Common commands
+
+\`\`\`bash
+npx w3-kit init
+npx w3-kit add connect-wallet
+npx w3-kit add mint-nft --chain evm
+npx w3-kit add swap-tokens --no-learn
+\`\`\`
+
+## Notes
+
+- Use component slugs for UI installs
+- Use recipe slugs for workflow examples
+- Prefer adding one focused unit at a time instead of scaffolding everything at once
+`,
+};
+
 function discoverDocs(): DocInfo[] {
+  if (!fs.existsSync(DOCS_DIR)) {
+    console.warn("  docs source not found, using local fallback docs");
+    return Object.keys(DOC_SECTION_MAP).map((slug) => ({
+      slug,
+      content:
+        LOCAL_DOC_FALLBACKS[slug] ??
+        `# ${slugToTitle(slug)}\n\nDocumentation for this section is not available yet.\n`,
+    }));
+  }
+
   const docs: DocInfo[] = [];
-  if (!fs.existsSync(DOCS_DIR)) return docs;
 
   const files = fs
     .readdirSync(DOCS_DIR)
@@ -222,7 +501,7 @@ function discoverDocs(): DocInfo[] {
   for (const file of files) {
     docs.push({
       slug: file.replace(/\.md$/, ""),
-      filename: file,
+      content: fs.readFileSync(path.join(DOCS_DIR, file), "utf-8"),
     });
   }
 
@@ -237,18 +516,9 @@ function generateGuideRegistry(guides: GuideInfo[]): string {
     'import type { GuideMeta } from "./types";',
     "",
   ];
-
-  // Imports
-  for (const g of guides) {
-    const varName = toCamelCase(g.slug) + "Content";
-    lines.push(`import ${varName} from "${g.filePath}?raw";`);
-  }
-
-  lines.push("");
   lines.push("export const guideRegistry: GuideMeta[] = [");
 
   for (const g of guides) {
-    const varName = toCamelCase(g.slug) + "Content";
     lines.push("  {");
     lines.push(`    id: ${JSON.stringify(g.slug)},`);
     lines.push(`    title: ${JSON.stringify(g.title)},`);
@@ -257,7 +527,7 @@ function generateGuideRegistry(guides: GuideInfo[]): string {
     );
     lines.push(`    category: ${JSON.stringify(g.category)} as GuideMeta["category"],`);
     lines.push(`    slug: ${JSON.stringify(g.slug)},`);
-    lines.push(`    content: ${varName},`);
+    lines.push(`    content: ${JSON.stringify(g.content)},`);
     lines.push(`    author: ${JSON.stringify(g.author)},`);
     lines.push("  },");
   }
@@ -275,42 +545,20 @@ function generateRecipeRegistry(recipes: RecipeInfo[]): string {
     'import type { RecipeMeta } from "./types";',
     "",
   ];
-
-  // Imports
-  for (const r of recipes) {
-    const prefix = toCamelCase(r.slug);
-    lines.push(`import ${prefix}Meta from "@learn/recipes/${r.slug}/meta.json";`);
-    if (r.hasEvm) {
-      lines.push(`import ${prefix}Evm from "@learn/recipes/${r.slug}/evm.tsx?raw";`);
-    }
-    if (r.hasSolana) {
-      lines.push(
-        `import ${prefix}Solana from "@learn/recipes/${r.slug}/solana.tsx?raw";`,
-      );
-    }
-    if (r.hasLearn) {
-      lines.push(
-        `import ${prefix}Learn from "@learn/recipes/${r.slug}/${r.learnFilename}?raw";`,
-      );
-    }
-  }
-
-  lines.push("");
   lines.push("export const recipeRegistry: RecipeMeta[] = [");
 
   for (const r of recipes) {
-    const prefix = toCamelCase(r.slug);
     lines.push("  {");
-    lines.push(`    id: ${prefix}Meta.name,`);
-    lines.push(`    name: ${prefix}Meta.name,`);
-    lines.push(`    description: ${prefix}Meta.description,`);
-    lines.push(`    slug: ${prefix}Meta.name,`);
-    lines.push(`    chains: ${prefix}Meta.chains,`);
-    lines.push(`    dependencies: ${prefix}Meta.dependencies,`);
-    lines.push(`    evmCode: ${r.hasEvm ? `${prefix}Evm` : '""'},`);
-    lines.push(`    solanaCode: ${r.hasSolana ? `${prefix}Solana` : '""'},`);
-    lines.push(`    learnContent: ${r.hasLearn ? `${prefix}Learn` : '""'},`);
-    lines.push(`    author: ${prefix}Meta.author ?? "",`);
+    lines.push(`    id: ${JSON.stringify(r.meta.name)},`);
+    lines.push(`    name: ${JSON.stringify(r.meta.name)},`);
+    lines.push(`    description: ${JSON.stringify(r.meta.description)},`);
+    lines.push(`    slug: ${JSON.stringify(r.meta.name)},`);
+    lines.push(`    chains: ${JSON.stringify(r.meta.chains)},`);
+    lines.push(`    dependencies: ${JSON.stringify(r.meta.dependencies)},`);
+    lines.push(`    evmCode: ${JSON.stringify(r.evmCode)},`);
+    lines.push(`    solanaCode: ${JSON.stringify(r.solanaCode)},`);
+    lines.push(`    learnContent: ${JSON.stringify(r.learnContent)},`);
+    lines.push(`    author: ${JSON.stringify(r.meta.author ?? "")},`);
     lines.push("  },");
   }
 
@@ -326,18 +574,10 @@ function generateDocContent(docs: DocInfo[]): string {
     '// AUTO-GENERATED by scripts/generate-learn-registry.ts — do not edit manually',
     "",
   ];
-
-  for (const doc of docs) {
-    const varName = toCamelCase(doc.slug) + "Doc";
-    lines.push(`import ${varName} from "@learn/docs/${doc.filename}?raw";`);
-  }
-
-  lines.push("");
   lines.push("export const docContentMap: Record<string, string> = {");
 
   for (const doc of docs) {
-    const varName = toCamelCase(doc.slug) + "Doc";
-    lines.push(`  ${JSON.stringify(doc.slug)}: ${varName},`);
+    lines.push(`  ${JSON.stringify(doc.slug)}: ${JSON.stringify(doc.content)},`);
   }
 
   lines.push("};");
@@ -480,6 +720,15 @@ function generateDocsNav(
 // ── Main ────────────────────────────────────────────────────────────────────
 
 console.log("Scanning learn repo...");
+const outFiles = [GUIDE_OUT, RECIPE_OUT, NAV_OUT, DOC_CONTENT_OUT];
+
+if (!LEARN_DIR) {
+  if (outFiles.every((file) => fs.existsSync(file))) {
+    console.warn("  learn repo not found, reusing committed generated registries");
+    process.exit(0);
+  }
+  console.warn("  learn repo not found, generating empty registries");
+}
 
 const guides = discoverGuides();
 console.log(`  Found ${guides.length} guides`);
@@ -491,8 +740,6 @@ const docs = discoverDocs();
 console.log(`  Found ${docs.length} doc pages`);
 
 // Write files
-const outFiles = [GUIDE_OUT, RECIPE_OUT, NAV_OUT, DOC_CONTENT_OUT];
-
 fs.writeFileSync(GUIDE_OUT, generateGuideRegistry(guides));
 console.log(`  Wrote ${path.relative(process.cwd(), GUIDE_OUT)}`);
 

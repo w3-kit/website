@@ -1,0 +1,29 @@
+/* AUTO-GENERATED — mirrored from ui/registry/w3-kit/. Edit the source there. */
+
+export { AddressBook } from "./address-book/address-book";
+export { AssetPortfolio } from "./asset-portfolio/asset-portfolio";
+export { BridgeWidget } from "./bridge/bridge";
+export { ConnectWallet } from "./connect-wallet/connect-wallet";
+export { ContractInteraction } from "./contract-interaction/contract-interaction";
+export { DeFiPositionManager } from "./defi-position-manager/defi-position-manager";
+export { ENSResolver } from "./ens-resolver/ens-resolver";
+export { FlashLoanExecutor } from "./flash-loan-executor/flash-loan-executor";
+export { GasCalculator } from "./gas-calculator/gas-calculator";
+export { LimitOrderManager } from "./limit-order-manager/limit-order-manager";
+export { LiquidityPoolStats } from "./liquidity-pool-stats/liquidity-pool-stats";
+export { MultisigWallet } from "./multisig-wallet/multisig-wallet";
+export { NetworkSwitcher } from "./network-switcher/network-switcher";
+export { NFTCard } from "./nft-card/nft-card";
+export { NFTCollectionGrid } from "./nft-collection-grid/nft-collection-grid";
+export { NFTMarketplaceAggregator } from "./nft-marketplace-aggregator/nft-marketplace-aggregator";
+export { PriceTicker } from "./price-ticker/price-ticker";
+export { SmartContractScanner } from "./smart-contract-scanner/smart-contract-scanner";
+export { StakingInterface } from "./staking-interface/staking-interface";
+export { SubscriptionPayments } from "./subscription-payments/subscription-payments";
+export { TokenAirdrop } from "./token-airdrop/token-airdrop";
+export { TokenCard } from "./token-card/token-card";
+export { TokenList } from "./token-list/token-list";
+export { TokenSwap } from "./token-swap/token-swap";
+export { TokenVesting } from "./token-vesting/token-vesting";
+export { TransactionHistory } from "./transaction-history/transaction-history";
+export { WalletBalance } from "./wallet-balance/wallet-balance";

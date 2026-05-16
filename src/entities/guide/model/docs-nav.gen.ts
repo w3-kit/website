@@ -15,36 +15,36 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Getting Started",
     items: [
-      { label: "Configuration", slug: "configuration", type: "markdown" },
-      { label: "Installation", slug: "installation", type: "markdown" },
       { label: "Introduction", slug: "introduction", type: "markdown" },
+      { label: "Installation", slug: "installation", type: "markdown" },
       { label: "Project Structure", slug: "project-structure", type: "markdown" },
+      { label: "Configuration", slug: "configuration", type: "markdown" },
     ],
   },
   {
     title: "Core Concepts",
     items: [
-      { label: "Accessibility", slug: "accessibility", type: "markdown" },
       { label: "Components", slug: "components", type: "markdown" },
-      { label: "Design Tokens", slug: "design-tokens", type: "markdown" },
       { label: "Theming", slug: "theming", type: "markdown" },
+      { label: "Design Tokens", slug: "design-tokens", type: "markdown" },
+      { label: "Accessibility", slug: "accessibility", type: "markdown" },
     ],
   },
   {
     title: "Ecosystem",
     items: [
+      { label: "Ui Library", slug: "ui-library", type: "markdown" },
+      { label: "Registry", slug: "registry", type: "markdown" },
       { label: "Cli", slug: "cli", type: "markdown" },
       { label: "Contracts", slug: "contracts", type: "markdown" },
-      { label: "Registry", slug: "registry", type: "markdown" },
-      { label: "Ui Library", slug: "ui-library", type: "markdown" },
     ],
   },
   {
     title: "API Reference",
     items: [
-      { label: "Cli Commands", slug: "cli-commands", type: "markdown" },
       { label: "Components Api", slug: "components-api", type: "markdown" },
       { label: "Hooks Utilities", slug: "hooks-utilities", type: "markdown" },
+      { label: "Cli Commands", slug: "cli-commands", type: "markdown" },
     ],
   },
   {
@@ -56,11 +56,7 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Guides: Concepts",
     items: [
-      {
-        label: "Accounts Model — EVM vs Solana, Side-by-Side",
-        slug: "accounts-model",
-        type: "guide",
-      },
+      { label: "Accounts Model — EVM vs Solana, Side-by-Side", slug: "accounts-model", type: "guide" },
       { label: "How Transactions Work", slug: "how-transactions-work", type: "guide" },
       { label: "Public vs Private Keys", slug: "public-vs-private-keys", type: "guide" },
       { label: "What Are Smart Contracts?", slug: "what-are-smart-contracts", type: "guide" },
@@ -70,35 +66,25 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Guides: Evm",
     items: [
-      {
-        label: "Gas Explained — EVM Fee Mechanics From First Principles",
-        slug: "gas-explained",
-        type: "guide",
-      },
+      { label: "Gas Explained — EVM Fee Mechanics From First Principles", slug: "gas-explained", type: "guide" },
     ],
   },
   {
     title: "Guides: Glossary",
-    items: [{ label: "Web3 Glossary", slug: "glossary", type: "guide" }],
+    items: [
+      { label: "Web3 Glossary", slug: "glossary", type: "guide" },
+    ],
   },
   {
     title: "Guides: Security",
     items: [
-      {
-        label: "Top 10 Smart Contract Vulnerabilities — EVM & Solana",
-        slug: "top-10-vulnerabilities",
-        type: "guide",
-      },
+      { label: "Top 10 Smart Contract Vulnerabilities — EVM & Solana", slug: "top-10-vulnerabilities", type: "guide" },
     ],
   },
   {
     title: "Guides: Solana",
     items: [
-      {
-        label: "PDAs Explained — Program Derived Addresses From First Principles",
-        slug: "pdas-explained",
-        type: "guide",
-      },
+      { label: "PDAs Explained — Program Derived Addresses From First Principles", slug: "pdas-explained", type: "guide" },
     ],
   },
   {
