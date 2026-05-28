@@ -1,6 +1,7 @@
 import { Separator } from "../../shared/ui/separator";
-import { GitHubIcon } from "../../shared/ui/github-icon";
 import { getSectionUrl } from "../../shared/lib/urls";
+import { GitHubLink } from "../../shared/ui/header-bits/github-link";
+import { AppFooter } from "../app-footer";
 import { ThemeToggle } from "../site-footer/theme-toggle";
 
 const subdomainLinks = [
@@ -11,7 +12,7 @@ const subdomainLinks = [
 
 export function UiFooter() {
   return (
-    <footer className="mt-auto" style={{ borderTop: "1px solid var(--w3-border-subtle)" }}>
+    <AppFooter>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between md:px-8 lg:px-16">
         {/* Left: branding + copyright */}
         <div className="flex items-center gap-3">
@@ -40,20 +41,11 @@ export function UiFooter() {
 
         {/* Right: GitHub + ThemeToggle */}
         <div className="flex items-center gap-3">
-          <a
-            href="https://github.com/w3-kit"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-foreground"
-            style={{ color: "var(--w3-gray-600)" }}
-          >
-            <GitHubIcon size={16} />
-            GitHub
-          </a>
+          <GitHubLink showLabel />
           <Separator orientation="vertical" className="!h-4" />
           <ThemeToggle />
         </div>
       </div>
-    </footer>
+    </AppFooter>
   );
 }

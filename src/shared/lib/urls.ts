@@ -1,35 +1,20 @@
 const DOMAIN = "w3-kit.com";
+const DEV_HOST = "localhost:3000";
 
 /**
  * Returns the URL for a section.
- * - Production: subdomain URLs (ui.w3-kit.com)
- * - Local dev: subdomain URLs (ui.localhost:3000) with path fallback
+ * - Production: https://${section}.w3-kit.com
+ * - Local dev:  http://${section}.localhost:3000
  *
- * Note: some browsers don't resolve *.localhost subdomains.
- * The path-based fallback (/ui, /docs) always works via TanStack Router.
+ * Uses `import.meta.env.PROD` so SSR and client always produce the same string
+ * (preventing hydration mismatches that would silently keep stale hrefs).
+ *
+ * Relies on the browser resolving *.localhost to 127.0.0.1 (RFC 6761).
+ * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add to /etc/hosts:
+ * `127.0.0.1 ui.localhost docs.localhost registry.localhost learn.localhost design.localhost`.
  */
 export function getSectionUrl(section: string): string {
-  if (typeof window === "undefined") return `/${section}`;
-  const host = window.location.host;
-  const protocol = window.location.protocol;
-
-  // Production: always use subdomains
-  if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
-    return `${protocol}//${section}.${DOMAIN}`;
-  }
-
-  // Local dev: use subdomains if we're already on one,
-  // otherwise use path-based routing (safer fallback)
-  const currentSub = host.split(".")[0];
-  const isOnSubdomain = ["ui", "docs", "registry", "learn", "design"].includes(currentSub);
-
-  if (isOnSubdomain) {
-    const port = window.location.port;
-    return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
-  }
-
-  // Fallback: path-based (always works)
-  return `/${section}`;
+  return import.meta.env.PROD ? `https://${section}.${DOMAIN}` : `http://${section}.${DEV_HOST}`;
 }
 
 /** Resolves a doc nav item to its full URL path */
@@ -40,23 +25,12 @@ export function getDocItemHref(item: { slug: string; type: string }): string {
   return `${base}/${item.slug}`;
 }
 
+/** Returns the landing-page URL (root host with no subdomain). */
 export function getLandingUrl(): string {
-  if (typeof window === "undefined") return "/";
-  const host = window.location.host;
-  const protocol = window.location.protocol;
+  return import.meta.env.PROD ? `https://www.${DOMAIN}` : `http://${DEV_HOST}`;
+}
 
-  if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
-    return `${protocol}//www.${DOMAIN}`;
-  }
-
-  // If on a subdomain, link back to root localhost
-  const currentSub = host.split(".")[0];
-  const isOnSubdomain = ["ui", "docs", "registry", "learn", "design"].includes(currentSub);
-
-  if (isOnSubdomain) {
-    const port = window.location.port;
-    return `${protocol}//localhost${port ? `:${port}` : ""}`;
-  }
-
-  return "/";
+/** True if the href points off-domain (used to decide target="_blank"). */
+export function isExternalHref(href: string): boolean {
+  return /^https?:\/\//.test(href) && !href.includes(DOMAIN);
 }
