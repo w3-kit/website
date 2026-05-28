@@ -1,8 +1,28 @@
 const RECIPES = [
-  { t: "5 min", title: "Connect a wallet", desc: "Drop in <ConnectWallet />, done.", code: "npx w3-kit add connect-wallet" },
-  { t: "8 min", title: "Show token balances", desc: "Multi-chain, typed, with USD conversion.", code: "npx w3-kit add wallet-balance" },
-  { t: "12 min", title: "Swap tokens via 1inch", desc: "Production-ready aggregator UI.", code: "npx w3-kit add token-swap" },
-  { t: "15 min", title: "Mint an NFT", desc: "Preview, pay, confirm — three components.", code: "npx w3-kit add nft-mint" },
+  {
+    t: "5 min",
+    title: "Connect a wallet",
+    desc: "Drop in <ConnectWallet />, done.",
+    code: "npx w3-kit add connect-wallet",
+  },
+  {
+    t: "8 min",
+    title: "Show token balances",
+    desc: "Multi-chain, typed, with USD conversion.",
+    code: "npx w3-kit add wallet-balance",
+  },
+  {
+    t: "12 min",
+    title: "Swap tokens via 1inch",
+    desc: "Production-ready aggregator UI.",
+    code: "npx w3-kit add token-swap",
+  },
+  {
+    t: "15 min",
+    title: "Mint an NFT",
+    desc: "Preview, pay, confirm — three components.",
+    code: "npx w3-kit add nft-mint",
+  },
 ];
 
 export function RecipesSection() {
@@ -14,8 +34,7 @@ export function RecipesSection() {
           Build in the time it takes
           <br />
           <span className="text-w3-gray-600">
-            to brew{" "}
-            <span className="font-serif-display italic text-w3-accent">a coffee.</span>
+            to brew <span className="font-serif-display italic text-w3-accent">a coffee.</span>
           </span>
         </h2>
       </div>

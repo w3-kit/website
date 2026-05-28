@@ -1,17 +1,31 @@
 import { useState, useEffect } from "react";
-import { Check, ArrowRight } from "lucide-react";
+import { Check } from "lucide-react";
 
 /* ── Shared mark component ────────────────────────────────────────── */
 
 const CHAIN_COLOR: Record<string, string> = {
-  ETH: "#627eea", BASE: "#0052ff", ARB: "#28a0f0", OP: "#ff0420",
-  POLY: "#8247e5", SOL: "#9945ff", ZK: "#0f0f0f", AVAX: "#e84142",
-  BNB: "#f0b90b", LINEA: "#61dfff",
+  ETH: "#627eea",
+  BASE: "#0052ff",
+  ARB: "#28a0f0",
+  OP: "#ff0420",
+  POLY: "#8247e5",
+  SOL: "#9945ff",
+  ZK: "#0f0f0f",
+  AVAX: "#e84142",
+  BNB: "#f0b90b",
+  LINEA: "#61dfff",
 };
 const TOKEN_COLOR: Record<string, string> = {
-  USDC: "#2775ca", USDT: "#26a17b", DAI: "#f5ac37", WETH: "#627eea",
-  WBTC: "#f7931a", LINK: "#2a5ada", UNI: "#ff007a", AAVE: "#b6509e",
-  ARB: "#28a0f0", OP: "#ff0420",
+  USDC: "#2775ca",
+  USDT: "#26a17b",
+  DAI: "#f5ac37",
+  WETH: "#627eea",
+  WBTC: "#f7931a",
+  LINK: "#2a5ada",
+  UNI: "#ff007a",
+  AAVE: "#b6509e",
+  ARB: "#28a0f0",
+  OP: "#ff0420",
 };
 
 function Mark({ label, color, size = 22 }: { label: string; color: string; size?: number }) {
@@ -19,8 +33,13 @@ function Mark({ label, color, size = 22 }: { label: string; color: string; size?
     <span
       className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full font-sans transition-all hover:-translate-y-[3px] hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.3)]"
       style={{
-        width: size, height: size, background: color,
-        color: "#fff", fontSize: size * 0.42, fontWeight: 600, letterSpacing: -0.3,
+        width: size,
+        height: size,
+        background: color,
+        color: "#fff",
+        fontSize: size * 0.42,
+        fontWeight: 600,
+        letterSpacing: -0.3,
       }}
     >
       {label.slice(0, 1).toUpperCase()}
@@ -106,7 +125,10 @@ export function TokenSwapMini() {
 export function NetworkSwitcherMini() {
   const [active, setActive] = useState("ETH");
   const nets: [string, string][] = [
-    ["ETH", "Ethereum"], ["BASE", "Base"], ["ARB", "Arbitrum"], ["POLY", "Polygon"],
+    ["ETH", "Ethereum"],
+    ["BASE", "Base"],
+    ["ARB", "Arbitrum"],
+    ["POLY", "Polygon"],
   ];
 
   return (
@@ -126,7 +148,9 @@ export function NetworkSwitcherMini() {
             <ChainMark k={k} size={18} />
             {n}
             {active === k && (
-              <span className="ml-auto"><Check size={13} className="text-w3-accent" /></span>
+              <span className="ml-auto">
+                <Check size={13} className="text-w3-accent" />
+              </span>
             )}
           </button>
         ))}
@@ -140,20 +164,26 @@ export function WalletBalanceMini() {
     <div className="flex h-full flex-col gap-2.5 p-3.5">
       <div className="font-mono text-[11px] text-w3-gray-500">&lt;WalletBalance /&gt;</div>
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-w3-gray-500">Total</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-w3-gray-500">
+          Total
+        </div>
         <div className="text-[26px] font-medium tracking-[-0.02em]">$12,481.53</div>
         <div className="text-[11px] text-[#16a34a]">+$241.08 (1.96%)</div>
       </div>
       <div className="flex flex-col gap-[3px]">
-        {([["ETH", 1.42, 3853.76], ["USDC", 2500, 2500.0], ["LINK", 142, 2127.77]] as [string, number, number][]).map(
-          ([k, b]) => (
-            <div key={k} className="flex items-center gap-2 text-xs">
-              <TokenMark k={k} size={16} />
-              <span className="flex-1">{k}</span>
-              <span className="font-mono text-w3-gray-600">{b.toLocaleString()}</span>
-            </div>
-          ),
-        )}
+        {(
+          [
+            ["ETH", 1.42, 3853.76],
+            ["USDC", 2500, 2500.0],
+            ["LINK", 142, 2127.77],
+          ] as [string, number, number][]
+        ).map(([k, b]) => (
+          <div key={k} className="flex items-center gap-2 text-xs">
+            <TokenMark k={k} size={16} />
+            <span className="flex-1">{k}</span>
+            <span className="font-mono text-w3-gray-600">{b.toLocaleString()}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -187,7 +217,9 @@ export function GasTrackerMini() {
     <div className="flex h-full flex-col gap-2.5 p-3.5">
       <div className="font-mono text-[11px] text-w3-gray-500">&lt;GasTracker /&gt;</div>
       <div className="flex items-baseline gap-1.5">
-        <span className="font-mono text-[30px] font-medium tracking-[-0.02em]">{base.toFixed(1)}</span>
+        <span className="font-mono text-[30px] font-medium tracking-[-0.02em]">
+          {base.toFixed(1)}
+        </span>
         <span className="text-xs text-w3-gray-600">gwei</span>
       </div>
       <div className="flex h-8 items-end gap-1">
@@ -212,9 +244,16 @@ export function ContractCallMini() {
     <div className="flex h-full flex-col gap-2 p-3.5">
       <div className="font-mono text-[11px] text-w3-gray-500">&lt;ContractCall /&gt;</div>
       <div className="flex flex-1 flex-col gap-[3px] font-mono text-[11px] leading-relaxed">
-        <div><span className="text-w3-gray-500">fn</span> <span className="text-w3-accent">balanceOf</span>(</div>
-        <div className="pl-3"><span className="text-w3-gray-500">addr:</span> 0x7f…3E2a</div>
-        <div>) → <span className="text-[#16a34a]">uint256</span></div>
+        <div>
+          <span className="text-w3-gray-500">fn</span>{" "}
+          <span className="text-w3-accent">balanceOf</span>(
+        </div>
+        <div className="pl-3">
+          <span className="text-w3-gray-500">addr:</span> 0x7f…3E2a
+        </div>
+        <div>
+          ) → <span className="text-[#16a34a]">uint256</span>
+        </div>
         <div className="mt-1 text-base tracking-[-0.02em] text-w3-gray-900">1,420,100</div>
       </div>
       <button className="w-full rounded-md border border-w3-border-standard px-2.5 py-[7px] font-mono text-[11px]">
@@ -264,9 +303,13 @@ export function TxHistoryMini() {
           <div
             key={i}
             className="flex items-baseline gap-2 py-1 text-[11px]"
-            style={{ borderBottom: i < txs.length - 1 ? "1px dashed var(--w3-border-subtle)" : "none" }}
+            style={{
+              borderBottom: i < txs.length - 1 ? "1px dashed var(--w3-border-subtle)" : "none",
+            }}
           >
-            <span className="min-w-[42px] font-mono text-[9px] uppercase text-w3-accent">{tx.a}</span>
+            <span className="min-w-[42px] font-mono text-[9px] uppercase text-w3-accent">
+              {tx.a}
+            </span>
             <span className="flex-1 text-w3-gray-800">{tx.amt}</span>
             <span className="font-mono text-[10px] text-w3-gray-500">{tx.t}</span>
           </div>
@@ -281,14 +324,18 @@ export function StakingMini() {
     <div className="flex h-full flex-col gap-2 p-3.5">
       <div className="font-mono text-[11px] text-w3-gray-500">&lt;Staking /&gt;</div>
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-w3-gray-500">APR</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-w3-gray-500">
+          APR
+        </div>
         <div className="font-mono text-[28px] font-medium text-w3-accent">4.82%</div>
       </div>
       <div className="h-1.5 overflow-hidden rounded-[3px] bg-w3-surface-alt">
         <div className="h-full w-[68%] bg-w3-accent" />
       </div>
       <div className="flex justify-between text-[11px] text-w3-gray-600">
-        <span>Staked <b className="text-w3-gray-900">32 ETH</b></span>
+        <span>
+          Staked <b className="text-w3-gray-900">32 ETH</b>
+        </span>
         <span>68% to next tier</span>
       </div>
       <button className="w-full rounded-lg bg-w3-gray-900 px-2.5 py-2 text-xs font-medium text-w3-gray-100">
