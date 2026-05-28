@@ -1,27 +1,20 @@
 const DOMAIN = "w3-kit.com";
+const DEV_HOST = "localhost:3000";
 
 /**
  * Returns the URL for a section.
- * - Production: subdomain URLs (ui.w3-kit.com)
- * - Local dev: subdomain URLs (ui.localhost:3000)
+ * - Production: https://${section}.w3-kit.com
+ * - Local dev:  http://${section}.localhost:3000
+ *
+ * Uses `import.meta.env.PROD` so SSR and client always produce the same string
+ * (preventing hydration mismatches that would silently keep stale hrefs).
  *
  * Relies on the browser resolving *.localhost to 127.0.0.1 (RFC 6761).
- * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add an
- * /etc/hosts entry: `127.0.0.1 ui.localhost docs.localhost registry.localhost learn.localhost design.localhost`.
+ * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add to /etc/hosts:
+ * `127.0.0.1 ui.localhost docs.localhost registry.localhost learn.localhost design.localhost`.
  */
 export function getSectionUrl(section: string): string {
-  if (typeof window === "undefined") return `/${section}`;
-  const host = window.location.host;
-  const protocol = window.location.protocol;
-
-  // Production: subdomain on the production domain
-  if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
-    return `${protocol}//${section}.${DOMAIN}`;
-  }
-
-  // Local dev: subdomain on localhost
-  const port = window.location.port;
-  return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
+  return import.meta.env.PROD ? `https://${section}.${DOMAIN}` : `http://${section}.${DEV_HOST}`;
 }
 
 /** Resolves a doc nav item to its full URL path */
@@ -32,23 +25,7 @@ export function getDocItemHref(item: { slug: string; type: string }): string {
   return `${base}/${item.slug}`;
 }
 
+/** Returns the landing-page URL (root host with no subdomain). */
 export function getLandingUrl(): string {
-  if (typeof window === "undefined") return "/";
-  const host = window.location.host;
-  const protocol = window.location.protocol;
-
-  if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
-    return `${protocol}//www.${DOMAIN}`;
-  }
-
-  // If on a subdomain, link back to root localhost
-  const currentSub = host.split(".")[0];
-  const isOnSubdomain = ["ui", "docs", "registry", "learn", "design"].includes(currentSub);
-
-  if (isOnSubdomain) {
-    const port = window.location.port;
-    return `${protocol}//localhost${port ? `:${port}` : ""}`;
-  }
-
-  return "/";
+  return import.meta.env.PROD ? `https://www.${DOMAIN}` : `http://${DEV_HOST}`;
 }
