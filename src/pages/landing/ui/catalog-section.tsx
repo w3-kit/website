@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { DEMOS } from "../../../shared/ui/w3-kit-demos";
+import { getSectionUrl } from "../../../shared/lib/urls";
 
 interface CatalogItem {
   /** Display index ("001", …) */
@@ -18,15 +19,57 @@ interface CatalogItem {
 }
 
 const ITEMS: CatalogItem[] = [
-  { id: "001", slug: "connect-wallet", name: "ConnectWallet", cat: "wallet", scale: 0.55, stage: 360 },
+  {
+    id: "001",
+    slug: "connect-wallet",
+    name: "ConnectWallet",
+    cat: "wallet",
+    scale: 0.55,
+    stage: 360,
+  },
   { id: "002", slug: "token-swap", name: "TokenSwap", cat: "defi", scale: 0.5, stage: 380 },
-  { id: "003", slug: "network-switcher", name: "NetworkSwitcher", cat: "chain", scale: 0.6, stage: 360 },
-  { id: "004", slug: "wallet-balance", name: "WalletBalance", cat: "wallet", scale: 0.45, stage: 420 },
+  {
+    id: "003",
+    slug: "network-switcher",
+    name: "NetworkSwitcher",
+    cat: "chain",
+    scale: 0.6,
+    stage: 360,
+  },
+  {
+    id: "004",
+    slug: "wallet-balance",
+    name: "WalletBalance",
+    cat: "wallet",
+    scale: 0.45,
+    stage: 420,
+  },
   { id: "005", slug: "nft-card", name: "NFTCard", cat: "nft", scale: 0.7, stage: 280 },
-  { id: "006", slug: "gas-calculator", name: "GasCalculator", cat: "chain", scale: 0.6, stage: 380 },
-  { id: "007", slug: "contract-interaction", name: "ContractInteraction", cat: "smart", scale: 0.6, stage: 360 },
+  {
+    id: "006",
+    slug: "gas-calculator",
+    name: "GasCalculator",
+    cat: "chain",
+    scale: 0.6,
+    stage: 380,
+  },
+  {
+    id: "007",
+    slug: "contract-interaction",
+    name: "ContractInteraction",
+    cat: "smart",
+    scale: 0.6,
+    stage: 360,
+  },
   { id: "008", slug: "ens-resolver", name: "EnsResolver", cat: "identity", scale: 0.7, stage: 360 },
-  { id: "009", slug: "transaction-history", name: "TransactionHistory", cat: "wallet", scale: 0.55, stage: 380 },
+  {
+    id: "009",
+    slug: "transaction-history",
+    name: "TransactionHistory",
+    cat: "wallet",
+    scale: 0.55,
+    stage: 380,
+  },
   { id: "010", slug: "staking-interface", name: "Staking", cat: "defi", scale: 0.45, stage: 440 },
   { id: "011", slug: "multisig-wallet", name: "Multisig", cat: "wallet", scale: 0.45, stage: 420 },
   { id: "012", slug: "price-ticker", name: "PriceTicker", cat: "market", scale: 0.55, stage: 380 },
@@ -98,7 +141,10 @@ export function CatalogSection() {
                   {String(row + 1).padStart(2, "0")}
                 </div>
               )}
-              <div className="catalog-cell group relative flex cursor-pointer flex-col border-l border-t border-w3-border-subtle bg-w3-surface transition-colors hover:bg-w3-surface-alt">
+              <a
+                href={`${getSectionUrl("ui")}/${item.slug}`}
+                className="catalog-cell group relative flex flex-col border-l border-t border-w3-border-subtle bg-w3-surface transition-colors hover:bg-w3-surface-alt"
+              >
                 {/* ID badge */}
                 <div className="absolute right-3 top-2.5 z-[2] font-mono text-[9px] text-w3-gray-500">
                   {item.id}
@@ -133,18 +179,19 @@ export function CatalogSection() {
                     className="text-w3-gray-600 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-w3-accent"
                   />
                 </div>
-              </div>
+              </a>
             </div>
           );
         })}
 
         {/* Fill remaining cells with hatched pattern */}
-        {Array.from({ length: Math.max(0, 4 - ((shown.length % 4) || 4)) }).map((_, i) => (
+        {Array.from({ length: Math.max(0, 4 - (shown.length % 4 || 4)) }).map((_, i) => (
           <div
             key={`pad-${i}`}
             className="border-l border-t border-w3-border-subtle"
             style={{
-              background: "repeating-linear-gradient(45deg, transparent 0 12px, var(--w3-grid-line) 12px 13px)",
+              background:
+                "repeating-linear-gradient(45deg, transparent 0 12px, var(--w3-grid-line) 12px 13px)",
             }}
           />
         ))}
@@ -152,11 +199,9 @@ export function CatalogSection() {
 
       {/* Footer bar */}
       <div className="flex items-center justify-between border-t border-w3-border-subtle px-20 py-3.5">
-        <span className="font-mono text-[11px] text-w3-gray-500">
-          Showing {shown.length} of 54
-        </span>
+        <span className="font-mono text-[11px] text-w3-gray-500">Showing {shown.length} of 54</span>
         <a
-          href="/ui"
+          href={getSectionUrl("ui")}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium text-w3-accent"
         >
           Browse all components <ArrowRight size={14} />

@@ -1,23 +1,25 @@
-import { LandingNav } from "./landing-nav";
+import { SiteHeader } from "../../../widgets/site-header";
+import { SiteFooter } from "../../../widgets/site-footer";
 import { HeroSection } from "./hero-section";
 import { CatalogSection } from "./catalog-section";
 import { ChainsSection } from "./chains-section";
 import { RecipesSection } from "./recipes-section";
 import { StatsSection } from "./stats-section";
 import { CtaSection } from "./cta-section";
-import { LandingFooter } from "./landing-footer";
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-w3-gray-100 text-w3-gray-900 antialiased">
-      <LandingNav />
-      <HeroSection />
-      <CatalogSection />
-      <ChainsSection />
-      <RecipesSection />
-      <StatsSection />
-      <CtaSection />
-      <LandingFooter />
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-w3-gray-100 text-w3-gray-900 antialiased">
+      <SiteHeader currentSection="landing" />
+      <main className="flex-1">
+        <HeroSection />
+        <CatalogSection />
+        <ChainsSection />
+        <RecipesSection />
+        <StatsSection />
+        <CtaSection />
+      </main>
+      <SiteFooter />
     </div>
   );
 }

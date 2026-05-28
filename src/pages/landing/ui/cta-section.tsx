@@ -1,4 +1,5 @@
 import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
+import { getSectionUrl } from "../../../shared/lib/urls";
 import { ArrowRight, Check, Copy } from "lucide-react";
 
 export function CtaSection() {
@@ -14,12 +15,11 @@ export function CtaSection() {
           <br />
           care what's under
           <br />
-          the hood.{" "}
-          <span className="font-serif-display italic text-w3-accent">ship.</span>
+          the hood. <span className="font-serif-display italic text-w3-accent">ship.</span>
         </h2>
         <p className="m-0 max-w-[420px] text-[15px] leading-relaxed text-w3-gray-600">
-          Open source, MIT, no accounts, no keys, no upsells. Install the CLI and
-          render real UI in ninety seconds.
+          Open source, MIT, no accounts, no keys, no upsells. Install the CLI and render real UI in
+          ninety seconds.
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export function CtaSection() {
         {/* Action buttons */}
         <div className="flex gap-2.5 border-t border-w3-border-subtle p-4">
           <a
-            href="/docs"
+            href={getSectionUrl("docs")}
             className="flex flex-1 items-center justify-center gap-2 rounded-full bg-w3-gray-900 px-[18px] py-[11px] text-sm font-medium text-w3-gray-100 transition-all hover:-translate-y-px hover:shadow-[0_10px_24px_-10px_rgba(85,84,217,0.5),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-0"
           >
             Read the docs <ArrowRight size={14} />
