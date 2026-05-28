@@ -18,17 +18,15 @@ export function MobileMenuOverlay({
   lockScroll = false,
   children,
 }: MobileMenuOverlayProps) {
-  // Auto-close at the md breakpoint.
   useEffect(() => {
-    if (!onAutoClose) return;
+    if (!open || !onAutoClose) return;
     const onResize = () => {
       if (window.innerWidth >= 768) onAutoClose();
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [onAutoClose]);
+  }, [open, onAutoClose]);
 
-  // Lock body scroll while open.
   useEffect(() => {
     if (!lockScroll || !open) return;
     const prev = document.body.style.overflow;

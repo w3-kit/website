@@ -29,3 +29,8 @@ export function getDocItemHref(item: { slug: string; type: string }): string {
 export function getLandingUrl(): string {
   return import.meta.env.PROD ? `https://www.${DOMAIN}` : `http://${DEV_HOST}`;
 }
+
+/** True if the href points off-domain (used to decide target="_blank"). */
+export function isExternalHref(href: string): boolean {
+  return /^https?:\/\//.test(href) && !href.includes(DOMAIN);
+}

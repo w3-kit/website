@@ -26,12 +26,14 @@ export function GitHubLink({
 
   useEffect(() => {
     if (!starsRepo) return;
-    fetch(`https://api.github.com/repos/${starsRepo}`)
+    const ctrl = new AbortController();
+    fetch(`https://api.github.com/repos/${starsRepo}`, { signal: ctrl.signal })
       .then((r) => r.json())
       .then((d) => {
         if (typeof d.stargazers_count === "number") setStars(d.stargazers_count);
       })
       .catch(() => {});
+    return () => ctrl.abort();
   }, [starsRepo]);
 
   return (

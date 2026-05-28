@@ -85,7 +85,6 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
           </a>
           <GitHubLink
             href="https://github.com/w3-kit/ui"
-            starsRepo="w3-kit/ui"
             showLabel
             className="px-4 py-3 text-base font-medium"
           />
@@ -96,7 +95,6 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
 
   return (
     <AppHeader variant={variant} mobileContent={mobile}>
-      {/* Breadcrumb: w3-kit / UI */}
       <div className="flex items-center gap-2">
         <Brand />
         <span
@@ -115,9 +113,7 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
         </a>
       </div>
 
-      {/* Desktop nav */}
       <nav className="hidden items-center gap-1 md:flex">
-        {/* Components mega menu trigger */}
         <div className="relative">
           <button
             ref={triggerRef}
@@ -134,7 +130,6 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
             />
           </button>
 
-          {/* Mega menu dropdown */}
           {megaOpen && (
             <div
               ref={megaRef}
@@ -158,15 +153,8 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
                         key={item.id}
                         href={`${getSectionUrl("ui")}/${item.id}`}
                         onClick={closeMega}
-                        className="rounded-md px-2 py-1 text-[13px] transition-colors hover:text-foreground"
+                        className="rounded-md px-2 py-1 text-[13px] transition-colors hover:bg-w3-surface-elevated hover:text-foreground"
                         style={{ color: "var(--w3-gray-700)" }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.background =
-                            "var(--w3-surface-elevated)";
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.background = "transparent";
-                        }}
                       >
                         {item.name}
                       </a>
@@ -175,7 +163,6 @@ export function UiHeader({ variant = "default" }: UiHeaderProps) {
                 ))}
               </div>
 
-              {/* Footer */}
               <div
                 className="mt-3 flex items-center justify-between pt-3"
                 style={{ borderTop: "1px solid var(--w3-border-subtle)" }}

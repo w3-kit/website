@@ -2,14 +2,12 @@ import { getSectionUrl } from "../../lib/urls";
 import { cn } from "../../lib/utils";
 import type { Section } from "../../lib/theme";
 
-type NavSection = "ui" | "docs" | "registry" | "learn";
-
-const LINKS: { label: string; section: NavSection }[] = [
+const LINKS = [
   { label: "UI", section: "ui" },
   { label: "Docs", section: "docs" },
   { label: "Registry", section: "registry" },
   { label: "Learn", section: "learn" },
-];
+] as const satisfies readonly { label: string; section: Section }[];
 
 interface SectionNavLinksProps {
   /** Highlights the link matching this section. */
