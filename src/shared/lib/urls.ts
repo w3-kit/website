@@ -3,33 +3,25 @@ const DOMAIN = "w3-kit.com";
 /**
  * Returns the URL for a section.
  * - Production: subdomain URLs (ui.w3-kit.com)
- * - Local dev: subdomain URLs (ui.localhost:3000) with path fallback
+ * - Local dev: subdomain URLs (ui.localhost:3000)
  *
- * Note: some browsers don't resolve *.localhost subdomains.
- * The path-based fallback (/ui, /docs) always works via TanStack Router.
+ * Relies on the browser resolving *.localhost to 127.0.0.1 (RFC 6761).
+ * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add an
+ * /etc/hosts entry: `127.0.0.1 ui.localhost docs.localhost registry.localhost learn.localhost design.localhost`.
  */
 export function getSectionUrl(section: string): string {
   if (typeof window === "undefined") return `/${section}`;
   const host = window.location.host;
   const protocol = window.location.protocol;
 
-  // Production: always use subdomains
+  // Production: subdomain on the production domain
   if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
     return `${protocol}//${section}.${DOMAIN}`;
   }
 
-  // Local dev: use subdomains if we're already on one,
-  // otherwise use path-based routing (safer fallback)
-  const currentSub = host.split(".")[0];
-  const isOnSubdomain = ["ui", "docs", "registry", "learn", "design"].includes(currentSub);
-
-  if (isOnSubdomain) {
-    const port = window.location.port;
-    return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
-  }
-
-  // Fallback: path-based (always works)
-  return `/${section}`;
+  // Local dev: subdomain on localhost
+  const port = window.location.port;
+  return `${protocol}//${section}.localhost${port ? `:${port}` : ""}`;
 }
 
 /** Resolves a doc nav item to its full URL path */
