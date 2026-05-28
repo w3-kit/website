@@ -16,15 +16,42 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execSync } from "node:child_process";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const UI_REGISTRY_DIR = path.join(ROOT, "ui/registry/w3-kit");
-const CHAINS_JSON = path.join(ROOT, "registry/data/chains.json");
+const WEBSITE_ROOT = path.resolve(import.meta.dirname, "..");
 
-const OUT_FILE = path.resolve(
-  import.meta.dirname,
-  "../src/entities/stats/model/stats.gen.ts",
-);
+// UI: prefer the sibling, fall back to the clone made by generate-ui-mirror.ts.
+const UI_REGISTRY_DIR = (() => {
+  const sibling = path.join(ROOT, "ui/registry/w3-kit");
+  if (fs.existsSync(sibling)) return sibling;
+  const clone = path.join(WEBSITE_ROOT, ".tmp-ui-mirror/registry/w3-kit");
+  return clone;
+})();
+
+// Chains: prefer the sibling, otherwise shallow-clone the registry repo.
+const REGISTRY_CLONE = path.join(WEBSITE_ROOT, ".tmp-registry-mirror");
+const REGISTRY_REPO_URL = "https://github.com/w3-kit/registry.git";
+
+const CHAINS_JSON = (() => {
+  const sibling = path.join(ROOT, "registry/data/chains.json");
+  if (fs.existsSync(sibling)) return sibling;
+  const clonedFile = path.join(REGISTRY_CLONE, "data/chains.json");
+  if (fs.existsSync(clonedFile)) return clonedFile;
+  try {
+    console.log(
+      `  registry sibling not found, cloning ${REGISTRY_REPO_URL} into .tmp-registry-mirror/`,
+    );
+    execSync(`git clone --depth 1 --quiet ${REGISTRY_REPO_URL} "${REGISTRY_CLONE}"`, {
+      stdio: ["ignore", "ignore", "inherit"],
+    });
+  } catch (err) {
+    console.warn(`  failed to clone registry repo: ${(err as Error).message}`);
+  }
+  return clonedFile;
+})();
+
+const OUT_FILE = path.resolve(import.meta.dirname, "../src/entities/stats/model/stats.gen.ts");
 
 // ── Sources ─────────────────────────────────────────────────────────────────
 
@@ -41,12 +68,7 @@ const GH_REPOS = [
 ];
 
 // Published npm packages we want to sum weekly downloads across.
-const NPM_PACKAGES = [
-  "w3-kit",
-  "@w3-kit/registry",
-  "@w3-kit/config",
-  "@w3-kit/mcp",
-];
+const NPM_PACKAGES = ["w3-kit", "@w3-kit/registry", "@w3-kit/config", "@w3-kit/mcp"];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -102,9 +124,8 @@ async function fetchNpmWeeklyDownloads(): Promise<number> {
 
 function countComponents(): number {
   if (!fs.existsSync(UI_REGISTRY_DIR)) return 0;
-  return fs
-    .readdirSync(UI_REGISTRY_DIR, { withFileTypes: true })
-    .filter((e) => e.isDirectory()).length;
+  return fs.readdirSync(UI_REGISTRY_DIR, { withFileTypes: true }).filter((e) => e.isDirectory())
+    .length;
 }
 
 function countChains(): number {
@@ -122,10 +143,7 @@ function countChains(): number {
 async function main() {
   console.log("Fetching landing stats...");
 
-  const [stars, npmWeekly] = await Promise.all([
-    fetchGithubStars(),
-    fetchNpmWeeklyDownloads(),
-  ]);
+  const [stars, npmWeekly] = await Promise.all([fetchGithubStars(), fetchNpmWeeklyDownloads()]);
   const components = countComponents();
   const chains = countChains();
 
