@@ -8,48 +8,60 @@
  *
  * Keyed by component slug (matches the registry id + the directory name
  * inside ui/registry/w3-kit/).
+ *
+ * The underlying components are mirrored at build time by
+ * scripts/generate-ui-mirror.ts. When the ui registry isn't available
+ * (e.g., Vercel CI without the sibling repo / submodule), the namespace
+ * import resolves to an empty module — each lookup returns undefined and
+ * the demo renders null. Consumers already null-check `DEMOS[slug]`.
  */
 import type { ComponentType } from "react";
-import {
-  AddressBook,
-  AssetPortfolio,
-  BridgeWidget,
-  ConnectWallet,
-  ContractInteraction,
-  DeFiPositionManager,
-  ENSResolver,
-  FlashLoanExecutor,
-  GasCalculator,
-  LimitOrderManager,
-  LiquidityPoolStats,
-  MultisigWallet,
-  NetworkSwitcher,
-  NFTCard,
-  NFTCollectionGrid,
-  NFTMarketplaceAggregator,
-  PriceTicker,
-  SmartContractScanner,
-  StakingInterface,
-  SubscriptionPayments,
-  TokenAirdrop,
-  TokenCard,
-  TokenList,
-  TokenSwap,
-  TokenVesting,
-  TransactionHistory,
-  WalletBalance,
-} from "./w3-kit/index.gen";
+import * as W3Kit from "./w3-kit/index.gen";
+
+const C = W3Kit as unknown as Record<string, ComponentType<Record<string, unknown>> | undefined>;
+const AddressBook = C.AddressBook;
+const AssetPortfolio = C.AssetPortfolio;
+const BridgeWidget = C.BridgeWidget;
+const ConnectWallet = C.ConnectWallet;
+const ContractInteraction = C.ContractInteraction;
+const DeFiPositionManager = C.DeFiPositionManager;
+const ENSResolver = C.ENSResolver;
+const FlashLoanExecutor = C.FlashLoanExecutor;
+const GasCalculator = C.GasCalculator;
+const LimitOrderManager = C.LimitOrderManager;
+const LiquidityPoolStats = C.LiquidityPoolStats;
+const MultisigWallet = C.MultisigWallet;
+const NetworkSwitcher = C.NetworkSwitcher;
+const NFTCard = C.NFTCard;
+const NFTCollectionGrid = C.NFTCollectionGrid;
+const NFTMarketplaceAggregator = C.NFTMarketplaceAggregator;
+const PriceTicker = C.PriceTicker;
+const SmartContractScanner = C.SmartContractScanner;
+const StakingInterface = C.StakingInterface;
+const SubscriptionPayments = C.SubscriptionPayments;
+const TokenAirdrop = C.TokenAirdrop;
+const TokenCard = C.TokenCard;
+const TokenList = C.TokenList;
+const TokenSwap = C.TokenSwap;
+const TokenVesting = C.TokenVesting;
+const TransactionHistory = C.TransactionHistory;
+const WalletBalance = C.WalletBalance;
 
 const noop = () => {};
 const NOW = Math.floor(Date.now() / 1000);
 
-/* ── address-book ──────────────────────────────────────────────────── */
 function AddressBookDemo() {
+  if (!AddressBook) return null;
   return (
     <AddressBook
       searchable
       entries={[
-        { id: "1", name: "Vitalik", address: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045", ensName: "vitalik.eth" },
+        {
+          id: "1",
+          name: "Vitalik",
+          address: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          ensName: "vitalik.eth",
+        },
         { id: "2", name: "Treasury", address: "0x7f...3E2a", notes: "Multisig 3/5" },
         { id: "3", name: "Cold Storage", address: "0x9c...A1b3" },
       ]}
@@ -57,13 +69,45 @@ function AddressBookDemo() {
   );
 }
 
-/* ── asset-portfolio ───────────────────────────────────────────────── */
 function AssetPortfolioDemo() {
+  if (!AssetPortfolio) return null;
   const assets = [
-    { symbol: "ETH", name: "Ethereum", balance: 1.42, price: 2715, value: 3855.3, change24h: 1.96, color: "#627eea" },
-    { symbol: "USDC", name: "USD Coin", balance: 2500, price: 1, value: 2500, change24h: 0.01, color: "#2775ca" },
-    { symbol: "WBTC", name: "Wrapped BTC", balance: 0.04, price: 67412, value: 2696.48, change24h: 0.84, color: "#f09242" },
-    { symbol: "LINK", name: "Chainlink", balance: 142, price: 14.2, value: 2016.4, change24h: -0.84, color: "#2a5ada" },
+    {
+      symbol: "ETH",
+      name: "Ethereum",
+      balance: 1.42,
+      price: 2715,
+      value: 3855.3,
+      change24h: 1.96,
+      color: "#627eea",
+    },
+    {
+      symbol: "USDC",
+      name: "USD Coin",
+      balance: 2500,
+      price: 1,
+      value: 2500,
+      change24h: 0.01,
+      color: "#2775ca",
+    },
+    {
+      symbol: "WBTC",
+      name: "Wrapped BTC",
+      balance: 0.04,
+      price: 67412,
+      value: 2696.48,
+      change24h: 0.84,
+      color: "#f09242",
+    },
+    {
+      symbol: "LINK",
+      name: "Chainlink",
+      balance: 142,
+      price: 14.2,
+      value: 2016.4,
+      change24h: -0.84,
+      color: "#2a5ada",
+    },
   ];
   return (
     <AssetPortfolio
@@ -75,8 +119,8 @@ function AssetPortfolioDemo() {
   );
 }
 
-/* ── bridge ────────────────────────────────────────────────────────── */
 function BridgeDemo() {
+  if (!BridgeWidget) return null;
   const networks = [
     { id: 1, name: "Ethereum", color: "#627eea" },
     { id: 8453, name: "Base", color: "#0052ff" },
@@ -97,12 +141,19 @@ function BridgeDemo() {
   );
 }
 
-/* ── connect-wallet ────────────────────────────────────────────────── */
 function ConnectWalletDemo() {
+  if (!ConnectWallet) return null;
   return (
     <ConnectWallet
       wallets={[
-        { id: "metamask", name: "MetaMask", icon: "🦊", ecosystem: "evm", installed: true, popular: true },
+        {
+          id: "metamask",
+          name: "MetaMask",
+          icon: "🦊",
+          ecosystem: "evm",
+          installed: true,
+          popular: true,
+        },
         { id: "coinbase", name: "Coinbase Wallet", icon: "🔵", ecosystem: "evm", popular: true },
         { id: "wc", name: "WalletConnect", icon: "🔗", ecosystem: "both" },
         { id: "phantom", name: "Phantom", icon: "👻", ecosystem: "solana", popular: true },
@@ -113,8 +164,8 @@ function ConnectWalletDemo() {
   );
 }
 
-/* ── contract-interaction ──────────────────────────────────────────── */
 function ContractInteractionDemo() {
+  if (!ContractInteraction) return null;
   return (
     <ContractInteraction
       address="0x7f...3E2a"
@@ -128,26 +179,51 @@ function ContractInteractionDemo() {
   );
 }
 
-/* ── defi-position-manager ─────────────────────────────────────────── */
 function DeFiPositionManagerDemo() {
+  if (!DeFiPositionManager) return null;
   return (
     <DeFiPositionManager
       positions={[
-        { id: "1", protocol: "Aave v3", token: "ETH", amount: "12.5", value: "$33,937", apy: 3.2, healthFactor: 2.1, risk: "low" },
-        { id: "2", protocol: "Compound", token: "USDC", amount: "5,000", value: "$5,000", apy: 4.8, risk: "low" },
-        { id: "3", protocol: "Curve", token: "3CRV", amount: "1,200", value: "$1,212", apy: 8.4, risk: "medium" },
+        {
+          id: "1",
+          protocol: "Aave v3",
+          token: "ETH",
+          amount: "12.5",
+          value: "$33,937",
+          apy: 3.2,
+          healthFactor: 2.1,
+          risk: "low",
+        },
+        {
+          id: "2",
+          protocol: "Compound",
+          token: "USDC",
+          amount: "5,000",
+          value: "$5,000",
+          apy: 4.8,
+          risk: "low",
+        },
+        {
+          id: "3",
+          protocol: "Curve",
+          token: "3CRV",
+          amount: "1,200",
+          value: "$1,212",
+          apy: 8.4,
+          risk: "medium",
+        },
       ]}
     />
   );
 }
 
-/* ── ens-resolver ──────────────────────────────────────────────────── */
 function ENSResolverDemo() {
+  if (!ENSResolver) return null;
   return <ENSResolver />;
 }
 
-/* ── flash-loan-executor ───────────────────────────────────────────── */
 function FlashLoanExecutorDemo() {
+  if (!FlashLoanExecutor) return null;
   const protocols = [
     { id: "aave", name: "Aave v3", fee: 0.0009 },
     { id: "balancer", name: "Balancer", fee: 0 },
@@ -168,8 +244,8 @@ function FlashLoanExecutorDemo() {
   );
 }
 
-/* ── gas-calculator ────────────────────────────────────────────────── */
 function GasCalculatorDemo() {
+  if (!GasCalculator) return null;
   return (
     <GasCalculator
       ethPrice={2715}
@@ -183,21 +259,45 @@ function GasCalculatorDemo() {
   );
 }
 
-/* ── limit-order-manager ───────────────────────────────────────────── */
 function LimitOrderManagerDemo() {
+  if (!LimitOrderManager) return null;
   return (
     <LimitOrderManager
       orders={[
-        { id: "1", type: "buy", token: "ETH", amount: "1.5", price: "$2,500", status: "active", timestamp: NOW - 60 },
-        { id: "2", type: "sell", token: "WBTC", amount: "0.1", price: "$70,000", status: "active", timestamp: NOW - 240 },
-        { id: "3", type: "buy", token: "USDC", amount: "5000", price: "$1.00", status: "filled", timestamp: NOW - 3600 },
+        {
+          id: "1",
+          type: "buy",
+          token: "ETH",
+          amount: "1.5",
+          price: "$2,500",
+          status: "active",
+          timestamp: NOW - 60,
+        },
+        {
+          id: "2",
+          type: "sell",
+          token: "WBTC",
+          amount: "0.1",
+          price: "$70,000",
+          status: "active",
+          timestamp: NOW - 240,
+        },
+        {
+          id: "3",
+          type: "buy",
+          token: "USDC",
+          amount: "5000",
+          price: "$1.00",
+          status: "filled",
+          timestamp: NOW - 3600,
+        },
       ]}
     />
   );
 }
 
-/* ── liquidity-pool-stats ──────────────────────────────────────────── */
 function LiquidityPoolStatsDemo() {
+  if (!LiquidityPoolStats) return null;
   return (
     <LiquidityPoolStats
       pool={{
@@ -216,8 +316,8 @@ function LiquidityPoolStatsDemo() {
   );
 }
 
-/* ── multisig-wallet ───────────────────────────────────────────────── */
 function MultisigWalletDemo() {
+  if (!MultisigWallet) return null;
   const signers = [
     { address: "0x1...", name: "Alice", hasApproved: true },
     { address: "0x2...", name: "Bob", hasApproved: true },
@@ -247,8 +347,8 @@ function MultisigWalletDemo() {
   );
 }
 
-/* ── network-switcher ──────────────────────────────────────────────── */
 function NetworkSwitcherDemo() {
+  if (!NetworkSwitcher) return null;
   return (
     <NetworkSwitcher
       activeChainId={1}
@@ -265,8 +365,8 @@ function NetworkSwitcherDemo() {
   );
 }
 
-/* ── nft-card ──────────────────────────────────────────────────────── */
 function NFTCardDemo() {
+  if (!NFTCard) return null;
   return (
     <NFTCard
       nft={{
@@ -282,59 +382,157 @@ function NFTCardDemo() {
   );
 }
 
-/* ── nft-collection-grid ───────────────────────────────────────────── */
 function NFTCollectionGridDemo() {
+  if (!NFTCollectionGrid) return null;
   return (
     <NFTCollectionGrid
       collectionName="Bored Apes"
       columns={3}
       items={[
-        { id: "1", name: "BAYC #5821", price: "32.4", currency: "ETH", image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=300&q=80" },
-        { id: "2", name: "BAYC #1234", price: "28.0", currency: "ETH", image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=300&q=80" },
-        { id: "3", name: "BAYC #4711", price: "29.2", currency: "ETH", image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&q=80" },
-        { id: "4", name: "BAYC #8888", price: "41.0", currency: "ETH", image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=300&q=80" },
-        { id: "5", name: "BAYC #2110", price: "24.0", currency: "ETH", image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=300&q=80" },
-        { id: "6", name: "BAYC #9001", price: "35.5", currency: "ETH", image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=300&q=80" },
+        {
+          id: "1",
+          name: "BAYC #5821",
+          price: "32.4",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=300&q=80",
+        },
+        {
+          id: "2",
+          name: "BAYC #1234",
+          price: "28.0",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=300&q=80",
+        },
+        {
+          id: "3",
+          name: "BAYC #4711",
+          price: "29.2",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&q=80",
+        },
+        {
+          id: "4",
+          name: "BAYC #8888",
+          price: "41.0",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=300&q=80",
+        },
+        {
+          id: "5",
+          name: "BAYC #2110",
+          price: "24.0",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=300&q=80",
+        },
+        {
+          id: "6",
+          name: "BAYC #9001",
+          price: "35.5",
+          currency: "ETH",
+          image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=300&q=80",
+        },
       ]}
     />
   );
 }
 
-/* ── nft-marketplace-aggregator ────────────────────────────────────── */
 function NFTMarketplaceAggregatorDemo() {
+  if (!NFTMarketplaceAggregator) return null;
   return (
     <NFTMarketplaceAggregator
       listings={[
-        { id: "1", name: "Punk #3100", collection: "CryptoPunks", marketplace: "OpenSea", price: "4200", currency: "ETH", usdPrice: "$11.4M", verified: true, image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80" },
-        { id: "2", name: "Punk #3100", collection: "CryptoPunks", marketplace: "Blur", price: "4180", currency: "ETH", usdPrice: "$11.3M", verified: true, image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80" },
-        { id: "3", name: "Punk #3100", collection: "CryptoPunks", marketplace: "LooksRare", price: "4250", currency: "ETH", usdPrice: "$11.5M", verified: false, image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80" },
+        {
+          id: "1",
+          name: "Punk #3100",
+          collection: "CryptoPunks",
+          marketplace: "OpenSea",
+          price: "4200",
+          currency: "ETH",
+          usdPrice: "$11.4M",
+          verified: true,
+          image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80",
+        },
+        {
+          id: "2",
+          name: "Punk #3100",
+          collection: "CryptoPunks",
+          marketplace: "Blur",
+          price: "4180",
+          currency: "ETH",
+          usdPrice: "$11.3M",
+          verified: true,
+          image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80",
+        },
+        {
+          id: "3",
+          name: "Punk #3100",
+          collection: "CryptoPunks",
+          marketplace: "LooksRare",
+          price: "4250",
+          currency: "ETH",
+          usdPrice: "$11.5M",
+          verified: false,
+          image: "https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=200&q=80",
+        },
       ]}
     />
   );
 }
 
-/* ── price-ticker ──────────────────────────────────────────────────── */
 function PriceTickerDemo() {
+  if (!PriceTicker) return null;
   return (
     <PriceTicker
       tokens={[
-        { symbol: "ETH", name: "Ethereum", price: 2715, priceChange24h: 1.96, marketCap: 326_000_000_000, volume24h: 18_240_000_000 },
-        { symbol: "BTC", name: "Bitcoin", price: 67412, priceChange24h: 0.84, marketCap: 1_330_000_000_000, volume24h: 24_120_000_000 },
-        { symbol: "SOL", name: "Solana", price: 148.2, priceChange24h: -2.41, marketCap: 68_000_000_000, volume24h: 2_840_000_000 },
-        { symbol: "LINK", name: "Chainlink", price: 14.2, priceChange24h: -0.84, marketCap: 8_400_000_000, volume24h: 320_000_000 },
+        {
+          symbol: "ETH",
+          name: "Ethereum",
+          price: 2715,
+          priceChange24h: 1.96,
+          marketCap: 326_000_000_000,
+          volume24h: 18_240_000_000,
+        },
+        {
+          symbol: "BTC",
+          name: "Bitcoin",
+          price: 67412,
+          priceChange24h: 0.84,
+          marketCap: 1_330_000_000_000,
+          volume24h: 24_120_000_000,
+        },
+        {
+          symbol: "SOL",
+          name: "Solana",
+          price: 148.2,
+          priceChange24h: -2.41,
+          marketCap: 68_000_000_000,
+          volume24h: 2_840_000_000,
+        },
+        {
+          symbol: "LINK",
+          name: "Chainlink",
+          price: 14.2,
+          priceChange24h: -0.84,
+          marketCap: 8_400_000_000,
+          volume24h: 320_000_000,
+        },
       ]}
     />
   );
 }
 
-/* ── smart-contract-scanner ────────────────────────────────────────── */
 function SmartContractScannerDemo() {
+  if (!SmartContractScanner) return null;
   return (
     <SmartContractScanner
       address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
       score={92}
       checks={[
-        { name: "Verified source", status: "safe", description: "Source code matches deployed bytecode" },
+        {
+          name: "Verified source",
+          status: "safe",
+          description: "Source code matches deployed bytecode",
+        },
         { name: "Ownership renounced", status: "safe" },
         { name: "Honeypot", status: "safe" },
         { name: "Mint function", status: "warning", description: "Owner can mint new tokens" },
@@ -343,46 +541,107 @@ function SmartContractScannerDemo() {
   );
 }
 
-/* ── staking-interface ─────────────────────────────────────────────── */
 function StakingInterfaceDemo() {
+  if (!StakingInterface) return null;
   return (
     <StakingInterface
       pools={[
-        { id: "eth", name: "ETH Staking", token: "ETH", apr: 4.82, lockPeriod: 30, totalStaked: "12,481", userStaked: "32", minStake: "0.1" },
-        { id: "usdc", name: "USDC Vault", token: "USDC", apr: 8.4, lockPeriod: 90, totalStaked: "8,200,000", userStaked: "0", minStake: "100" },
+        {
+          id: "eth",
+          name: "ETH Staking",
+          token: "ETH",
+          apr: 4.82,
+          lockPeriod: 30,
+          totalStaked: "12,481",
+          userStaked: "32",
+          minStake: "0.1",
+        },
+        {
+          id: "usdc",
+          name: "USDC Vault",
+          token: "USDC",
+          apr: 8.4,
+          lockPeriod: 90,
+          totalStaked: "8,200,000",
+          userStaked: "0",
+          minStake: "100",
+        },
       ]}
     />
   );
 }
 
-/* ── subscription-payments ─────────────────────────────────────────── */
 function SubscriptionPaymentsDemo() {
+  if (!SubscriptionPayments) return null;
   return (
     <SubscriptionPayments
       plans={[
-        { id: "starter", name: "Starter", price: "10", token: "USDC", interval: "month", features: ["Basic access", "Email support"] },
-        { id: "pro", name: "Pro", price: "29", token: "USDC", interval: "month", features: ["Everything in Starter", "Priority support", "API access"], popular: true },
-        { id: "team", name: "Team", price: "99", token: "USDC", interval: "month", features: ["Everything in Pro", "5 seats", "SLA"] },
+        {
+          id: "starter",
+          name: "Starter",
+          price: "10",
+          token: "USDC",
+          interval: "month",
+          features: ["Basic access", "Email support"],
+        },
+        {
+          id: "pro",
+          name: "Pro",
+          price: "29",
+          token: "USDC",
+          interval: "month",
+          features: ["Everything in Starter", "Priority support", "API access"],
+          popular: true,
+        },
+        {
+          id: "team",
+          name: "Team",
+          price: "99",
+          token: "USDC",
+          interval: "month",
+          features: ["Everything in Pro", "5 seats", "SLA"],
+        },
       ]}
     />
   );
 }
 
-/* ── token-airdrop ─────────────────────────────────────────────────── */
 function TokenAirdropDemo() {
+  if (!TokenAirdrop) return null;
   return (
     <TokenAirdrop
       airdrops={[
-        { id: "1", token: "OP", amount: "1,250", status: "active", startDate: "2026-04-01", endDate: "2026-05-15" },
-        { id: "2", token: "ARB", amount: "820", status: "active", startDate: "2026-04-10", endDate: "2026-06-01" },
-        { id: "3", token: "UNI", amount: "400", status: "claimed", startDate: "2026-02-01", endDate: "2026-03-01" },
+        {
+          id: "1",
+          token: "OP",
+          amount: "1,250",
+          status: "active",
+          startDate: "2026-04-01",
+          endDate: "2026-05-15",
+        },
+        {
+          id: "2",
+          token: "ARB",
+          amount: "820",
+          status: "active",
+          startDate: "2026-04-10",
+          endDate: "2026-06-01",
+        },
+        {
+          id: "3",
+          token: "UNI",
+          amount: "400",
+          status: "claimed",
+          startDate: "2026-02-01",
+          endDate: "2026-03-01",
+        },
       ]}
     />
   );
 }
 
-/* ── token-card ────────────────────────────────────────────────────── */
 function TokenCardDemo() {
+  if (!TokenCard) return null;
   return (
     <TokenCard
       token={{
@@ -396,8 +655,8 @@ function TokenCardDemo() {
   );
 }
 
-/* ── token-list ────────────────────────────────────────────────────── */
 function TokenListDemo() {
+  if (!TokenList) return null;
   return (
     <TokenList
       tokens={[
@@ -411,8 +670,8 @@ function TokenListDemo() {
   );
 }
 
-/* ── token-swap ────────────────────────────────────────────────────── */
 function TokenSwapDemo() {
+  if (!TokenSwap) return null;
   const tokens = [
     { symbol: "ETH", name: "Ethereum", balance: "1.420", price: 2715.32 },
     { symbol: "USDC", name: "USD Coin", balance: "2,500", price: 1 },
@@ -430,41 +689,114 @@ function TokenSwapDemo() {
   );
 }
 
-/* ── token-vesting ─────────────────────────────────────────────────── */
 function TokenVestingDemo() {
+  if (!TokenVesting) return null;
   return (
     <TokenVesting
       schedules={[
-        { id: "1", token: "TEAM", totalAmount: "100,000", vestedAmount: "32,000", cliffDate: "2025-04-01", endDate: "2027-04-01", status: "active" },
-        { id: "2", token: "INV", totalAmount: "250,000", vestedAmount: "62,500", cliffDate: "2025-01-01", endDate: "2028-01-01", status: "active" },
+        {
+          id: "1",
+          token: "TEAM",
+          totalAmount: "100,000",
+          vestedAmount: "32,000",
+          cliffDate: "2025-04-01",
+          endDate: "2027-04-01",
+          status: "active",
+        },
+        {
+          id: "2",
+          token: "INV",
+          totalAmount: "250,000",
+          vestedAmount: "62,500",
+          cliffDate: "2025-01-01",
+          endDate: "2028-01-01",
+          status: "active",
+        },
       ]}
     />
   );
 }
 
-/* ── transaction-history ───────────────────────────────────────────── */
 function TransactionHistoryDemo() {
+  if (!TransactionHistory) return null;
   return (
     <TransactionHistory
       transactions={[
-        { hash: "0xa1...01", type: "swap", status: "success", value: "0.5", tokenSymbol: "ETH", from: "0x...", to: "0x...", timestamp: NOW - 2 },
-        { hash: "0xa1...02", type: "send", status: "success", value: "420", tokenSymbol: "USDC", from: "0x...", to: "0x...", timestamp: NOW - 14 },
-        { hash: "0xa1...03", type: "approve", status: "pending", value: "0", tokenSymbol: "USDT", from: "0x...", to: "0x...", timestamp: NOW - 60 },
-        { hash: "0xa1...04", type: "receive", status: "success", value: "1.2", tokenSymbol: "ETH", from: "0x...", to: "0x...", timestamp: NOW - 3600 },
+        {
+          hash: "0xa1...01",
+          type: "swap",
+          status: "success",
+          value: "0.5",
+          tokenSymbol: "ETH",
+          from: "0x...",
+          to: "0x...",
+          timestamp: NOW - 2,
+        },
+        {
+          hash: "0xa1...02",
+          type: "send",
+          status: "success",
+          value: "420",
+          tokenSymbol: "USDC",
+          from: "0x...",
+          to: "0x...",
+          timestamp: NOW - 14,
+        },
+        {
+          hash: "0xa1...03",
+          type: "approve",
+          status: "pending",
+          value: "0",
+          tokenSymbol: "USDT",
+          from: "0x...",
+          to: "0x...",
+          timestamp: NOW - 60,
+        },
+        {
+          hash: "0xa1...04",
+          type: "receive",
+          status: "success",
+          value: "1.2",
+          tokenSymbol: "ETH",
+          from: "0x...",
+          to: "0x...",
+          timestamp: NOW - 3600,
+        },
       ]}
     />
   );
 }
 
-/* ── wallet-balance ────────────────────────────────────────────────── */
 function WalletBalanceDemo() {
+  if (!WalletBalance) return null;
   return (
     <WalletBalance
       showAllocation
       tokens={[
-        { symbol: "ETH", name: "Ethereum", balance: "1.42", price: 2715.32, priceChange24h: 1.96, color: "#627eea" },
-        { symbol: "USDC", name: "USD Coin", balance: "2500", price: 1, priceChange24h: 0.01, color: "#2775ca" },
-        { symbol: "LINK", name: "Chainlink", balance: "142", price: 14.2, priceChange24h: -0.84, color: "#2a5ada" },
+        {
+          symbol: "ETH",
+          name: "Ethereum",
+          balance: "1.42",
+          price: 2715.32,
+          priceChange24h: 1.96,
+          color: "#627eea",
+        },
+        {
+          symbol: "USDC",
+          name: "USD Coin",
+          balance: "2500",
+          price: 1,
+          priceChange24h: 0.01,
+          color: "#2775ca",
+        },
+        {
+          symbol: "LINK",
+          name: "Chainlink",
+          balance: "142",
+          price: 14.2,
+          priceChange24h: -0.84,
+          color: "#2a5ada",
+        },
       ]}
     />
   );

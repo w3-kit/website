@@ -23,8 +23,7 @@ const SRC_DIR = path.join(ROOT, "ui/registry/w3-kit");
 const OUT_DIR = path.resolve(import.meta.dirname, "../src/shared/ui/w3-kit");
 const INDEX_FILE = path.join(OUT_DIR, "index.gen.ts");
 
-const BANNER =
-  "/* AUTO-GENERATED — mirrored from ui/registry/w3-kit/. Edit the source there. */\n";
+const BANNER = "/* AUTO-GENERATED — mirrored from ui/registry/w3-kit/. Edit the source there. */\n";
 
 function slugToPascal(slug: string): string {
   return slug
@@ -101,7 +100,10 @@ function writeIndex(slugs: string[]) {
     const content = fs.readFileSync(file, "utf-8");
     const exportName = findExportedName(content, slug);
     if (!exportName) continue;
-    if (/export\s+default\s+/.test(content) && !new RegExp(`export\\s+(function|const)\\s+${exportName}`).test(content)) {
+    if (
+      /export\s+default\s+/.test(content) &&
+      !new RegExp(`export\\s+(function|const)\\s+${exportName}`).test(content)
+    ) {
       lines.push(`export { default as ${slugToPascal(slug)} } from "./${slug}/${slug}";`);
     } else {
       lines.push(`export { ${exportName} } from "./${slug}/${slug}";`);
@@ -112,18 +114,22 @@ function writeIndex(slugs: string[]) {
 
 function main() {
   console.log("Mirroring ui components into website...");
-  if (!fs.existsSync(SRC_DIR)) {
-    console.warn(`  ui registry not found at ${SRC_DIR}, skipping`);
-    return;
-  }
 
-  // Clean target dir (but keep lib/ which we recreate anyway)
+  // Always (re-)create OUT_DIR with a valid index.gen.ts and lib/utils.ts so
+  // imports from src/shared/ui/w3-kit-demos.tsx always resolve, even when
+  // the ui registry isn't checked out (e.g., Vercel without submodules).
+  // Consumers handle missing components by checking `DEMOS[slug]`.
   if (fs.existsSync(OUT_DIR)) {
     fs.rmSync(OUT_DIR, { recursive: true, force: true });
   }
   fs.mkdirSync(OUT_DIR, { recursive: true });
-
   writeLocalUtils();
+
+  if (!fs.existsSync(SRC_DIR)) {
+    console.warn(`  ui registry not found at ${SRC_DIR} — writing empty mirror`);
+    fs.writeFileSync(INDEX_FILE, BANNER + "export {};\n");
+    return;
+  }
 
   const slugs = fs
     .readdirSync(SRC_DIR, { withFileTypes: true })
