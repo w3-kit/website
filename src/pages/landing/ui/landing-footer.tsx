@@ -5,21 +5,21 @@ const FOOTER_COLS = [
   {
     h: "Toolkit",
     links: [
-      { label: "Components", href: "/ui" },
-      { label: "Registry", href: "/registry" },
-      { label: "CLI", href: "/docs" },
-      { label: "Themes", href: "/ui" },
-      { label: "Changelog", href: "/docs" },
+      { label: "Components", href: getSectionUrl("ui") },
+      { label: "Registry", href: getSectionUrl("registry") },
+      { label: "CLI", href: getSectionUrl("docs") },
+      { label: "Themes", href: getSectionUrl("ui") },
+      { label: "Changelog", href: getSectionUrl("docs") },
     ],
   },
   {
     h: "Learn",
     links: [
-      { label: "Quickstart", href: "/docs" },
-      { label: "Recipes", href: "/docs" },
-      { label: "Guides", href: "/docs" },
-      { label: "API reference", href: "/docs" },
-      { label: "Examples", href: "/docs" },
+      { label: "Quickstart", href: getSectionUrl("docs") },
+      { label: "Recipes", href: getSectionUrl("docs") },
+      { label: "Guides", href: getSectionUrl("docs") },
+      { label: "API reference", href: getSectionUrl("docs") },
+      { label: "Examples", href: getSectionUrl("docs") },
     ],
   },
   {
@@ -45,8 +45,8 @@ export function LandingFooter() {
             <span className="text-lg font-semibold tracking-[-0.3px]">w3-kit</span>
           </div>
           <p className="m-0 mb-[18px] max-w-[320px] text-sm leading-relaxed text-w3-gray-600">
-            An open, friendly toolkit for web3 builders. Free forever,
-            MIT-licensed, built in the open — with and for the community.
+            An open, friendly toolkit for web3 builders. Free forever, MIT-licensed, built in the
+            open — with and for the community.
           </p>
           <div className="flex items-center gap-2.5 text-xs text-w3-gray-600">
             {["MIT", "OPEN SOURCE", "v0.8.2"].map((tag) => (
@@ -85,8 +85,8 @@ export function LandingFooter() {
       {/* Bottom bar */}
       <div className="flex items-center justify-between border-t border-w3-border-subtle px-20 py-5">
         <span className="font-mono text-[11px] text-w3-gray-500">
-          w3-kit © 2026 · Made with ♥ by builders, for builders · No accounts, no
-          telemetry, no catches
+          w3-kit © 2026 · Made with ♥ by builders, for builders · No accounts, no telemetry, no
+          catches
         </span>
         <div className="flex gap-[18px]">
           {[
