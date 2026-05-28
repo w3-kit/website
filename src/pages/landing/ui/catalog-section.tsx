@@ -141,7 +141,10 @@ export function CatalogSection() {
                   {String(row + 1).padStart(2, "0")}
                 </div>
               )}
-              <div className="catalog-cell group relative flex cursor-pointer flex-col border-l border-t border-w3-border-subtle bg-w3-surface transition-colors hover:bg-w3-surface-alt">
+              <a
+                href={`${getSectionUrl("ui")}/${item.slug}`}
+                className="catalog-cell group relative flex flex-col border-l border-t border-w3-border-subtle bg-w3-surface transition-colors hover:bg-w3-surface-alt"
+              >
                 {/* ID badge */}
                 <div className="absolute right-3 top-2.5 z-[2] font-mono text-[9px] text-w3-gray-500">
                   {item.id}
@@ -176,7 +179,7 @@ export function CatalogSection() {
                     className="text-w3-gray-600 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-w3-accent"
                   />
                 </div>
-              </div>
+              </a>
             </div>
           );
         })}

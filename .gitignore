@@ -10,5 +10,6 @@ dist
 src/routeTree.gen.ts
 src/**/*.gen.ts
 src/shared/ui/w3-kit/
+.tmp-ui-mirror/
 .vercel
 test-results/

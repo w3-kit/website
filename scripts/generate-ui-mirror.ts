@@ -17,9 +17,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execSync } from "node:child_process";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const SRC_DIR = path.join(ROOT, "ui/registry/w3-kit");
+const SIBLING_SRC = path.join(ROOT, "ui/registry/w3-kit");
+const CLONE_DIR = path.resolve(import.meta.dirname, "../.tmp-ui-mirror");
+const CLONE_SRC = path.join(CLONE_DIR, "registry/w3-kit");
+const UI_REPO_URL = "https://github.com/w3-kit/ui.git";
 const OUT_DIR = path.resolve(import.meta.dirname, "../src/shared/ui/w3-kit");
 const INDEX_FILE = path.join(OUT_DIR, "index.gen.ts");
 
@@ -61,8 +65,8 @@ function transform(source: string): string {
   return out;
 }
 
-function copyDir(slug: string) {
-  const src = path.join(SRC_DIR, slug);
+function copyDir(srcRoot: string, slug: string) {
+  const src = path.join(srcRoot, slug);
   const dst = path.join(OUT_DIR, slug);
   if (!fs.existsSync(src) || !fs.statSync(src).isDirectory()) return;
   fs.mkdirSync(dst, { recursive: true });
@@ -73,6 +77,31 @@ function copyDir(slug: string) {
     const content = fs.readFileSync(path.join(src, entry.name), "utf-8");
     const transformed = BANNER + transform(content);
     fs.writeFileSync(path.join(dst, entry.name), transformed);
+  }
+}
+
+/**
+ * Returns the directory that holds ../ui/registry/w3-kit/<slug>/ subfolders,
+ * either from the sibling repo (local dev) or by shallow-cloning the public
+ * ui repo into .tmp-ui-mirror/ (CI without the sibling, e.g., Vercel).
+ * Returns null if neither is available.
+ */
+function resolveSource(): string | null {
+  if (fs.existsSync(SIBLING_SRC)) return SIBLING_SRC;
+
+  // Reuse existing clone if present (faster repeat builds).
+  if (fs.existsSync(CLONE_SRC)) return CLONE_SRC;
+
+  try {
+    console.log(`  ui sibling not found, cloning ${UI_REPO_URL} into .tmp-ui-mirror/`);
+    if (fs.existsSync(CLONE_DIR)) fs.rmSync(CLONE_DIR, { recursive: true, force: true });
+    execSync(`git clone --depth 1 --quiet ${UI_REPO_URL} "${CLONE_DIR}"`, {
+      stdio: ["ignore", "ignore", "inherit"],
+    });
+    return fs.existsSync(CLONE_SRC) ? CLONE_SRC : null;
+  } catch (err) {
+    console.warn(`  failed to clone ui repo: ${(err as Error).message}`);
+    return null;
   }
 }
 
@@ -117,31 +146,31 @@ function main() {
 
   // Always (re-)create OUT_DIR with a valid index.gen.ts and lib/utils.ts so
   // imports from src/shared/ui/w3-kit-demos.tsx always resolve, even when
-  // the ui registry isn't checked out (e.g., Vercel without submodules).
-  // Consumers handle missing components by checking `DEMOS[slug]`.
+  // the ui registry isn't reachable. Consumers null-check `DEMOS[slug]`.
   if (fs.existsSync(OUT_DIR)) {
     fs.rmSync(OUT_DIR, { recursive: true, force: true });
   }
   fs.mkdirSync(OUT_DIR, { recursive: true });
   writeLocalUtils();
 
-  if (!fs.existsSync(SRC_DIR)) {
-    console.warn(`  ui registry not found at ${SRC_DIR} — writing empty mirror`);
+  const srcDir = resolveSource();
+  if (!srcDir) {
+    console.warn(`  ui registry unavailable — writing empty mirror`);
     fs.writeFileSync(INDEX_FILE, BANNER + "export {};\n");
     return;
   }
 
   const slugs = fs
-    .readdirSync(SRC_DIR, { withFileTypes: true })
+    .readdirSync(srcDir, { withFileTypes: true })
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
     .sort();
 
-  for (const slug of slugs) copyDir(slug);
+  for (const slug of slugs) copyDir(srcDir, slug);
 
   writeIndex(slugs);
 
-  console.log(`  Mirrored ${slugs.length} components to ${path.relative(ROOT, OUT_DIR)}`);
+  console.log(`  Mirrored ${slugs.length} components from ${srcDir}`);
   console.log("Done!");
 }
 
