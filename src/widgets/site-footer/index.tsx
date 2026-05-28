@@ -20,7 +20,13 @@ const communityLinks = [
   { label: "Issues", href: "https://github.com/w3-kit/website/issues" },
 ];
 
-function FooterLinkGroup({ title, links }: { title: string; links: { label: string; href: string }[] }) {
+function FooterLinkGroup({
+  title,
+  links,
+}: {
+  title: string;
+  links: { label: string; href: string }[];
+}) {
   return (
     <div className="flex flex-col gap-3">
       <h4 className="text-sm font-medium" style={{ color: "var(--w3-gray-900)" }}>

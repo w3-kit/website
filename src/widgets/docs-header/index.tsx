@@ -97,7 +97,10 @@ function NavDropdown({
       )}
     >
       {label}
-      <ChevronDown size={12} className={cn("transition-transform", active === id && "rotate-180")} />
+      <ChevronDown
+        size={12}
+        className={cn("transition-transform", active === id && "rotate-180")}
+      />
     </button>
   );
 }
@@ -133,11 +136,7 @@ export function DocsHeader() {
   }, [activeDropdown]);
 
   const mobile = (
-    <MobileMenuOverlay
-      open={mobileOpen}
-      onAutoClose={() => setMobileOpen(false)}
-      topClass="pt-14"
-    >
+    <MobileMenuOverlay open={mobileOpen} onAutoClose={() => setMobileOpen(false)} topClass="pt-14">
       <nav className="flex flex-col gap-4 px-6 py-6">
         {docsNavSections.map((section) => (
           <CollapsibleMobileSection key={section.title} section={section} />

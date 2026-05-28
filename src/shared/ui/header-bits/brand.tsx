@@ -14,10 +14,7 @@ interface BrandProps {
 
 export function Brand({ size = 24, href, badge, className }: BrandProps) {
   return (
-    <a
-      href={href ?? getLandingUrl()}
-      className={cn("flex items-center gap-2", className)}
-    >
+    <a href={href ?? getLandingUrl()} className={cn("flex items-center gap-2", className)}>
       <Logo size={size} className="text-[var(--w3-accent)]" />
       <span className="text-sm font-semibold" style={{ color: "var(--w3-gray-900)" }}>
         w3-kit

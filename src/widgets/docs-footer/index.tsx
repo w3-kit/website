@@ -52,8 +52,7 @@ function FooterSection({
       <h4 className="text-sm font-medium text-w3-gray-900">{title}</h4>
       <ul className="flex flex-col gap-2">
         {links.map((link) => {
-          const resolvedHref =
-            link.href ?? getDocItemHref({ slug: link.slug!, type: link.type! });
+          const resolvedHref = link.href ?? getDocItemHref({ slug: link.slug!, type: link.type! });
           const isExternal = resolvedHref.startsWith("http");
 
           return (
