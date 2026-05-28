@@ -22,16 +22,20 @@ const LEARN_REPO_URL = "https://github.com/w3-kit/learn.git";
 
 /**
  * Returns the directory that holds guides/recipes/docs subfolders, either
- * from the sibling repo (local dev) or by shallow-cloning the public learn
- * repo into .tmp-learn-mirror/ (CI without the sibling, e.g., Vercel).
- * Returns null if neither is available.
+ * from the sibling repo (local dev) or by cloning the public learn repo
+ * into .tmp-learn-mirror/ (CI without the sibling, e.g., Vercel).
+ *
+ * NOTE: full clone (no --depth) is required so getGitAuthor() can walk
+ * history back to the commit that introduced each guide. A shallow clone
+ * only sees the latest commit, which is usually a dependabot bump — that
+ * would attribute every guide to dependabot[bot].
  */
 function resolveLearnDir(): string | null {
   if (fs.existsSync(SIBLING_LEARN)) return SIBLING_LEARN;
   if (fs.existsSync(CLONE_LEARN)) return CLONE_LEARN;
   try {
     console.log(`  learn sibling not found, cloning ${LEARN_REPO_URL} into .tmp-learn-mirror/`);
-    execSync(`git clone --depth 1 --quiet ${LEARN_REPO_URL} "${CLONE_LEARN}"`, {
+    execSync(`git clone --quiet ${LEARN_REPO_URL} "${CLONE_LEARN}"`, {
       stdio: ["ignore", "ignore", "inherit"],
     });
     return fs.existsSync(CLONE_LEARN) ? CLONE_LEARN : null;
