@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "tsx scripts/generate-learn-registry.ts && tsx scripts/generate-stats.ts && tsx scripts/generate-ui-mirror.ts",
+    "generate": "tsx scripts/generate-learn-registry.ts && tsx scripts/generate-ui-mirror.ts && tsx scripts/generate-stats.ts",
     "predev": "npm run generate",
     "dev": "vite dev",
     "prebuild": "npm run generate",
