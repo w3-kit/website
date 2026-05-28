@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, ChevronRight, Search } from "lucide-react";
-import { Button } from "../../shared/ui/button";
-import { Logo } from "../../shared/ui/logo";
+import { ChevronDown, ChevronRight, Search } from "lucide-react";
 import { cn } from "../../shared/lib/utils";
 import { getSectionUrl, getDocItemHref } from "../../shared/lib/urls";
 import { docsNavSections, type DocNavSection } from "../../entities/guide/model/docs-nav.gen";
-import { GitHubIcon } from "../../shared/ui/github-icon";
 import { useSearch } from "../../features/search";
+import { Brand } from "../../shared/ui/header-bits/brand";
+import { GitHubLink } from "../../shared/ui/header-bits/github-link";
+import { MobileMenuTrigger } from "../../shared/ui/header-bits/mobile-menu-trigger";
+import { MobileMenuOverlay } from "../../shared/ui/header-bits/mobile-menu-overlay";
+import { AppHeader } from "../app-header";
 
 const docsSections = docsNavSections.filter(
   (s) => !s.title.startsWith("Recipes:") && !s.title.startsWith("Guides"),
@@ -95,151 +97,8 @@ function NavDropdown({
       )}
     >
       {label}
-      <ChevronDown
-        size={12}
-        className={cn("transition-transform", active === id && "rotate-180")}
-      />
+      <ChevronDown size={12} className={cn("transition-transform", active === id && "rotate-180")} />
     </button>
-  );
-}
-
-export function DocsHeader() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown>(null);
-  const navRef = useRef<HTMLDivElement>(null);
-  const { openSearch } = useSearch();
-
-  useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 768) setMobileOpen(false);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  useEffect(() => {
-    if (!activeDropdown) return;
-    const handler = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [activeDropdown]);
-
-  return (
-    <>
-      <header
-        className="sticky top-0 z-50 flex shrink-0 items-center justify-between border-b border-w3-border-subtle px-6 py-3 backdrop-blur-xl"
-        style={{
-          background: "color-mix(in srgb, var(--w3-gray-100) 80%, transparent)",
-        }}
-      >
-        <a href={getSectionUrl("docs")} className="flex items-center gap-2">
-          <Logo size={24} className="text-[var(--w3-accent)]" />
-          <span className="text-sm font-semibold text-w3-gray-900">w3-kit</span>
-          <span className="rounded-md bg-w3-accent-subtle px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-w3-accent">
-            docs
-          </span>
-        </a>
-
-        <nav className="hidden items-center gap-0 md:flex" ref={navRef}>
-          <NavDropdown
-            label="Docs"
-            id="docs"
-            active={activeDropdown}
-            onToggle={setActiveDropdown}
-          />
-          <NavDropdown
-            label="Guides"
-            id="guides"
-            active={activeDropdown}
-            onToggle={setActiveDropdown}
-          />
-          <NavDropdown
-            label="Recipes"
-            id="recipes"
-            active={activeDropdown}
-            onToggle={setActiveDropdown}
-          />
-
-          <button
-            onClick={openSearch}
-            className="ml-3 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Search"
-          >
-            <Search size={16} />
-          </button>
-
-          <a
-            href="https://github.com/w3-kit"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="GitHub"
-          >
-            <GitHubIcon size={16} />
-          </a>
-
-          {activeDropdown === "docs" && (
-            <DropdownPanel>
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                {docsSections.map((section) => (
-                  <DropdownSection key={section.title} section={section} />
-                ))}
-              </div>
-            </DropdownPanel>
-          )}
-
-          {activeDropdown === "guides" && (
-            <DropdownPanel>
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {guideSections.map((section) => (
-                  <DropdownSection key={section.title} section={section} />
-                ))}
-              </div>
-            </DropdownPanel>
-          )}
-
-          {activeDropdown === "recipes" && (
-            <DropdownPanel>
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {recipeSections.map((section) => (
-                  <DropdownSection key={section.title} section={section} />
-                ))}
-              </div>
-            </DropdownPanel>
-          )}
-        </nav>
-
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-        >
-          {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-        </Button>
-      </header>
-
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 flex flex-col overflow-y-auto pt-14 backdrop-blur-xl md:hidden"
-          style={{
-            background: "color-mix(in srgb, var(--w3-gray-100) 95%, transparent)",
-          }}
-        >
-          <nav className="flex flex-col gap-4 px-6 py-6">
-            {docsNavSections.map((section) => (
-              <CollapsibleMobileSection key={section.title} section={section} />
-            ))}
-          </nav>
-        </div>
-      )}
-    </>
   );
 }
 
@@ -253,5 +112,101 @@ function DropdownPanel({ children }: { children: React.ReactNode }) {
     >
       <div className="mx-auto max-w-[1200px] px-6 py-6 lg:px-16">{children}</div>
     </div>
+  );
+}
+
+export function DocsHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const { openSearch } = useSearch();
+
+  useEffect(() => {
+    if (!activeDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [activeDropdown]);
+
+  const mobile = (
+    <MobileMenuOverlay
+      open={mobileOpen}
+      onAutoClose={() => setMobileOpen(false)}
+      topClass="pt-14"
+    >
+      <nav className="flex flex-col gap-4 px-6 py-6">
+        {docsNavSections.map((section) => (
+          <CollapsibleMobileSection key={section.title} section={section} />
+        ))}
+      </nav>
+    </MobileMenuOverlay>
+  );
+
+  return (
+    <AppHeader className="shrink-0 py-3" mobileContent={mobile}>
+      <Brand href={getSectionUrl("docs")} badge="docs" />
+
+      <nav className="hidden items-center gap-0 md:flex" ref={navRef}>
+        <NavDropdown label="Docs" id="docs" active={activeDropdown} onToggle={setActiveDropdown} />
+        <NavDropdown
+          label="Guides"
+          id="guides"
+          active={activeDropdown}
+          onToggle={setActiveDropdown}
+        />
+        <NavDropdown
+          label="Recipes"
+          id="recipes"
+          active={activeDropdown}
+          onToggle={setActiveDropdown}
+        />
+
+        <button
+          onClick={openSearch}
+          className="ml-3 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+          aria-label="Search"
+        >
+          <Search size={16} />
+        </button>
+
+        <GitHubLink className="rounded-md p-1.5" />
+
+        {activeDropdown === "docs" && (
+          <DropdownPanel>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {docsSections.map((section) => (
+                <DropdownSection key={section.title} section={section} />
+              ))}
+            </div>
+          </DropdownPanel>
+        )}
+
+        {activeDropdown === "guides" && (
+          <DropdownPanel>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {guideSections.map((section) => (
+                <DropdownSection key={section.title} section={section} />
+              ))}
+            </div>
+          </DropdownPanel>
+        )}
+
+        {activeDropdown === "recipes" && (
+          <DropdownPanel>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {recipeSections.map((section) => (
+                <DropdownSection key={section.title} section={section} />
+              ))}
+            </div>
+          </DropdownPanel>
+        )}
+      </nav>
+
+      <MobileMenuTrigger open={mobileOpen} onToggle={() => setMobileOpen(!mobileOpen)} />
+    </AppHeader>
   );
 }
