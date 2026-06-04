@@ -12,4 +12,12 @@ test.describe("Registry subdomain", () => {
     await expect(page.getByText("18 tokens")).toBeVisible();
     await expect(page.getByText("6 Solana programs")).toBeVisible();
   });
+
+  test("chains list shows all chains", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/chains");
+    await expect(page.getByRole("heading", { name: /Chains/i })).toBeVisible();
+    await expect(page.getByText("Ethereum", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Base", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Solana", { exact: true }).first()).toBeVisible();
+  });
 });
