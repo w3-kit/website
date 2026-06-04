@@ -332,3 +332,16 @@
     @apply font-sans;
   }
 }
+
+@keyframes w3-typewriter-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.w3-typewriter-reveal {
+  animation: w3-typewriter-reveal 700ms ease-out forwards;
+}

@@ -108,6 +108,152 @@ test.describe("Landing Page", () => {
   });
 });
 
+test.describe("Recipe Previews section", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+  });
+
+  test("section renders with label and headline", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.getByText("04 — PREVIEW")).toBeVisible();
+    await expect(section.getByRole("heading", { name: /See it before you ship/i })).toBeVisible();
+  });
+
+  test("renders all snippet tabs with first selected", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  test("clicking a tab updates selection", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await tablist.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
+
+    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    );
+  });
+
+  test("active tab's code is visible in panel", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const panel = section.getByRole("tabpanel");
+
+    await expect(panel).toContainText("ConnectWallet");
+
+    await section.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
+    await expect(panel).toContainText("TokenSwap");
+  });
+
+  test("copy button writes active snippet code to clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    await section.getByRole("button", { name: /copy code/i }).click();
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText).toContain("ConnectWallet");
+  });
+
+  test("try-it link points to docs subdomain recipe page", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    const tryLink = section.getByRole("link", { name: /try it in docs/i });
+    await expect(tryLink).toHaveAttribute(
+      "href",
+      "http://docs.localhost:3000/recipe/connect-wallet"
+    );
+
+    await section.getByRole("tab", { name: "Mint an NFT" }).click();
+    await expect(tryLink).toHaveAttribute("href", "http://docs.localhost:3000/recipe/nft-mint");
+  });
+
+  test("respects prefers-reduced-motion (no clip animation)", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    const reveal = section.locator("[data-typewriter]");
+    await expect(reveal).toHaveAttribute("data-typewriter", "static");
+  });
+
+  test("only active tab is in the tab order", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "tabindex",
+      "0"
+    );
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
+      "tabindex",
+      "-1"
+    );
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "tabindex",
+      "-1"
+    );
+  });
+
+  test("arrow keys navigate between tabs with wrap-around", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await tablist.getByRole("tab", { name: "Connect a wallet" }).focus();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("End");
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("ArrowDown");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("ArrowUp");
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("Home");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+});
+
 test.describe("Subdomain Routing", () => {
   test.beforeEach(async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
