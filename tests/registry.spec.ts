@@ -50,4 +50,17 @@ test.describe("Registry subdomain", () => {
     await page.goto("http://registry.localhost:3000/tokens/DOESNOTEXIST");
     await expect(page.getByText(/not found/i)).toBeVisible();
   });
+
+  test("programs list shows all Solana programs", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/programs");
+    await expect(page.getByRole("heading", { name: /Programs/i })).toBeVisible();
+    await expect(page.getByText("System Program").first()).toBeVisible();
+    await expect(page.getByText("SPL Token Program").first()).toBeVisible();
+  });
+
+  test("program detail shows programId per chain", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/programs/system-program");
+    await expect(page.getByRole("heading", { name: "System Program" })).toBeVisible();
+    await expect(page.getByText("11111111111111111111111111111111").first()).toBeVisible();
+  });
 });
