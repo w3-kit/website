@@ -4,7 +4,7 @@ export type RecipeSnippet = {
   description: string;
   language: string;
   code: string;
-  docsHref: string;
+  docsSlug: string;
 };
 
 export const RECIPE_SNIPPETS: RecipeSnippet[] = [
@@ -13,7 +13,7 @@ export const RECIPE_SNIPPETS: RecipeSnippet[] = [
     title: "Connect a wallet",
     description: "Drop-in wallet button, all popular wallets supported.",
     language: "tsx",
-    docsHref: "/docs/recipes/connect-wallet",
+    docsSlug: "connect-wallet",
     code: `import { ConnectWallet } from "@w3-kit/ui";
 
 export function Header() {
@@ -32,7 +32,7 @@ export function Header() {
     title: "Show token balances",
     description: "Typed multi-chain balances with USD conversion.",
     language: "tsx",
-    docsHref: "/docs/recipes/wallet-balance",
+    docsSlug: "wallet-balance",
     code: `import { useTokenBalances } from "@w3-kit/hooks";
 
 export function Balances({ address }: { address: \`0x\${string}\` }) {
@@ -57,7 +57,7 @@ export function Balances({ address }: { address: \`0x\${string}\` }) {
     title: "Swap tokens via 1inch",
     description: "Production-ready aggregator UI in three lines.",
     language: "tsx",
-    docsHref: "/docs/recipes/token-swap",
+    docsSlug: "token-swap",
     code: `import { TokenSwap } from "@w3-kit/ui";
 
 export function SwapPage() {
@@ -76,7 +76,7 @@ export function SwapPage() {
     title: "Mint an NFT",
     description: "Preview, pay, confirm. Three components, no glue code.",
     language: "tsx",
-    docsHref: "/docs/recipes/nft-mint",
+    docsSlug: "nft-mint",
     code: `import { MintPreview, MintPay, MintConfirm } from "@w3-kit/ui";
 
 export function MintFlow({ contract }: { contract: \`0x\${string}\` }) {

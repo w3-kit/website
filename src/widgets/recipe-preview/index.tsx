@@ -1,6 +1,7 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import { ArrowRight, Check, Copy } from "lucide-react";
 import { useCopyToClipboard } from "../../shared/lib/use-copy-to-clipboard";
+import { getDocItemHref } from "../../shared/lib/urls";
 import { RECIPE_SNIPPETS, type RecipeSnippet } from "./snippets";
 import { CodePanel } from "./code-panel";
 
@@ -96,7 +97,7 @@ export function RecipePreview() {
             {copied ? "Copied" : "Copy code"}
           </button>
           <a
-            href={active.docsHref}
+            href={getDocItemHref({ slug: active.docsSlug, type: "recipe" })}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-w3-gray-900 hover:text-w3-accent"
           >
             Try it in docs <ArrowRight size={13} />

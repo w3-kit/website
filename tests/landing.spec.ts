@@ -174,15 +174,18 @@ test.describe("Recipe Previews section", () => {
     expect(clipboardText).toContain("ConnectWallet");
   });
 
-  test("try-it link points to active snippet's docs href", async ({ page }) => {
+  test("try-it link points to docs subdomain recipe page", async ({ page }) => {
     const section = page.locator("#preview");
     await section.scrollIntoViewIfNeeded();
 
     const tryLink = section.getByRole("link", { name: /try it in docs/i });
-    await expect(tryLink).toHaveAttribute("href", "/docs/recipes/connect-wallet");
+    await expect(tryLink).toHaveAttribute(
+      "href",
+      "http://docs.localhost:3000/recipe/connect-wallet"
+    );
 
     await section.getByRole("tab", { name: "Mint an NFT" }).click();
-    await expect(tryLink).toHaveAttribute("href", "/docs/recipes/nft-mint");
+    await expect(tryLink).toHaveAttribute("href", "http://docs.localhost:3000/recipe/nft-mint");
   });
 
   test("respects prefers-reduced-motion (no clip animation)", async ({ page }) => {
