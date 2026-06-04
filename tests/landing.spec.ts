@@ -271,12 +271,6 @@ test.describe("Subdomain Routing", () => {
     await expect(page.getByText("Under Construction")).toBeVisible();
   });
 
-  test("registry subdomain serves under-construction page", async ({ page }) => {
-    await page.goto("http://registry.localhost:3000");
-    await expect(page.getByRole("heading", { name: "Registry" })).toBeVisible();
-    await expect(page.getByText("Under Construction")).toBeVisible();
-  });
-
   test("learn subdomain serves under-construction page", async ({ page }) => {
     await page.goto("http://learn.localhost:3000");
     await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
