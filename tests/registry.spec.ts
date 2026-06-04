@@ -104,4 +104,11 @@ test.describe("Registry subdomain", () => {
     await page.getByRole("option", { name: /Ethereum/i }).first().click();
     await expect(page).toHaveURL(/\/registry\/chains\/1$/);
   });
+
+  test("API page shows usage examples", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/api");
+    await expect(page.getByRole("heading", { name: /API/i }).first()).toBeVisible();
+    await expect(page.getByText("getChain").first()).toBeVisible();
+    await expect(page.getByText("getTokenAddress").first()).toBeVisible();
+  });
 });
