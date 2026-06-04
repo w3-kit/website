@@ -48,7 +48,7 @@
     "@playwright/test": "^1.60.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "@w3-kit/config": "^0.2.0",
     "eslint": "^10.4.0",
     "prettier": "^3.8.3",
