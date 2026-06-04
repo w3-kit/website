@@ -3,6 +3,7 @@ import { SiteFooter } from "../../../widgets/site-footer";
 import { HeroSection } from "./hero-section";
 import { CatalogSection } from "./catalog-section";
 import { ChainsSection } from "./chains-section";
+import { RecipePreviewSection } from "./recipe-preview-section";
 import { RecipesSection } from "./recipes-section";
 import { StatsSection } from "./stats-section";
 import { CtaSection } from "./cta-section";
@@ -15,6 +16,7 @@ export function LandingPage() {
         <HeroSection />
         <CatalogSection />
         <ChainsSection />
+        <RecipePreviewSection />
         <RecipesSection />
         <StatsSection />
         <CtaSection />

@@ -108,6 +108,20 @@ test.describe("Landing Page", () => {
   });
 });
 
+test.describe("Recipe Previews section", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+  });
+
+  test("section renders with label and headline", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.getByText("04 — PREVIEW")).toBeVisible();
+    await expect(section.getByRole("heading", { name: /See it before you ship/i })).toBeVisible();
+  });
+});
+
 test.describe("Subdomain Routing", () => {
   test.beforeEach(async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
