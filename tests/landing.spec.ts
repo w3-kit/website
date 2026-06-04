@@ -120,6 +120,70 @@ test.describe("Recipe Previews section", () => {
     await expect(section.getByText("04 — PREVIEW")).toBeVisible();
     await expect(section.getByRole("heading", { name: /See it before you ship/i })).toBeVisible();
   });
+
+  test("renders all snippet tabs with first selected", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  test("clicking a tab updates selection", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await tablist.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
+
+    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    );
+  });
+
+  test("active tab's code is visible in panel", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const panel = section.getByRole("tabpanel");
+
+    await expect(panel).toContainText("ConnectWallet");
+
+    await section.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
+    await expect(panel).toContainText("TokenSwap");
+  });
+
+  test("copy button writes active snippet code to clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    await section.getByRole("button", { name: /copy code/i }).click();
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText).toContain("ConnectWallet");
+  });
+
+  test("try-it link points to active snippet's docs href", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    const tryLink = section.getByRole("link", { name: /try it in docs/i });
+    await expect(tryLink).toHaveAttribute("href", "/docs/recipes/connect-wallet");
+
+    await section.getByRole("tab", { name: "Mint an NFT" }).click();
+    await expect(tryLink).toHaveAttribute("href", "/docs/recipes/nft-mint");
+  });
 });
 
 test.describe("Subdomain Routing", () => {

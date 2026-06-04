@@ -1,3 +1,5 @@
+import { RecipePreview } from "../../../widgets/recipe-preview";
+
 export function RecipePreviewSection() {
   return (
     <section
@@ -10,6 +12,7 @@ export function RecipePreviewSection() {
           See it before you ship.
         </h2>
       </div>
+      <RecipePreview />
     </section>
   );
 }
