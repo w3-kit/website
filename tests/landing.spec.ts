@@ -192,6 +192,63 @@ test.describe("Recipe Previews section", () => {
     const reveal = section.locator("[data-typewriter]");
     await expect(reveal).toHaveAttribute("data-typewriter", "static");
   });
+
+  test("only active tab is in the tab order", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "tabindex",
+      "0"
+    );
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
+      "tabindex",
+      "-1"
+    );
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "tabindex",
+      "-1"
+    );
+  });
+
+  test("arrow keys navigate between tabs with wrap-around", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+    const tablist = section.getByRole("tablist");
+
+    await tablist.getByRole("tab", { name: "Connect a wallet" }).focus();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("End");
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("ArrowDown");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("ArrowUp");
+    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    await page.keyboard.press("Home");
+    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
 });
 
 test.describe("Subdomain Routing", () => {
