@@ -94,4 +94,14 @@ test.describe("Registry subdomain", () => {
     expect(after).toBeLessThanOrEqual(before);
     expect(after).toBeGreaterThan(0);
   });
+
+  test("Cmd+K opens search and navigates", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/", { waitUntil: "networkidle" });
+    await page.keyboard.press("Meta+k");
+    const input = page.getByPlaceholder("Search chains, tokens, programs");
+    await expect(input).toBeVisible();
+    await input.fill("ethereum");
+    await page.getByRole("option", { name: /Ethereum/i }).first().click();
+    await expect(page).toHaveURL(/\/registry\/chains\/1$/);
+  });
 });
