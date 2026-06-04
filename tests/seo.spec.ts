@@ -40,4 +40,20 @@ test.describe("SEO", () => {
     const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
     expect(canonical).toBe("http://registry.localhost:3000/tokens");
   });
+
+  test("sitemap.xml lists apex + each subdomain root", async ({ request }) => {
+    const res = await request.get("/sitemap.xml");
+    expect(res.status()).toBe(200);
+    const body = await res.text();
+    expect(body).toContain("https://w3-kit.com/");
+    expect(body).toContain("https://registry.w3-kit.com/");
+    expect(body).toContain("https://docs.w3-kit.com/");
+  });
+
+  test("sitemap.xml lists dynamic registry detail pages", async ({ request }) => {
+    const res = await request.get("/sitemap.xml");
+    const body = await res.text();
+    expect(body).toContain("https://registry.w3-kit.com/chains/1");
+    expect(body).toContain("https://registry.w3-kit.com/tokens/USDC");
+  });
 });
