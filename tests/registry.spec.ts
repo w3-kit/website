@@ -84,4 +84,14 @@ test.describe("Registry subdomain", () => {
     expect(after).toBeLessThan(before);
     expect(after).toBeGreaterThan(0);
   });
+
+  test("chain filter on tokens list reduces visible count", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/tokens", { waitUntil: "networkidle" });
+    const cards = page.locator("ul li a[href^='/registry/tokens/']");
+    const before = await cards.count();
+    await page.getByLabel("Filter by chain").selectOption("1");
+    const after = await cards.count();
+    expect(after).toBeLessThanOrEqual(before);
+    expect(after).toBeGreaterThan(0);
+  });
 });
