@@ -34,3 +34,27 @@ export function getLandingUrl(): string {
 export function isExternalHref(href: string): boolean {
   return /^https?:\/\//.test(href) && !href.includes(DOMAIN);
 }
+
+const SUBDOMAINS = ["registry", "docs", "ui", "learn", "design"] as const;
+type Subdomain = (typeof SUBDOMAINS)[number];
+
+/**
+ * Maps an internal rewrite path to its public subdomain URL.
+ * `/registry/chains/1` → `https://registry.w3-kit.com/chains/1`
+ * `/`                  → `https://w3-kit.com/`
+ */
+export function getCanonicalUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  const segments = normalized.split("/").filter(Boolean);
+  const first = segments[0];
+
+  if (first && (SUBDOMAINS as readonly string[]).includes(first)) {
+    const sub = first as Subdomain;
+    const rest = segments.slice(1).join("/");
+    const base = getSectionUrl(sub);
+    return rest ? `${base}/${rest}` : `${base}/`;
+  }
+
+  const apex = getLandingUrl();
+  return normalized === "/" ? `${apex}/` : `${apex}${normalized}`;
+}
