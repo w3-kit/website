@@ -14,4 +14,17 @@ test.describe("SEO", () => {
     const ldJson = JSON.parse(ldJsonText ?? "{}");
     expect(ldJson["@type"]).toBe("SoftwareApplication");
   });
+
+  test("robots.txt is served with sitemap reference", async ({ request }) => {
+    const res = await request.get("/robots.txt");
+    expect(res.status()).toBe(200);
+    const body = await res.text();
+    expect(body).toMatch(/Sitemap:/i);
+  });
+
+  test("og.png is served", async ({ request }) => {
+    const res = await request.get("/og.png");
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toMatch(/image\/png/);
+  });
 });
