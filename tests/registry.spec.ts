@@ -63,4 +63,15 @@ test.describe("Registry subdomain", () => {
     await expect(page.getByRole("heading", { name: "System Program" })).toBeVisible();
     await expect(page.getByText("11111111111111111111111111111111").first()).toBeVisible();
   });
+
+  test("copy button on chain RPC writes URL to clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("http://registry.localhost:3000/chains/1", { waitUntil: "networkidle" });
+    const btn = page.getByRole("button", { name: "Copy https://eth.llamarpc.com" });
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
+    await expect(btn).toContainText("Copied");
+    const text = await page.evaluate(() => navigator.clipboard.readText());
+    expect(text).toBe("https://eth.llamarpc.com");
+  });
 });

@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { PROGRAMS } from "../../../entities/program/model/programs.gen";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CopyButton } from "../../../features/copy-address";
 
 export function ProgramDetailPage() {
   const params = useParams({ strict: false }) as { key?: string };
@@ -33,7 +34,13 @@ export function ProgramDetailPage() {
             const chain = CHAINS.find((c) => c.chainId === d.chainId);
             return (
               <li key={d.chainId} className="rounded-lg border border-w3-border-subtle p-3">
-                <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
+                  <CopyButton
+                    value={d.programId}
+                    label={`${program.name} programId on ${chain?.name ?? d.chainId}`}
+                  />
+                </div>
                 <div className="mt-1 break-all font-mono text-[11px] text-w3-gray-700">
                   {d.programId}
                 </div>

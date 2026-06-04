@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { TOKENS } from "../../../entities/token/model/tokens.gen";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CopyButton } from "../../../features/copy-address";
 
 export function TokenDetailPage() {
   const params = useParams({ strict: false }) as { symbol?: string };
@@ -41,7 +42,13 @@ export function TokenDetailPage() {
             const chain = CHAINS.find((c) => c.chainId === d.chainId);
             return (
               <li key={d.chainId} className="rounded-lg border border-w3-border-subtle p-3">
-                <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
+                  <CopyButton
+                    value={d.address}
+                    label={`${token.symbol} on ${chain?.name ?? d.chainId}`}
+                  />
+                </div>
                 <div className="mt-1 break-all font-mono text-[11px] text-w3-gray-700">
                   {d.address}
                 </div>

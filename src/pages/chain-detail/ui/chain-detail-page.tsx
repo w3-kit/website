@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
 import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { CopyButton } from "../../../features/copy-address";
 
 export function ChainDetailPage() {
   const params = useParams({ strict: false }) as { chainId?: string };
@@ -43,10 +44,14 @@ export function ChainDetailPage() {
         <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
           RPC URLs
         </h2>
-        <ul className="mt-2 space-y-1 font-mono text-[12px]">
+        <ul className="mt-2 space-y-2">
           {chain.rpcUrls.map((url) => (
-            <li key={url} className="rounded bg-w3-surface-alt px-2 py-1">
-              {url}
+            <li
+              key={url}
+              className="flex items-center justify-between gap-3 rounded bg-w3-surface-alt px-3 py-2"
+            >
+              <span className="break-all font-mono text-[12px]">{url}</span>
+              <CopyButton value={url} label={url} />
             </li>
           ))}
         </ul>
