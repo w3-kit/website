@@ -27,4 +27,17 @@ test.describe("SEO", () => {
     expect(res.status()).toBe(200);
     expect(res.headers()["content-type"]).toMatch(/image\/png/);
   });
+
+  test("registry chain detail has dynamic title and canonical", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/chains/1");
+    await expect(page).toHaveTitle(/Ethereum/i);
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+    expect(canonical).toBe("http://registry.localhost:3000/chains/1");
+  });
+
+  test("registry tokens list has subdomain canonical", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/tokens");
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+    expect(canonical).toBe("http://registry.localhost:3000/tokens");
+  });
 });
