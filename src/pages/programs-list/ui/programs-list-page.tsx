@@ -3,9 +3,7 @@ import { PROGRAMS } from "../../../entities/program/model/programs.gen";
 export function ProgramsListPage() {
   return (
     <div className="mx-auto max-w-5xl">
-      <h1 className="text-[32px] font-medium leading-tight tracking-[-0.03em]">
-        Solana Programs
-      </h1>
+      <h1 className="text-[32px] font-medium leading-tight tracking-[-0.03em]">Solana Programs</h1>
       <p className="mt-2 text-w3-gray-600">{PROGRAMS.length} catalogued programs.</p>
 
       <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -6,9 +6,9 @@ const FEATURED_CHAINS = [1, 8453, 101];
 const FEATURED_TOKENS = ["USDC", "USDT", "WETH"];
 
 export function RegistryHomePage() {
-  const featuredChains = FEATURED_CHAINS.map((id) =>
-    CHAINS.find((c) => c.chainId === id),
-  ).filter((c): c is NonNullable<typeof c> => Boolean(c));
+  const featuredChains = FEATURED_CHAINS.map((id) => CHAINS.find((c) => c.chainId === id)).filter(
+    (c): c is NonNullable<typeof c> => Boolean(c),
+  );
   const featuredTokens = FEATURED_TOKENS.map((s) => TOKENS.find((t) => t.symbol === s)).filter(
     (t): t is NonNullable<typeof t> => Boolean(t),
   );
