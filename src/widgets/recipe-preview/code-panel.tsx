@@ -1,4 +1,5 @@
 import { useHighlight } from "../code-block/use-highlight";
+import { Typewriter } from "./typewriter";
 import type { RecipeSnippet } from "./snippets";
 
 export function CodePanel({ snippet }: { snippet: RecipeSnippet }) {
@@ -6,16 +7,18 @@ export function CodePanel({ snippet }: { snippet: RecipeSnippet }) {
 
   return (
     <div className="overflow-x-auto bg-w3-gray-200 p-5 font-mono text-[13px] leading-relaxed">
-      {html ? (
-        <div
-          className="[&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:!bg-transparent"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      ) : (
-        <pre className="text-w3-gray-700">
-          <code>{snippet.code.trim()}</code>
-        </pre>
-      )}
+      <Typewriter resetKey={snippet.id}>
+        {html ? (
+          <div
+            className="[&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:!bg-transparent"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        ) : (
+          <pre className="text-w3-gray-700">
+            <code>{snippet.code.trim()}</code>
+          </pre>
+        )}
+      </Typewriter>
     </div>
   );
 }

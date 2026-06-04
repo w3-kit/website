@@ -184,6 +184,14 @@ test.describe("Recipe Previews section", () => {
     await section.getByRole("tab", { name: "Mint an NFT" }).click();
     await expect(tryLink).toHaveAttribute("href", "/docs/recipes/nft-mint");
   });
+
+  test("respects prefers-reduced-motion (no clip animation)", async ({ page }) => {
+    const section = page.locator("#preview");
+    await section.scrollIntoViewIfNeeded();
+
+    const reveal = section.locator("[data-typewriter]");
+    await expect(reveal).toHaveAttribute("data-typewriter", "static");
+  });
 });
 
 test.describe("Subdomain Routing", () => {
