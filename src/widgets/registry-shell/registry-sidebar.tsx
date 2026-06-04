@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
 const NAV = [
   { label: "Home", href: "/registry/" },
@@ -23,8 +23,8 @@ export function RegistrySidebar() {
               : location.pathname.startsWith(item.href);
           return (
             <li key={item.href}>
-              <Link
-                to={item.href}
+              <a
+                href={item.href}
                 className={`block rounded px-3 py-2 text-sm transition-colors ${
                   active
                     ? "bg-w3-surface-alt text-w3-gray-900"
@@ -32,7 +32,7 @@ export function RegistrySidebar() {
                 }`}
               >
                 {item.label}
-              </Link>
+              </a>
             </li>
           );
         })}
