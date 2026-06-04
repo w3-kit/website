@@ -1,13 +1,29 @@
+import { useState } from "react";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import {
+  FilterChains,
+  applyChainFilter,
+  DEFAULT_CHAIN_FILTER,
+  type ChainFilter,
+} from "../../../features/filter-chains";
 
 export function ChainsListPage() {
+  const [filter, setFilter] = useState<ChainFilter>(DEFAULT_CHAIN_FILTER);
+  const filtered = applyChainFilter(CHAINS, filter);
+
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="text-[32px] font-medium leading-tight tracking-[-0.03em]">Chains</h1>
-      <p className="mt-2 text-w3-gray-600">{CHAINS.length} supported chains.</p>
+      <p className="mt-2 text-w3-gray-600">
+        {filtered.length} of {CHAINS.length} chains.
+      </p>
+
+      <div className="mt-6">
+        <FilterChains value={filter} onChange={setFilter} />
+      </div>
 
       <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {CHAINS.map((c) => (
+        {filtered.map((c) => (
           <li key={c.chainId}>
             <a
               href={`/registry/chains/${c.chainId}`}

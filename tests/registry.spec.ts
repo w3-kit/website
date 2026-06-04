@@ -74,4 +74,14 @@ test.describe("Registry subdomain", () => {
     const text = await page.evaluate(() => navigator.clipboard.readText());
     expect(text).toBe("https://eth.llamarpc.com");
   });
+
+  test("ecosystem filter on chains list reduces visible count", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/chains", { waitUntil: "networkidle" });
+    const cards = page.locator("ul li a[href^='/registry/chains/']");
+    const before = await cards.count();
+    await page.getByRole("button", { name: "Solana", exact: true }).click();
+    const after = await cards.count();
+    expect(after).toBeLessThan(before);
+    expect(after).toBeGreaterThan(0);
+  });
 });
