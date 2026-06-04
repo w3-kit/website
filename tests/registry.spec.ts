@@ -32,4 +32,22 @@ test.describe("Registry subdomain", () => {
     await page.goto("http://registry.localhost:3000/chains/999999");
     await expect(page.getByText(/not found/i)).toBeVisible();
   });
+
+  test("tokens list shows all tokens", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/tokens");
+    await expect(page.getByRole("heading", { name: /Tokens/i })).toBeVisible();
+    await expect(page.getByText("USDC", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("WETH", { exact: true }).first()).toBeVisible();
+  });
+
+  test("token detail shows addresses per chain", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/tokens/USDC");
+    await expect(page.getByRole("heading", { name: "USDC" })).toBeVisible();
+    await expect(page.getByText("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")).toBeVisible();
+  });
+
+  test("token detail shows not-found for unknown symbol", async ({ page }) => {
+    await page.goto("http://registry.localhost:3000/tokens/DOESNOTEXIST");
+    await expect(page.getByText(/not found/i)).toBeVisible();
+  });
 });
