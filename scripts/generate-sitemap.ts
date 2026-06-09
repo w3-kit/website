@@ -69,6 +69,7 @@ async function main() {
   const urls: string[] = [];
 
   urls.push(apexUrl("/"));
+  urls.push(apexUrl("/compare"));
 
   urls.push(subUrl("registry", "/"));
   urls.push(subUrl("registry", "/chains"));
