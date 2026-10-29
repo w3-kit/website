@@ -58,7 +58,7 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Guides: Concepts",
     items: [
-      { label: "Accounts Model — EVM vs Solana, Side-by-Side", slug: "accounts-model", type: "guide" },
+      { label: "Accounts Model", slug: "accounts-model", type: "guide" },
       { label: "How Transactions Work", slug: "how-transactions-work", type: "guide" },
       { label: "Public vs Private Keys", slug: "public-vs-private-keys", type: "guide" },
       { label: "What Are Smart Contracts?", slug: "what-are-smart-contracts", type: "guide" },
@@ -68,7 +68,7 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Guides: EVM",
     items: [
-      { label: "Gas Explained — EVM Fee Mechanics From First Principles", slug: "gas-explained", type: "guide" },
+      { label: "Gas Explained", slug: "gas-explained", type: "guide" },
     ],
   },
   {
@@ -80,13 +80,13 @@ export const docsNavSections: DocNavSection[] = [
   {
     title: "Guides: Security",
     items: [
-      { label: "Top 10 Smart Contract Vulnerabilities — EVM & Solana", slug: "top-10-vulnerabilities", type: "guide" },
+      { label: "Top 10 Smart Contract Vulnerabilities", slug: "top-10-vulnerabilities", type: "guide" },
     ],
   },
   {
     title: "Guides: Solana",
     items: [
-      { label: "PDAs Explained — Program Derived Addresses From First Principles", slug: "pdas-explained", type: "guide" },
+      { label: "PDAs Explained", slug: "pdas-explained", type: "guide" },
     ],
   },
   {

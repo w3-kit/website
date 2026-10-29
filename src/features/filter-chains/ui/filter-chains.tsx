@@ -1,4 +1,4 @@
-import type { Chain, Ecosystem } from "../../../entities/chain";
+import { ECOSYSTEM_LABELS, type Chain, type Ecosystem } from "../../../entities/chain";
 
 export type EcosystemFilter = "all" | Ecosystem;
 export type ChainFilter = { ecosystem: EcosystemFilter; includeTestnets: boolean };
@@ -18,8 +18,8 @@ export function applyChainFilter(chains: Chain[], filter: ChainFilter): Chain[] 
 
 const OPTIONS: { value: EcosystemFilter; label: string }[] = [
   { value: "all", label: "All" },
-  { value: "evm", label: "EVM" },
-  { value: "solana", label: "Solana" },
+  { value: "evm", label: ECOSYSTEM_LABELS.evm },
+  { value: "solana", label: ECOSYSTEM_LABELS.solana },
 ];
 
 export function FilterChains({

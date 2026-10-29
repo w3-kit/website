@@ -1,22 +1,19 @@
 import { useParams } from "@tanstack/react-router";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { ECOSYSTEM_LABELS, findChain } from "../../../entities/chain";
+import { tokensOnChain } from "../../../entities/token";
 import { CopyButton } from "../../../features/copy-address";
-import { RegistryNotFound, RegistryPageHead } from "../../../widgets/registry-page-head";
-import {
-  CopyRows,
-  FactList,
-  RegistrySection,
-  TokenRows,
-  ecosystemLabel,
-} from "../../../widgets/registry-rows";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
+import { CopyRows, FactList, RegistrySection, TokenRows } from "../../../widgets/registry-rows";
 
+const REGISTRY_HOME = { href: getSectionUrl("registry"), label: "Back to the registry" };
 export function ChainDetailPage() {
   const { chainId = "" } = useParams({ strict: false }) as { chainId?: string };
-  const chain = CHAINS.find((c) => c.chainId === Number(chainId));
-  if (!chain) return <RegistryNotFound kind="chain" id={chainId} />;
+  const chain = findChain(Number(chainId));
+  if (!chain) return <NotFound kind="chain" id={chainId} back={REGISTRY_HOME} />;
 
-  const tokens = TOKENS.filter((t) => t.chains.some((d) => d.chainId === chain.chainId));
+  const tokens = tokensOnChain(chain.chainId);
 
   return (
     <>
@@ -26,7 +23,7 @@ export function ChainDetailPage() {
 
       <FactList
         facts={[
-          ["Ecosystem", ecosystemLabel(chain.ecosystem)],
+          ["Ecosystem", ECOSYSTEM_LABELS[chain.ecosystem]],
           [
             "Native token",
             `${chain.nativeCurrency.symbol} · ${chain.nativeCurrency.decimals} decimals`,

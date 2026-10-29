@@ -1,18 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
-import type { Chain } from "../../entities/chain";
-import type { Token } from "../../entities/token";
+import { ECOSYSTEM_LABELS, type Chain } from "../../entities/chain";
+import { chainCountLabel, type Token } from "../../entities/token";
 import type { SolanaProgram } from "../../entities/program";
 import { cn } from "../../shared/lib/utils";
-
-const ECOSYSTEM_LABELS: Record<string, string> = {
-  evm: "EVM",
-  solana: "Solana",
-  sui: "Sui",
-  aptos: "Aptos",
-};
-export const ecosystemLabel = (e: string) => ECOSYSTEM_LABELS[e] ?? e;
 
 /** Alternating bands, one per record. The same shape is used on every registry list. */
 function Rows({ children }: { children: ReactNode }) {
@@ -58,7 +50,7 @@ export function ChainRows({ chains }: { chains: Chain[] }) {
               Chain ID {c.chainId}
             </span>
             <span className="hidden text-w3-small text-w3-ink-soft md:block">
-              {ecosystemLabel(c.ecosystem)}
+              {ECOSYSTEM_LABELS[c.ecosystem]}
             </span>
             <span className="hidden text-w3-small text-w3-ink-soft md:block">
               {c.nativeCurrency.symbol}
@@ -89,7 +81,7 @@ export function TokenRows({ tokens }: { tokens: Token[] }) {
               {t.decimals} decimals
             </span>
             <span className="hidden text-w3-small text-w3-ink-soft md:block">
-              {t.chains.length} {t.chains.length === 1 ? "chain" : "chains"}
+              {chainCountLabel(t)}
             </span>
             {arrow}
           </Link>

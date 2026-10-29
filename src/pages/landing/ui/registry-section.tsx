@@ -1,8 +1,9 @@
 import { useState, type KeyboardEvent } from "react";
 import { ArrowRight, Check, Copy } from "lucide-react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { requireChain } from "../../../entities/chain";
+import { addressOn, tokensOnChain, type Token } from "../../../entities/token";
 import { getSectionUrl } from "../../../shared/lib/urls";
+import { truncateAddress } from "../../../shared/lib/format";
 import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { useReveal } from "../../../shared/lib/use-reveal";
 import { cn } from "../../../shared/lib/utils";
@@ -11,19 +12,13 @@ const FEATURED_CHAIN_IDS = [1, 8453, 42161, 10, 137, 101];
 const MAX_BANDS = 6;
 
 const registry = getSectionUrl("registry");
-const chains = FEATURED_CHAIN_IDS.map((id) => CHAINS.find((c) => c.chainId === id)!);
-
-const tokensOn = (chainId: number) =>
-  TOKENS.flatMap((t) => {
-    const deployment = t.chains.find((d) => d.chainId === chainId);
-    return deployment ? [{ token: t, address: deployment.address }] : [];
-  });
+const chains = FEATURED_CHAIN_IDS.map(requireChain);
 
 export function RegistrySection() {
   const [active, setActive] = useState(0);
   const ref = useReveal<HTMLDivElement>();
   const chain = chains[active];
-  const tokens = tokensOn(chain.chainId);
+  const tokens = tokensOnChain(chain.chainId);
 
   const onTabKey = (e: KeyboardEvent) => {
     const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
@@ -79,7 +74,7 @@ export function RegistrySection() {
                     : "bg-w3-ground text-w3-ink hover:bg-w3-tone-2",
                 )}
               >
-                <span className="text-[16px] font-medium">{c.name.replace(" One", "")}</span>
+                <span className="text-[16px] font-medium">{c.name}</span>
                 <span
                   className={cn("text-[13px]", i === active ? "opacity-70" : "text-w3-ink-soft")}
                 >
@@ -95,13 +90,11 @@ export function RegistrySection() {
             aria-labelledby={`chain-tab-${active}`}
             className="flex min-w-0 flex-1 flex-col gap-1"
           >
-            {tokens.slice(0, MAX_BANDS).map(({ token, address }, i) => (
+            {tokens.slice(0, MAX_BANDS).map((token, i) => (
               <TokenBand
                 key={token.symbol}
-                symbol={token.symbol}
-                name={token.name}
-                decimals={token.decimals}
-                address={address}
+                token={token}
+                address={addressOn(token, chain.chainId) ?? ""}
                 shade={i % 2 === 0}
               />
             ))}
@@ -123,15 +116,7 @@ export function RegistrySection() {
   );
 }
 
-interface TokenBandProps {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-  shade: boolean;
-}
-
-function TokenBand({ symbol, name, decimals, address, shade }: TokenBandProps) {
+function TokenBand({ token, address, shade }: { token: Token; address: string; shade: boolean }) {
   const [copied, copy] = useCopyToClipboard(address);
 
   return (
@@ -141,20 +126,18 @@ function TokenBand({ symbol, name, decimals, address, shade }: TokenBandProps) {
         shade ? "bg-w3-ground" : "bg-w3-tone-2",
       )}
     >
-      <span className="text-[20px] font-medium tabular-nums text-w3-ink">{symbol}</span>
+      <span className="text-[20px] font-medium tabular-nums text-w3-ink">{token.symbol}</span>
       <span className="min-w-0">
-        <span className="block truncate text-[18px] font-medium text-w3-ink">{name}</span>
-        <span className="block text-[13px] text-w3-ink-soft">{decimals} decimals</span>
+        <span className="block truncate text-[18px] font-medium text-w3-ink">{token.name}</span>
+        <span className="block text-[13px] text-w3-ink-soft">{token.decimals} decimals</span>
       </span>
       <button
         type="button"
         onClick={copy}
-        aria-label={`Copy ${symbol} address`}
+        aria-label={`Copy ${token.symbol} address`}
         className="flex items-center gap-2 text-w3-ink-soft transition-colors hover:text-w3-ink"
       >
-        <code className="hidden text-[14px] sm:inline">
-          {address.slice(0, 8)}…{address.slice(-6)}
-        </code>
+        <code className="hidden text-[14px] sm:inline">{truncateAddress(address)}</code>
         {copied ? (
           <Check size={16} className="text-w3-accent" aria-hidden />
         ) : (

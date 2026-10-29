@@ -430,9 +430,9 @@ function generateDocsNav(docs: DocInfo[], guides: GuideInfo[], recipes: RecipeIn
     sectionMap.set(section, list);
   }
 
+  // Reading order follows DOC_SECTION_MAP, not the alphabetical file order.
+  const mapOrder = Object.keys(DOC_SECTION_MAP);
   for (const sectionTitle of SECTION_ORDER) {
-    // Reading order follows DOC_SECTION_MAP, not the alphabetical file order.
-    const mapOrder = Object.keys(DOC_SECTION_MAP);
     const sectionDocs = sectionMap
       .get(sectionTitle)
       ?.sort((a, b) => mapOrder.indexOf(a.slug) - mapOrder.indexOf(b.slug));
@@ -465,7 +465,7 @@ function generateDocsNav(docs: DocInfo[], guides: GuideInfo[], recipes: RecipeIn
     lines.push("    items: [");
     for (const g of categoryGuides) {
       lines.push(
-        `      { label: ${JSON.stringify(g.title)}, slug: ${JSON.stringify(g.slug)}, type: "guide" },`,
+        `      { label: ${JSON.stringify(g.title.split(" — ")[0])}, slug: ${JSON.stringify(g.slug)}, type: "guide" },`,
       );
     }
     lines.push("    ],");

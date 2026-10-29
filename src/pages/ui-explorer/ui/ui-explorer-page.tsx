@@ -1,29 +1,32 @@
+import { CopyCommand } from "../../../features/copy-address";
 import { Link, getRouteApi } from "@tanstack/react-router";
-import { ArrowRight, Check, Copy } from "lucide-react";
-import { UiShell } from "../../../widgets/ui-shell";
+import { ArrowRight } from "lucide-react";
+import { SiteShell } from "../../../widgets/site-chrome";
 import {
   COMPONENT_CATEGORIES,
   componentInstallCommand,
   componentRegistry,
+  isComponentCategory,
   type ComponentMeta,
 } from "../../../entities/component";
 import { DEMOS } from "../../../shared/ui/w3-kit-demos";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { cn } from "../../../shared/lib/utils";
 
 const route = getRouteApi("/ui/");
 const EXAMPLE_ID = "token-swap";
 const categoryLabel = (c: ComponentMeta["category"]) =>
-  COMPONENT_CATEGORIES.find((x) => x.value === c)?.label ?? c;
+  COMPONENT_CATEGORIES.find((x) => x.value === c)!.label;
 
 export function UiExplorerPage() {
-  const { category } = route.useSearch();
+  // The router keeps unknown query values; anything that is not a category means "all".
+  const search = route.useSearch();
+  const category = isComponentCategory(search.category) ? search.category : undefined;
   const shown = category
     ? componentRegistry.filter((c) => c.category === category)
     : componentRegistry;
 
   return (
-    <UiShell>
+    <SiteShell section="ui">
       <Hero />
       <section aria-labelledby="catalog-title" className="px-4 pb-24 md:px-10 md:pb-40">
         <h2 id="catalog-title" className="sr-only">
@@ -45,7 +48,7 @@ export function UiExplorerPage() {
           ))}
         </nav>
 
-        <ul className="mt-8 columns-1 gap-2 sm:columns-2 xl:columns-3">
+        <ul aria-label="Components" className="mt-8 columns-1 gap-2 sm:columns-2 xl:columns-3">
           {shown.map((component) => (
             <li key={component.id} className="mb-2 break-inside-avoid">
               <ComponentTile component={component} />
@@ -53,13 +56,12 @@ export function UiExplorerPage() {
           ))}
         </ul>
       </section>
-    </UiShell>
+    </SiteShell>
   );
 }
 
 function Hero() {
   const command = componentInstallCommand(EXAMPLE_ID);
-  const [copied, copy] = useCopyToClipboard(command);
 
   return (
     <section
@@ -78,15 +80,7 @@ function Hero() {
           Every tile below is the real React component running with sample data. Add one and the
           file is yours to change.
         </p>
-        <button
-          type="button"
-          onClick={copy}
-          className="w3-press inline-flex h-12 items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
-        >
-          <code className="text-[15px]">{command}</code>
-          {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-        </button>
+        <CopyCommand command={command} />
       </div>
     </section>
   );
@@ -108,7 +102,10 @@ function CategoryTab({
       to="/ui"
       search={{ category: value }}
       resetScroll={false}
-      aria-current={active ? "page" : undefined}
+      // Match on the category too, and let `active` (which also covers unknown categories) decide.
+      activeOptions={{ exact: true, includeSearch: true }}
+      activeProps={{ "aria-current": active ? "page" : undefined }}
+      inactiveProps={{ "aria-current": active ? "page" : undefined }}
       className={cn(
         "inline-flex h-11 shrink-0 items-center gap-2 px-4 text-w3-small font-medium transition-colors",
         active ? "bg-w3-ink text-w3-ground" : "bg-w3-tone text-w3-ink hover:bg-w3-tone-2",

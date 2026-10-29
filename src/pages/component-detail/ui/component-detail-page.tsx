@@ -1,6 +1,7 @@
+import { CopyCommand } from "../../../features/copy-address";
 import { Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Copy } from "lucide-react";
-import { UiShell } from "../../../widgets/ui-shell";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { SiteShell } from "../../../widgets/site-chrome";
 import {
   COMPONENT_CATEGORIES,
   componentInstallCommand,
@@ -9,23 +10,32 @@ import {
   type ComponentMeta,
 } from "../../../entities/component";
 import { DEMOS } from "../../../shared/ui/w3-kit-demos";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { cn } from "../../../shared/lib/utils";
+import { getSectionUrl } from "../../../shared/lib/urls";
+import { NotFound } from "../../../shared/ui/not-found";
 import { PropsTable } from "./props-table";
 
 export function ComponentDetailPage() {
   const { componentId = "" } = useParams({ strict: false });
 
   return (
-    <UiShell>
+    <SiteShell section="ui">
       <ComponentPage id={componentId} />
-    </UiShell>
+    </SiteShell>
   );
 }
 
 function ComponentPage({ id }: { id: string }) {
   const component = useComponent(id);
-  if (!component) return <NotFound id={id} />;
+  if (!component) {
+    return (
+      <NotFound
+        kind="component"
+        id={id}
+        back={{ href: getSectionUrl("ui"), label: "All components" }}
+      />
+    );
+  }
 
   const Demo = DEMOS[component.id];
   const index = componentRegistry.findIndex((c) => c.id === component.id);
@@ -65,19 +75,10 @@ function ComponentPage({ id }: { id: string }) {
 
 function InstallRow({ component }: { component: ComponentMeta }) {
   const command = componentInstallCommand(component.id);
-  const [copied, copy] = useCopyToClipboard(command);
 
   return (
     <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-      <button
-        type="button"
-        onClick={copy}
-        className="w3-press inline-flex h-12 max-w-full items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
-      >
-        <code className="truncate text-[15px]">{command}</code>
-        {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-        <span className="sr-only">{copied ? "Copied" : "Copy install command"}</span>
-      </button>
+      <CopyCommand command={command} />
       <a
         href={component.sourceUrl}
         target="_blank"
@@ -147,22 +148,5 @@ function Neighbour({
         {isNext && <ArrowRight size={22} aria-hidden />}
       </span>
     </Link>
-  );
-}
-
-function NotFound({ id }: { id: string }) {
-  return (
-    <section className="flex min-h-[60vh] flex-col items-start justify-center gap-6 px-4 md:px-10">
-      <h1 className="text-w3-title font-medium">
-        <span className="block">No component</span>
-        <span className="block text-w3-ink-soft">called {id}.</span>
-      </h1>
-      <Link
-        to="/ui"
-        className="w3-press inline-flex h-12 items-center gap-2 bg-w3-accent px-5 text-w3-small font-medium text-w3-on-accent"
-      >
-        All components <ArrowRight size={16} aria-hidden />
-      </Link>
-    </section>
   );
 }

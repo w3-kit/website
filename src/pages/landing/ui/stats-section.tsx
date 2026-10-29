@@ -1,21 +1,22 @@
 import { componentRegistry } from "../../../entities/component";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
-import { LANDING_STATS } from "../../../entities/stats/model/stats.gen";
+import { CHAINS } from "../../../entities/chain";
+import { TOKENS } from "../../../entities/token";
+import { PROGRAMS } from "../../../entities/program";
+import { FETCHED_STATS } from "../../../entities/stats";
 import { useReveal } from "../../../shared/lib/use-reveal";
 
-const fetched = (label: string) => LANDING_STATS.find((s) => s.sml === label)?.big;
+const compact = new Intl.NumberFormat("en", { notation: "compact" });
 
-// Counts come from the same data the sites render; stars and downloads are fetched at build.
+// Counts come from the same data the sites render; stars and downloads are fetched at build
+// and left out when that fetch failed.
 const ROWS = [
-  { figure: String(componentRegistry.length), caption: "React components" },
-  { figure: String(CHAINS.length), caption: "chains in the registry" },
-  { figure: String(TOKENS.length), caption: "tokens with every address" },
-  { figure: String(PROGRAMS.length), caption: "Solana programs" },
-  { figure: fetched("GitHub stars"), caption: "GitHub stars across the org" },
-  { figure: fetched("npm downloads / week"), caption: "npm downloads a week" },
-].filter((row): row is { figure: string; caption: string } => Boolean(row.figure));
+  { figure: componentRegistry.length, caption: "React components" },
+  { figure: CHAINS.length, caption: "chains in the registry" },
+  { figure: TOKENS.length, caption: "tokens with every address" },
+  { figure: PROGRAMS.length, caption: "Solana programs" },
+  { figure: FETCHED_STATS.githubStars, caption: "GitHub stars across the org" },
+  { figure: FETCHED_STATS.npmWeeklyDownloads, caption: "npm downloads a week" },
+].filter((row): row is { figure: number; caption: string } => row.figure !== null);
 
 export function StatsSection() {
   const ref = useReveal<HTMLDivElement>();
@@ -32,7 +33,7 @@ export function StatsSection() {
             <div key={row.caption} className="grid grid-cols-[52%_1fr] items-baseline gap-x-6">
               <dt className="sr-only">{row.caption}</dt>
               <dd className="text-right text-[clamp(56px,7vw,112px)] font-medium leading-none tracking-[-0.045em] tabular-nums text-w3-ink">
-                {row.figure}
+                {compact.format(row.figure)}
               </dd>
               <dd className="text-w3-body text-w3-ink">{row.caption}</dd>
             </div>

@@ -1,4 +1,4 @@
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
+import { PROGRAMS } from "../../../entities/program";
 import { ProgramRows } from "../../../widgets/registry-rows";
 import { RegistryPageHead } from "../../../widgets/registry-page-head";
 

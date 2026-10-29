@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
-import { CHAINS } from "../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../entities/token/model/tokens.gen";
-import { PROGRAMS } from "../../entities/program/model/programs.gen";
+import { CHAINS } from "../../entities/chain";
+import { TOKENS } from "../../entities/token";
+import { PROGRAMS } from "../../entities/program";
 import { getSectionUrl } from "../../shared/lib/urls";
 
 const registry = getSectionUrl("registry");

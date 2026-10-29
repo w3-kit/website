@@ -2,12 +2,12 @@ import {
   COMPONENT_CATEGORIES,
   componentRegistry,
   type ComponentCategory,
-} from "../../entities/component";
-import { CHAINS } from "../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../entities/token/model/tokens.gen";
-import { docsNavSections } from "../../entities/guide/model/docs-nav.gen";
-import { getDocItemHref, getLandingUrl, getSectionUrl } from "../../shared/lib/urls";
-import type { Section } from "../../shared/lib/theme";
+} from "../../../entities/component";
+import { CHAINS, MAINNETS } from "../../../entities/chain";
+import { TOKENS } from "../../../entities/token";
+import { docsNavSections, shortSectionTitle } from "../../../entities/guide";
+import { getDocItemHref, getLandingUrl, getSectionUrl } from "../../../shared/lib/urls";
+import type { Section } from "../../../shared/lib/urls";
 
 export interface MenuLink {
   label: string;
@@ -42,9 +42,13 @@ export interface SiteNav {
 
 const COLUMN_LENGTH = 6;
 
+export const ECOSYSTEM_MENU = "Ecosystem";
+
 const landing = getLandingUrl();
 const ui = getSectionUrl("ui");
 const docs = getSectionUrl("docs");
+
+export const GET_STARTED_HREF = `${docs}/installation`;
 const registry = getSectionUrl("registry");
 
 /** The sites of the toolkit, for the Ecosystem switcher and the footer. */
@@ -111,10 +115,9 @@ const categoryMenus: Menu[] = COMPONENT_CATEGORIES.map(({ value, label }) => ({
 const docsSection = (title: string): MenuGroup => {
   const section = docsNavSections.find((s) => s.title === title);
   return {
-    title: title.replace(/^(Guides|Recipes):\s*/, ""),
+    title: shortSectionTitle(title),
     links: (section?.items ?? []).map((item) => ({
-      // Guide titles carry a subtitle after a dash; the menu only needs the name.
-      label: item.label.split(" — ")[0],
+      label: item.label,
       href: getDocItemHref(item),
     })),
   };
@@ -155,7 +158,6 @@ const chainLink = (c: (typeof CHAINS)[number]) => ({
   label: c.name,
   href: `${registry}/chains/${c.chainId}`,
 });
-const mainnets = CHAINS.filter((c) => !c.testnet);
 
 const registryMenus: NavItem[] = [
   {
@@ -163,8 +165,8 @@ const registryMenus: NavItem[] = [
     href: `${registry}/chains`,
     summary: `${CHAINS.length} chains with their IDs, native tokens, RPCs and explorers.`,
     groups: [
-      ...columns("EVM", mainnets.filter((c) => c.ecosystem === "evm").map(chainLink)),
-      { title: "Other", links: mainnets.filter((c) => c.ecosystem !== "evm").map(chainLink) },
+      ...columns("EVM", MAINNETS.filter((c) => c.ecosystem === "evm").map(chainLink)),
+      { title: "Other", links: MAINNETS.filter((c) => c.ecosystem !== "evm").map(chainLink) },
       { title: "Testnets", links: CHAINS.filter((c) => c.testnet).map(chainLink) },
     ],
   },
@@ -234,7 +236,7 @@ export const SITE_NAV: Record<Section, SiteNav> = {
     home: registry,
     items: registryMenus,
     footer: [
-      { title: "Chains", links: mainnets.slice(0, COLUMN_LENGTH).map(chainLink) },
+      { title: "Chains", links: MAINNETS.slice(0, COLUMN_LENGTH).map(chainLink) },
       {
         title: "Tokens",
         links: TOKENS.slice(0, COLUMN_LENGTH).map((t) => ({

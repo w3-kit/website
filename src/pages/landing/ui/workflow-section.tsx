@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { chainName, requireChain } from "../../../entities/chain";
+import { requireToken } from "../../../entities/token";
+import { INIT_COMMAND, recipeAddCommand } from "../../../shared/lib/commands";
 import { cn } from "../../../shared/lib/utils";
 
-const BASE = CHAINS.find((c) => c.chainId === 8453)!;
-const USDC = TOKENS.find((t) => t.symbol === "USDC")!;
+const BASE_CHAIN_ID = 8453;
+const BASE = requireChain(BASE_CHAIN_ID);
+const NATIVE = BASE.nativeCurrency;
+const USDC = requireToken("USDC");
 const USDC_ROWS = 4;
-const chainName = (id: number) => CHAINS.find((c) => c.chainId === id)?.name ?? String(id);
+const EXAMPLE_RECIPE = "swap-tokens";
 
 /** Each stage is a real CLI run; the registry ones print this site's own data. */
 const STAGES = [
@@ -15,7 +18,7 @@ const STAGES = [
     name: "Start",
     clause: ["First, start", "a project."],
     output: [
-      "$ npx w3-kit init",
+      `$ ${INIT_COMMAND}`,
       "✓ Project name: my-dapp",
       "✓ Which chain? EVM (Ethereum, Arbitrum, Base, Polygon...)",
       "✓ Pick a template: nextjs-crosschain",
@@ -32,9 +35,9 @@ const STAGES = [
     name: "Add",
     clause: ["Then add", "a recipe."],
     output: [
-      "$ npx w3-kit add swap-tokens",
+      `$ ${recipeAddCommand(EXAMPLE_RECIPE)}`,
       "✓ Which chain? EVM",
-      "✓ Recipe added to ./recipes/swap-tokens/",
+      `✓ Recipe added to ./recipes/${EXAMPLE_RECIPE}/`,
       "✓ Dependencies installed",
     ],
   },
@@ -46,7 +49,7 @@ const STAGES = [
       `Chain         ${BASE.name}`,
       `Chain ID      ${BASE.chainId}`,
       `Ecosystem     ${BASE.ecosystem}`,
-      `Native Token  ${BASE.nativeCurrency.name} (${BASE.nativeCurrency.symbol}, ${BASE.nativeCurrency.decimals} decimals)`,
+      `Native Token  ${NATIVE.name} (${NATIVE.symbol}, ${NATIVE.decimals} decimals)`,
       `RPC           ${BASE.rpcUrls[0]}`,
       `Explorer      ${BASE.blockExplorers[0]}`,
       `Testnet       ${BASE.testnet ? "Yes" : "No"}`,
@@ -127,7 +130,10 @@ export function WorkflowSection() {
           aria-valuetext={current.name}
           className="w3-range w-full"
         />
-        <div className="mt-3 grid grid-cols-4 text-w3-small">
+        <div
+          className="mt-3 grid text-w3-small"
+          style={{ gridTemplateColumns: `repeat(${STAGES.length}, 1fr)` }}
+        >
           {STAGES.map((s, i) => (
             <button
               key={s.name}

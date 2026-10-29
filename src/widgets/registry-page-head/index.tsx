@@ -26,4 +26,3 @@ export function RegistryPageHead({ title, subtitle, children }: RegistryPageHead
     </header>
   );
 }
-export { RegistryNotFound } from "./not-found";

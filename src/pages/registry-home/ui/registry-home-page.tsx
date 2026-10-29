@@ -1,19 +1,16 @@
+import { REGISTRY_INSTALL_COMMAND } from "../../../shared/lib/commands";
+import { CopyCommand } from "../../../features/copy-address";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Copy } from "lucide-react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
+import { ArrowRight } from "lucide-react";
+import { CHAINS, MAINNETS } from "../../../entities/chain";
+import { TOKENS } from "../../../entities/token";
+import { PROGRAMS } from "../../../entities/program";
 import { ChainRows, ProgramRows, TokenRows } from "../../../widgets/registry-rows";
 import { RegistryPageHead } from "../../../widgets/registry-page-head";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 
-const INSTALL = "npm install @w3-kit/registry";
 const PREVIEW_ROWS = 6;
-const mainnets = CHAINS.filter((c) => !c.testnet);
 
 export function RegistryHomePage() {
-  const [copied, copy] = useCopyToClipboard(INSTALL);
-
   return (
     <>
       <RegistryPageHead title="Every address," subtitle="typed and checked.">
@@ -21,19 +18,11 @@ export function RegistryHomePage() {
           {CHAINS.length} chains, {TOKENS.length} tokens and {PROGRAMS.length} Solana programs, with
           the IDs, RPCs and contract addresses your app needs. Browse them here or import them.
         </p>
-        <button
-          type="button"
-          onClick={copy}
-          className="w3-press inline-flex h-12 items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
-        >
-          <code className="text-[15px]">{INSTALL}</code>
-          {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-        </button>
+        <CopyCommand command={REGISTRY_INSTALL_COMMAND} />
       </RegistryPageHead>
 
       <Block title="Chains" count={CHAINS.length} to="/registry/chains">
-        <ChainRows chains={mainnets.slice(0, PREVIEW_ROWS)} />
+        <ChainRows chains={MAINNETS.slice(0, PREVIEW_ROWS)} />
       </Block>
       <Block title="Tokens" count={TOKENS.length} to="/registry/tokens">
         <TokenRows tokens={TOKENS.slice(0, PREVIEW_ROWS)} />

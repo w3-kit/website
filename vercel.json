@@ -10,7 +10,7 @@
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "(?<section>learn|design).w3-kit.com" }],
+      "has": [{ "type": "host", "value": "(learn|design).w3-kit.com" }],
       "destination": "https://w3-kit.com/",
       "permanent": false
     },

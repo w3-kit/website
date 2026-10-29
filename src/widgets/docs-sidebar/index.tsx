@@ -1,6 +1,6 @@
 import { getDocItemHref } from "../../shared/lib/urls";
 import { cn } from "../../shared/lib/utils";
-import { type DocNavSection } from "../../entities/guide/model/docs-nav.gen";
+import { type DocNavSection } from "../../entities/guide";
 
 interface DocsSidebarProps {
   sections: DocNavSection[];
@@ -28,7 +28,7 @@ export function DocsSidebar({ sections, activeSlug }: DocsSidebarProps) {
                         active ? "font-medium text-w3-accent" : "text-w3-ink",
                       )}
                     >
-                      {item.label.split(" — ")[0]}
+                      {item.label}
                     </a>
                   </li>
                 );

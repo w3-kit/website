@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { DocsShell } from "../docs-shell";
 import { DocsSidebar } from "../docs-sidebar";
 import { DocsToc } from "../docs-toc";
-import { docsNavSections } from "../../entities/guide/model/docs-nav.gen";
+import { docsNavSections } from "../../entities/guide";
 
 interface DocsContentLayoutProps {
   activeSlug: string;

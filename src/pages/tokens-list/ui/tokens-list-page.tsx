@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { TOKENS } from "../../../entities/token";
 import {
   FilterTokens,
   applyTokenFilter,

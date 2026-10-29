@@ -1,11 +1,9 @@
-import { Check, Copy } from "lucide-react";
-import { Logo } from "../../shared/ui/logo";
-import { useCopyToClipboard } from "../../shared/lib/use-copy-to-clipboard";
-import type { Section } from "../../shared/lib/theme";
-import { COMMUNITY, ECOSYSTEM, SITE_NAV, type MenuGroup } from "../site-header/menus";
+import { INIT_COMMAND } from "../../../shared/lib/commands";
+import { CopyCommand } from "../../../features/copy-address";
+import { Logo } from "../../../shared/ui/logo";
+import type { Section } from "../../../shared/lib/urls";
+import { COMMUNITY, ECOSYSTEM, SITE_NAV, type MenuGroup } from "../model/site-nav";
 import { ThemeToggle } from "./theme-toggle";
-
-const INIT_COMMAND = "npx w3-kit init";
 
 const ECOSYSTEM_COLUMN: MenuGroup = {
   title: "Ecosystem",
@@ -14,7 +12,6 @@ const ECOSYSTEM_COLUMN: MenuGroup = {
 
 export function SiteFooter({ currentSection }: { currentSection: Section }) {
   const columns = [...SITE_NAV[currentSection].footer, ECOSYSTEM_COLUMN, COMMUNITY];
-  const [copied, copy] = useCopyToClipboard(INIT_COMMAND);
 
   return (
     <footer className="mt-auto overflow-hidden bg-[var(--w3-footer-ground)] text-[var(--w3-footer-ink)]">
@@ -23,15 +20,10 @@ export function SiteFooter({ currentSection }: { currentSection: Section }) {
           <span className="block">Start with</span>
           <span className="block">one command.</span>
         </h2>
-        <button
-          type="button"
-          onClick={copy}
-          className="w3-press inline-flex h-14 items-center gap-3 self-start bg-w3-accent px-6 text-w3-body font-medium text-w3-on-accent hover:bg-w3-accent-hover md:self-auto"
-        >
-          <code>{INIT_COMMAND}</code>
-          {copied ? <Check size={18} aria-hidden /> : <Copy size={18} aria-hidden />}
-          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-        </button>
+        <CopyCommand
+          command={INIT_COMMAND}
+          className="h-14 self-start px-6 text-w3-body md:self-auto"
+        />
       </div>
 
       <nav

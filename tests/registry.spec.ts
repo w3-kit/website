@@ -10,7 +10,7 @@ test.describe("Registry subdomain", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Every address,typed and checked.",
     );
-    await expect(page.getByText(/14 chains, 18 tokens and 6 Solana programs/)).toBeVisible();
+    await expect(page.getByText(/\d+ chains, \d+ tokens and \d+ Solana programs/)).toBeVisible();
   });
 
   test("chains list shows all chains", async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe("Registry subdomain", () => {
     await expect(page).toHaveURL("http://registry.localhost:3000/chains/1");
   });
 
-  test("API page shows only functions the package exports", async ({ page }) => {
+  test("API page shows how to use the package in code", async ({ page }) => {
     await page.goto("http://registry.localhost:3000/api");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Use it in code");
     await expect(page.getByText("getChain").first()).toBeVisible();

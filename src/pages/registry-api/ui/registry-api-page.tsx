@@ -1,16 +1,17 @@
-import { Check, Copy } from "lucide-react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { REGISTRY_INSTALL_COMMAND } from "../../../shared/lib/commands";
+import { CopyCommand } from "../../../features/copy-address";
+import { CHAINS, requireChain } from "../../../entities/chain";
+
+const BASE_CHAIN_ID = 8453;
+import { addressOn, requireToken, tokensOnChain } from "../../../entities/token";
 import { CodeBlock } from "../../../widgets/code-block";
 import { RegistryPageHead } from "../../../widgets/registry-page-head";
 import { RegistrySection } from "../../../widgets/registry-rows";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 
-const INSTALL = "npm install @w3-kit/registry";
-const BASE = CHAINS.find((c) => c.chainId === 8453)!;
-const USDC = TOKENS.find((t) => t.symbol === "USDC")!;
-const usdcOnBase = USDC.chains.find((d) => d.chainId === BASE.chainId)!.address;
-const tokensOnBase = TOKENS.filter((t) => t.chains.some((d) => d.chainId === BASE.chainId));
+const BASE = requireChain(BASE_CHAIN_ID);
+const USDC = requireToken("USDC");
+const usdcOnBase = addressOn(USDC, BASE.chainId);
+const tokensOnBase = tokensOnChain(BASE.chainId);
 
 // Only functions exported by the published package; outputs come from this site's registry data.
 const EXAMPLES = [
@@ -47,23 +48,13 @@ getChainsByEcosystem("solana");     // Solana and Solana Devnet`,
 ];
 
 export function RegistryApiPage() {
-  const [copied, copy] = useCopyToClipboard(INSTALL);
-
   return (
     <>
       <RegistryPageHead title="Use it in code" subtitle="@w3-kit/registry">
         <p className="text-w3-body">
           The same data as this site, typed, in one package with no runtime dependencies.
         </p>
-        <button
-          type="button"
-          onClick={copy}
-          className="w3-press inline-flex h-12 items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
-        >
-          <code className="text-[15px]">{INSTALL}</code>
-          {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-        </button>
+        <CopyCommand command={REGISTRY_INSTALL_COMMAND} />
       </RegistryPageHead>
 
       <div className="max-w-[800px]">

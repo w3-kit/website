@@ -1,16 +1,17 @@
 import { useParams } from "@tanstack/react-router";
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { PROGRAMS } from "../../../entities/program";
+import { chainName } from "../../../entities/chain";
 import { CopyButton } from "../../../features/copy-address";
-import { RegistryNotFound, RegistryPageHead } from "../../../widgets/registry-page-head";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
 import { CopyRows, RegistrySection } from "../../../widgets/registry-rows";
 
-const chainName = (id: number) => CHAINS.find((c) => c.chainId === id)?.name ?? `Chain ${id}`;
-
+const REGISTRY_HOME = { href: getSectionUrl("registry"), label: "Back to the registry" };
 export function ProgramDetailPage() {
   const { key = "" } = useParams({ strict: false }) as { key?: string };
   const program = PROGRAMS.find((p) => p.key === key);
-  if (!program) return <RegistryNotFound kind="program" id={key} />;
+  if (!program) return <NotFound kind="program" id={key} back={REGISTRY_HOME} />;
 
   return (
     <>

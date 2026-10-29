@@ -4,6 +4,8 @@ const DEV_HOST = "localhost:3000";
 /** The single list of section subdomains. Routing, links and SEO all read it. */
 export const SUBDOMAINS = ["ui", "docs", "registry"] as const;
 export type Subdomain = (typeof SUBDOMAINS)[number];
+/** A site of the toolkit: one of the subdomains, or the apex landing site. */
+export type Section = Subdomain | "landing";
 
 /**
  * Returns the URL for a section.
@@ -17,7 +19,7 @@ export type Subdomain = (typeof SUBDOMAINS)[number];
  * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add to /etc/hosts:
  * `127.0.0.1 ui.localhost docs.localhost registry.localhost`.
  */
-export function getSectionUrl(section: string): string {
+export function getSectionUrl(section: Subdomain): string {
   return import.meta.env.PROD ? `https://${section}.${DOMAIN}` : `http://${section}.${DEV_HOST}`;
 }
 

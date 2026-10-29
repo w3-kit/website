@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CHAINS } from "../../../entities/chain";
 import {
   FilterChains,
   applyChainFilter,

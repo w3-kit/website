@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { type Theme, getStoredTheme, setTheme, listenToSystemTheme } from "../../shared/lib/theme";
-import { cn } from "../../shared/lib/utils";
+import {
+  type Theme,
+  getStoredTheme,
+  setTheme,
+  listenToSystemTheme,
+} from "../../../shared/lib/theme";
+import { cn } from "../../../shared/lib/utils";
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: "system", label: "System" },

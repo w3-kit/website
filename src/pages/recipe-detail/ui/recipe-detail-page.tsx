@@ -1,20 +1,23 @@
+import { ECOSYSTEM_LABELS, type Ecosystem } from "../../../entities/chain";
+import { CopyCommand } from "../../../features/copy-address";
+import { recipeAddCommand } from "../../../shared/lib/commands";
 import { useMemo, useState } from "react";
 import { useParams } from "@tanstack/react-router";
-import { Check, Copy } from "lucide-react";
 import { DocsContentLayout } from "../../../widgets/docs-content-layout";
-import { DocsNotFound } from "../../../shared/ui/docs-not-found";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
 import { DocsShell } from "../../../widgets/docs-shell";
 import { CodeBlock } from "../../../widgets/code-block";
 import { MarkdownRenderer } from "../../../widgets/markdown-renderer";
 import { extractHeadings } from "../../../widgets/markdown-renderer/extract-headings";
 import { useRecipe, type RecipeMeta } from "../../../entities/recipe";
-import { allDocNavItems } from "../../../entities/guide/model/docs-nav.gen";
+import { allDocNavItems } from "../../../entities/guide";
 import { AuthorBadge } from "../../../shared/ui/author-badge";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { cn } from "../../../shared/lib/utils";
 
-const CHAIN_LABELS: Record<string, string> = { evm: "EVM", solana: "Solana" };
+const chainLabel = (chain: string) => ECOSYSTEM_LABELS[chain as Ecosystem] ?? chain;
 
+const DOCS_HOME = { href: getSectionUrl("docs"), label: "All docs" };
 export function RecipeDetailPage() {
   const { recipeSlug = "" } = useParams({ strict: false });
   const recipe = useRecipe(recipeSlug);
@@ -22,7 +25,7 @@ export function RecipeDetailPage() {
   if (!recipe) {
     return (
       <DocsShell>
-        <DocsNotFound entityType="Recipe" slug={recipeSlug} />
+        <NotFound kind="recipe" id={recipeSlug} back={DOCS_HOME} />
       </DocsShell>
     );
   }
@@ -39,11 +42,11 @@ function Recipe({ recipe }: { recipe: RecipeMeta }) {
       <h1 className="text-w3-title font-medium">{navItem?.label ?? recipe.name}</h1>
       <p className="mt-6 text-w3-body">{recipe.description}</p>
       <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-w3-small text-w3-ink-soft">
-        <span>{recipe.chains.map((c) => CHAIN_LABELS[c] ?? c).join(" and ")}</span>
+        <span>{recipe.chains.map(chainLabel).join(" and ")}</span>
         <AuthorBadge author={recipe.author} prefix="by" />
       </div>
 
-      <AddCommand slug={recipe.slug} />
+      <CopyCommand command={recipeAddCommand(recipe.slug)} className="mt-10" />
 
       {dependencies.length > 0 && (
         <p className="mt-6 text-w3-small text-w3-ink-soft">
@@ -69,22 +72,6 @@ function Recipe({ recipe }: { recipe: RecipeMeta }) {
   );
 }
 
-function AddCommand({ slug }: { slug: string }) {
-  const command = `npx w3-kit add ${slug}`;
-  const [copied, copy] = useCopyToClipboard(command);
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      className="w3-press mt-10 inline-flex h-12 max-w-full items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
-    >
-      <code className="truncate text-[15px]">{command}</code>
-      {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-      <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-    </button>
-  );
-}
-
 function RecipeCode({ recipe }: { recipe: RecipeMeta }) {
   const variants = [
     { chain: "evm", code: recipe.evmCode },
@@ -97,7 +84,7 @@ function RecipeCode({ recipe }: { recipe: RecipeMeta }) {
   return (
     <section aria-label="Code" className="mt-14">
       {variants.length > 1 && (
-        <div role="tablist" className="flex gap-1">
+        <div role="tablist" aria-label="Chain" className="flex gap-1">
           {variants.map((v) => (
             <button
               key={v.chain}
@@ -112,7 +99,7 @@ function RecipeCode({ recipe }: { recipe: RecipeMeta }) {
                   : "bg-w3-tone text-w3-ink hover:bg-w3-tone-2",
               )}
             >
-              {CHAIN_LABELS[v.chain]}
+              {chainLabel(v.chain)}
             </button>
           ))}
         </div>

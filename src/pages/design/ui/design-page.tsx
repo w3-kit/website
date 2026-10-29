@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { SiteHeader } from "../../../widgets/site-header";
-import { SiteFooter } from "../../../widgets/site-footer";
+import { SiteShell } from "../../../widgets/site-chrome";
 import { Logo } from "../../../shared/ui/logo";
 import { getLandingUrl } from "../../../shared/lib/urls";
 import { cn } from "../../../shared/lib/utils";
@@ -9,19 +8,15 @@ import { COLOURS, MOTION, RULES, SPACING, TYPE_STEPS } from "./tokens";
 
 export function DesignPage() {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-clip bg-w3-ground text-w3-ink antialiased">
-      <SiteHeader currentSection="landing" />
-      <main className="flex-1">
-        <Hero />
-        <Colours />
-        <Type />
-        <Spacing />
-        <Parts />
-        <Motion />
-        <Rules />
-      </main>
-      <SiteFooter currentSection="landing" />
-    </div>
+    <SiteShell section="landing">
+      <Hero />
+      <Colours />
+      <Type />
+      <Spacing />
+      <Parts />
+      <Motion />
+      <Rules />
+    </SiteShell>
   );
 }
 
@@ -101,7 +96,7 @@ function Type() {
             <dt className="order-2 text-w3-small text-w3-ink-soft md:order-none md:col-span-3">
               {step.token} · {step.range}
             </dt>
-            <dd className={cn("font-medium md:col-span-9", step.className)}>{step.sample}</dd>
+            <dd className={cn("font-medium md:col-span-9", step.token)}>{step.sample}</dd>
           </div>
         ))}
       </dl>
@@ -135,7 +130,7 @@ function Spacing() {
 function Parts() {
   const grounds = [
     { label: "On white", className: "bg-w3-ground text-w3-ink" },
-    { label: "On black", className: "bg-[#0a0a0a] text-[#f5f5f5]" },
+    { label: "On black", className: "bg-[var(--w3-footer-ground)] text-[var(--w3-footer-ink)]" },
     { label: "On tone", className: "bg-w3-tone text-w3-ink" },
   ];
   return (

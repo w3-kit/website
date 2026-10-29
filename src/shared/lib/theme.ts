@@ -1,6 +1,4 @@
-import type { Subdomain } from "./urls";
 export type Theme = "system" | "light" | "dark";
-export type Section = Subdomain | "landing";
 
 export const THEME_KEY = "w3-theme";
 export const THEME_ATTR = "data-theme";

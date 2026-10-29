@@ -1,4 +1,4 @@
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CHAINS } from "../../../entities/chain";
 import type { Token } from "../../../entities/token";
 
 export type TokenFilter = { chainId: number | null };

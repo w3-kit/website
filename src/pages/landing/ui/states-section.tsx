@@ -93,12 +93,6 @@ function TxStatus({ state, onConfirm }: { state: TxState; onConfirm?: () => void
       <span className="flex gap-2">
         <button
           type="button"
-          className="h-9 rounded-lg border border-w3-tone-2 px-3 text-[13px] font-medium text-w3-ink hover:bg-w3-tone"
-        >
-          Reject
-        </button>
-        <button
-          type="button"
           onClick={onConfirm}
           className="w3-press h-9 rounded-lg bg-w3-accent px-3 text-[13px] font-medium text-w3-on-accent hover:bg-w3-accent-hover"
         >

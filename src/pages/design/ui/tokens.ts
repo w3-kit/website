@@ -34,31 +34,26 @@ export const TYPE_STEPS = [
     token: "text-w3-display",
     range: "44–96 px",
     sample: "Web3 components",
-    className: "text-w3-display",
   },
   {
     token: "text-w3-title",
     range: "36–72 px",
     sample: "Every address typed.",
-    className: "text-w3-title",
   },
   {
     token: "text-w3-statement",
     range: "24–32 px",
     sample: "Every state of a transaction, handled.",
-    className: "text-w3-statement",
   },
   {
     token: "text-w3-body",
     range: "18 px",
     sample: "Swap 0.5 ETH for 958.75 USDC on Base, confirmed in block 21,904,113.",
-    className: "text-w3-body",
   },
   {
     token: "text-w3-small",
     range: "15 px",
     sample: "Navigation, labels and captions.",
-    className: "text-w3-small",
   },
 ] as const;
 

@@ -1,7 +1,7 @@
 import { ArrowRight, Search } from "lucide-react";
 import { DocsShell } from "../../../widgets/docs-shell";
 import { useSearch } from "../../../features/search";
-import { docsNavSections, type DocNavSection } from "../../../entities/guide/model/docs-nav.gen";
+import { docsNavSections, shortSectionTitle, type DocNavSection } from "../../../entities/guide";
 import { getDocItemHref } from "../../../shared/lib/urls";
 
 const PARTS: { title: string; summary: string; prefix?: string }[] = [
@@ -90,9 +90,7 @@ function Hero() {
 function SectionLinks({ section }: { section: DocNavSection }) {
   return (
     <div>
-      <h3 className="mb-3 text-w3-small text-w3-ink-soft">
-        {section.title.replace(/^(Guides|Recipes):\s*/, "")}
-      </h3>
+      <h3 className="mb-3 text-w3-small text-w3-ink-soft">{shortSectionTitle(section.title)}</h3>
       <ul className="flex flex-col gap-1.5">
         {section.items.map((item) => (
           <li key={item.slug}>
@@ -100,7 +98,7 @@ function SectionLinks({ section }: { section: DocNavSection }) {
               href={getDocItemHref(item)}
               className="text-w3-body text-w3-ink transition-colors hover:text-w3-accent"
             >
-              {item.label.split(" — ")[0]}
+              {item.label}
             </a>
           </li>
         ))}

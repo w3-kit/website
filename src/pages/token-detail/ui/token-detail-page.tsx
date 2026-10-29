@@ -1,16 +1,17 @@
 import { useParams } from "@tanstack/react-router";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { TOKENS, chainCountLabel } from "../../../entities/token";
+import { chainName } from "../../../entities/chain";
 import { CopyButton } from "../../../features/copy-address";
-import { RegistryNotFound, RegistryPageHead } from "../../../widgets/registry-page-head";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
 import { CopyRows, FactList, RegistrySection } from "../../../widgets/registry-rows";
 
-const chainName = (id: number) => CHAINS.find((c) => c.chainId === id)?.name ?? `Chain ${id}`;
-
+const REGISTRY_HOME = { href: getSectionUrl("registry"), label: "Back to the registry" };
 export function TokenDetailPage() {
   const { symbol = "" } = useParams({ strict: false }) as { symbol?: string };
   const token = TOKENS.find((t) => t.symbol.toLowerCase() === symbol.toLowerCase());
-  if (!token) return <RegistryNotFound kind="token" id={symbol} />;
+  if (!token) return <NotFound kind="token" id={symbol} back={REGISTRY_HOME} />;
 
   return (
     <>
@@ -21,10 +22,7 @@ export function TokenDetailPage() {
       <FactList
         facts={[
           ["Decimals", token.decimals],
-          [
-            "Deployed on",
-            `${token.chains.length} ${token.chains.length === 1 ? "chain" : "chains"}`,
-          ],
+          ["Deployed on", chainCountLabel(token)],
         ]}
       />
 

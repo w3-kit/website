@@ -1,16 +1,13 @@
-import { Check, Copy } from "lucide-react";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { INIT_COMMAND } from "../../../shared/lib/commands";
+import { CopyCommand } from "../../../features/copy-address";
+import { CHAINS } from "../../../entities/chain";
+import { TOKENS } from "../../../entities/token";
 import { DEMOS } from "../../../shared/ui/w3-kit-demos";
-import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 import { getSectionUrl } from "../../../shared/lib/urls";
 
-const INIT_COMMAND = "npx w3-kit init";
 const HeroFragment = DEMOS["token-swap"];
 
 export function HeroSection() {
-  const [copied, copy] = useCopyToClipboard(INIT_COMMAND);
-
   return (
     <section
       aria-labelledby="hero-title"
@@ -33,15 +30,7 @@ export function HeroSection() {
             tokens, and a CLI that puts them in your project.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <button
-              type="button"
-              onClick={copy}
-              className="w3-press inline-flex h-12 items-center gap-3 bg-w3-accent px-5 text-w3-small font-medium text-w3-on-accent hover:bg-w3-accent-hover"
-            >
-              <code className="text-[15px]">{INIT_COMMAND}</code>
-              {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
-              <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
-            </button>
+            <CopyCommand command={INIT_COMMAND} />
             <a
               href={getSectionUrl("docs")}
               className="text-w3-small font-medium text-w3-ink underline decoration-w3-tone-2 underline-offset-4 transition-colors hover:decoration-w3-accent"

@@ -1,11 +1,11 @@
-import { SUBDOMAINS, type Subdomain } from "../shared/lib/urls";
+import { SUBDOMAINS, type Section, type Subdomain } from "../shared/lib/urls";
 
-export function getSubdomain(host: string): Subdomain | "landing" {
-  const [first] = host.split(".");
+export function getSubdomain(host: string): Section {
+  const labels = host.split(".");
   // ui.localhost:3000 locally, ui.w3-kit.com in production. The apex has no section label.
-  const isSectionHost = host.split(".").length >= (host.includes("localhost") ? 2 : 3);
-  return isSectionHost && (SUBDOMAINS as readonly string[]).includes(first)
-    ? (first as Subdomain)
+  const isSectionHost = labels.length >= (host.includes("localhost") ? 2 : 3);
+  return isSectionHost && (SUBDOMAINS as readonly string[]).includes(labels[0])
+    ? (labels[0] as Subdomain)
     : "landing";
 }
 

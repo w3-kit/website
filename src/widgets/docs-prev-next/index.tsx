@@ -28,7 +28,7 @@ function NeighbourLink({ item, direction }: { item: Neighbour; direction: "previ
       <span className="text-w3-small text-w3-ink-soft">{isNext ? "Next" : "Previous"}</span>
       <span className="flex items-center gap-3 text-w3-body font-medium text-w3-ink group-hover:text-w3-accent">
         {!isNext && <ArrowLeft size={18} aria-hidden />}
-        {item.label.split(" — ")[0]}
+        {item.label}
         {isNext && <ArrowRight size={18} aria-hidden />}
       </span>
     </a>
