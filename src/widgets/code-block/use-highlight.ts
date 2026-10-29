@@ -9,7 +9,7 @@ async function getHighlighter(): Promise<Highlighter> {
   if (!highlighterPromise) {
     highlighterPromise = import("shiki").then((shiki) =>
       shiki.createHighlighter({
-        themes: ["github-light", "github-dark"],
+        themes: ["github-light-high-contrast", "github-dark-high-contrast"],
         langs: ["tsx", "typescript", "solidity", "bash", "json", "markdown"],
       }),
     );
@@ -26,7 +26,7 @@ export function useHighlight(code: string, lang: string = "tsx") {
       if (cancelled) return;
       const result = highlighter.codeToHtml(code, {
         lang,
-        themes: { light: "github-light", dark: "github-dark" },
+        themes: { light: "github-light-high-contrast", dark: "github-dark-high-contrast" },
       });
       setHtml(result);
     });

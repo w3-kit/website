@@ -11,25 +11,27 @@ import designTokensDoc from "@learn/docs/design-tokens.md?raw";
 import hooksUtilitiesDoc from "@learn/docs/hooks-utilities.md?raw";
 import installationDoc from "@learn/docs/installation.md?raw";
 import introductionDoc from "@learn/docs/introduction.md?raw";
+import mcpDoc from "@learn/docs/mcp.md?raw";
 import projectStructureDoc from "@learn/docs/project-structure.md?raw";
 import registryDoc from "@learn/docs/registry.md?raw";
 import themingDoc from "@learn/docs/theming.md?raw";
 import uiLibraryDoc from "@learn/docs/ui-library.md?raw";
 
 export const docContentMap: Record<string, string> = {
-  accessibility: accessibilityDoc,
+  "accessibility": accessibilityDoc,
   "cli-commands": cliCommandsDoc,
-  cli: cliDoc,
+  "cli": cliDoc,
   "components-api": componentsApiDoc,
-  components: componentsDoc,
-  configuration: configurationDoc,
-  contracts: contractsDoc,
+  "components": componentsDoc,
+  "configuration": configurationDoc,
+  "contracts": contractsDoc,
   "design-tokens": designTokensDoc,
   "hooks-utilities": hooksUtilitiesDoc,
-  installation: installationDoc,
-  introduction: introductionDoc,
+  "installation": installationDoc,
+  "introduction": introductionDoc,
+  "mcp": mcpDoc,
   "project-structure": projectStructureDoc,
-  registry: registryDoc,
-  theming: themingDoc,
+  "registry": registryDoc,
+  "theming": themingDoc,
   "ui-library": uiLibraryDoc,
 };

@@ -153,6 +153,18 @@ function BridgeDemo() {
   );
 }
 
+/** Wallet monogram. The demos used Clearbit's logo API, which no longer serves images. */
+function WalletMark({ letter, color }: { letter: string; color: string }) {
+  return (
+    <span
+      className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+      style={{ background: color }}
+    >
+      {letter}
+    </span>
+  );
+}
+
 function ConnectWalletDemo() {
   if (!ConnectWallet) return null;
   return (
@@ -161,27 +173,27 @@ function ConnectWalletDemo() {
         {
           id: "metamask",
           name: "MetaMask",
-          icon: "https://logo.clearbit.com/metamask.io",
+          icon: <WalletMark letter="M" color="#f6851b" />,
           ecosystem: "evm",
           popular: true,
         },
         {
           id: "coinbase",
           name: "Coinbase Wallet",
-          icon: "https://logo.clearbit.com/coinbase.com",
+          icon: <WalletMark letter="C" color="#0052ff" />,
           ecosystem: "evm",
           popular: true,
         },
         {
           id: "walletconnect",
           name: "WalletConnect",
-          icon: "https://logo.clearbit.com/walletconnect.com",
+          icon: <WalletMark letter="W" color="#3b99fc" />,
           ecosystem: "evm",
         },
         {
           id: "phantom",
           name: "Phantom",
-          icon: "https://logo.clearbit.com/phantom.app",
+          icon: <WalletMark letter="P" color="#ab9ff2" />,
           ecosystem: "solana",
           popular: true,
         },

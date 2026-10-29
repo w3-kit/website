@@ -21,7 +21,7 @@ export function MobileMenuOverlay({
   useEffect(() => {
     if (!open || !onAutoClose) return;
     const onResize = () => {
-      if (window.innerWidth >= 768) onAutoClose();
+      if (window.innerWidth >= 1024) onAutoClose();
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -40,10 +40,8 @@ export function MobileMenuOverlay({
 
   return (
     <div
-      className={`fixed inset-0 z-40 flex flex-col overflow-y-auto ${topClass} backdrop-blur-xl md:hidden`}
-      style={{
-        background: "color-mix(in srgb, var(--w3-gray-100) 95%, transparent)",
-      }}
+      className={`fixed inset-0 z-40 flex flex-col overflow-y-auto ${topClass} lg:hidden`}
+      style={{ background: "var(--w3-ground)" }}
     >
       {children}
     </div>

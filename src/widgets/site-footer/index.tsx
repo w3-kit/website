@@ -1,51 +1,79 @@
-import { Separator } from "../../shared/ui/separator";
-import { getSectionUrl } from "../../shared/lib/urls";
-import { Brand } from "../../shared/ui/header-bits/brand";
-import { GitHubLink } from "../../shared/ui/header-bits/github-link";
-import { FooterCopyright } from "../../shared/ui/footer-bits/footer-copyright";
-import { FooterLinkGroup } from "../../shared/ui/footer-bits/footer-link-group";
-import { AppFooter } from "../app-footer";
+import { Check, Copy } from "lucide-react";
+import { Logo } from "../../shared/ui/logo";
+import { useCopyToClipboard } from "../../shared/lib/use-copy-to-clipboard";
+import type { Section } from "../../shared/lib/theme";
+import { COMMUNITY, ECOSYSTEM, SITE_NAV, type MenuGroup } from "../site-header/menus";
 import { ThemeToggle } from "./theme-toggle";
 
-const productLinks = [
-  { label: "UI Components", href: getSectionUrl("ui") },
-  { label: "Documentation", href: getSectionUrl("docs") },
-  { label: "Registry", href: getSectionUrl("registry") },
-  { label: "Learn", href: getSectionUrl("learn") },
-  { label: "Design System", href: getSectionUrl("design") },
-];
+const INIT_COMMAND = "npx w3-kit init";
 
-const communityLinks = [
-  { label: "GitHub", href: "https://github.com/w3-kit" },
-  { label: "Contributing", href: "https://github.com/w3-kit/website/blob/main/CONTRIBUTING.md" },
-  { label: "Issues", href: "https://github.com/w3-kit/website/issues" },
-];
+const ECOSYSTEM_COLUMN: MenuGroup = {
+  title: "Ecosystem",
+  links: ECOSYSTEM.map((site) => ({ label: site.label, href: site.href })),
+};
 
-export function SiteFooter() {
+export function SiteFooter({ currentSection }: { currentSection: Section }) {
+  const columns = [...SITE_NAV[currentSection].footer, ECOSYSTEM_COLUMN, COMMUNITY];
+  const [copied, copy] = useCopyToClipboard(INIT_COMMAND);
+
   return (
-    <AppFooter>
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-6 py-12 sm:grid-cols-2 md:grid-cols-4 md:px-8 lg:px-16">
-        <div className="flex flex-col gap-4 sm:col-span-2 md:col-span-1">
-          <Brand size={28} />
-          <p className="max-w-[200px] text-sm" style={{ color: "var(--w3-gray-600)" }}>
-            Open-source web3 developer toolkit. Build fast, ship with confidence.
-          </p>
-          <GitHubLink showLabel />
-        </div>
-
-        <FooterLinkGroup title="Product" links={productLinks} />
-        <FooterLinkGroup title="Community" links={communityLinks} />
-
-        <div className="flex flex-col gap-3">
-          <h4 className="text-sm font-medium" style={{ color: "var(--w3-gray-900)" }}>
-            Theme
-          </h4>
-          <ThemeToggle />
-        </div>
+    <footer className="mt-auto overflow-hidden bg-[var(--w3-footer-ground)] text-[var(--w3-footer-ink)]">
+      <div className="flex flex-col gap-8 px-4 pt-20 md:flex-row md:items-end md:justify-between md:px-10 md:pt-32">
+        <h2 className="text-w3-title font-medium">
+          <span className="block">Start with</span>
+          <span className="block">one command.</span>
+        </h2>
+        <button
+          type="button"
+          onClick={copy}
+          className="w3-press inline-flex h-14 items-center gap-3 self-start bg-w3-accent px-6 text-w3-body font-medium text-w3-on-accent hover:bg-w3-accent-hover md:self-auto"
+        >
+          <code>{INIT_COMMAND}</code>
+          {copied ? <Check size={18} aria-hidden /> : <Copy size={18} aria-hidden />}
+          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
+        </button>
       </div>
 
-      <Separator />
-      <FooterCopyright />
-    </AppFooter>
+      <nav
+        aria-label="Footer"
+        className="grid grid-cols-2 gap-x-6 gap-y-12 px-4 pt-20 sm:grid-cols-3 md:px-10 md:pt-28 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]"
+      >
+        {columns.map((column) => (
+          <div key={column.title}>
+            <h2 className="mb-4 text-w3-small font-medium text-[var(--w3-footer-soft)]">
+              {column.title}
+            </h2>
+            <ul className="flex flex-col gap-2.5">
+              {column.links.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-w3-small text-[var(--w3-footer-ink)] transition-colors hover:text-[var(--w3-footer-accent)]"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <div className="flex flex-col gap-6 px-4 pt-20 sm:flex-row sm:items-center sm:justify-between md:px-10 md:pt-28">
+        <p className="text-w3-small text-[var(--w3-footer-soft)]">
+          © {new Date().getFullYear()} w3-kit. Open source under the MIT licence.
+        </p>
+        <ThemeToggle className="-mx-4 sm:mx-0" />
+      </div>
+
+      {/* The name returns at full width, the logo's four brackets beside it. */}
+      <div
+        aria-hidden
+        className="flex select-none items-end gap-[2vw] px-4 pb-4 pt-10 md:px-10 md:pb-8"
+      >
+        <Logo size={0} className="h-[14vw] w-[14vw] shrink-0 text-w3-accent" />
+        <span className="text-[27vw] font-semibold leading-[0.72] tracking-[-0.06em]">w3-kit</span>
+      </div>
+    </footer>
   );
 }

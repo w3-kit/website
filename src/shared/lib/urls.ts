@@ -1,6 +1,10 @@
 const DOMAIN = "w3-kit.com";
 const DEV_HOST = "localhost:3000";
 
+/** The single list of section subdomains. Routing, links and SEO all read it. */
+export const SUBDOMAINS = ["ui", "docs", "registry"] as const;
+export type Subdomain = (typeof SUBDOMAINS)[number];
+
 /**
  * Returns the URL for a section.
  * - Production: https://${section}.w3-kit.com
@@ -11,7 +15,7 @@ const DEV_HOST = "localhost:3000";
  *
  * Relies on the browser resolving *.localhost to 127.0.0.1 (RFC 6761).
  * Modern Chrome/Firefox/Safari/Edge handle this; if yours doesn't, add to /etc/hosts:
- * `127.0.0.1 ui.localhost docs.localhost registry.localhost learn.localhost design.localhost`.
+ * `127.0.0.1 ui.localhost docs.localhost registry.localhost`.
  */
 export function getSectionUrl(section: string): string {
   return import.meta.env.PROD ? `https://${section}.${DOMAIN}` : `http://${section}.${DEV_HOST}`;
@@ -25,18 +29,15 @@ export function getDocItemHref(item: { slug: string; type: string }): string {
   return `${base}/${item.slug}`;
 }
 
-/** Returns the landing-page URL (root host with no subdomain). */
+/** Returns the landing-page URL (the apex host; www redirects to it). */
 export function getLandingUrl(): string {
-  return import.meta.env.PROD ? `https://www.${DOMAIN}` : `http://${DEV_HOST}`;
+  return import.meta.env.PROD ? `https://${DOMAIN}` : `http://${DEV_HOST}`;
 }
 
 /** True if the href points off-domain (used to decide target="_blank"). */
 export function isExternalHref(href: string): boolean {
   return /^https?:\/\//.test(href) && !href.includes(DOMAIN);
 }
-
-const SUBDOMAINS = ["registry", "docs", "ui", "learn", "design"] as const;
-type Subdomain = (typeof SUBDOMAINS)[number];
 
 /**
  * Maps an internal rewrite path to its public subdomain URL.

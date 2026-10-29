@@ -2,95 +2,78 @@ import { useParams } from "@tanstack/react-router";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
 import { TOKENS } from "../../../entities/token/model/tokens.gen";
 import { CopyButton } from "../../../features/copy-address";
+import { RegistryNotFound, RegistryPageHead } from "../../../widgets/registry-page-head";
+import {
+  CopyRows,
+  FactList,
+  RegistrySection,
+  TokenRows,
+  ecosystemLabel,
+} from "../../../widgets/registry-rows";
 
 export function ChainDetailPage() {
-  const params = useParams({ strict: false }) as { chainId?: string };
-  const chainIdParam = params.chainId ?? "";
-  const chainId = Number(chainIdParam);
-  const chain = CHAINS.find((c) => c.chainId === chainId);
+  const { chainId = "" } = useParams({ strict: false }) as { chainId?: string };
+  const chain = CHAINS.find((c) => c.chainId === Number(chainId));
+  if (!chain) return <RegistryNotFound kind="chain" id={chainId} />;
 
-  if (!chain) {
-    return (
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-medium">Chain not found</h1>
-        <p className="mt-2 text-w3-gray-600">No chain with chainId {chainIdParam}.</p>
-      </div>
-    );
-  }
-
-  const tokensOnChain = TOKENS.filter((t) => t.chains.some((d) => d.chainId === chainId));
+  const tokens = TOKENS.filter((t) => t.chains.some((d) => d.chainId === chain.chainId));
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="font-mono text-[11px] text-w3-gray-500">
-        {chain.ecosystem.toUpperCase()} · chainId {chain.chainId}
-      </div>
-      <h1 className="mt-1 text-[36px] font-medium leading-tight tracking-[-0.03em]">
-        {chain.name}
-      </h1>
-      <p className="mt-3 max-w-prose text-w3-gray-700">{chain.learn}</p>
+    <>
+      <RegistryPageHead title={chain.name} subtitle={`Chain ID ${chain.chainId}`}>
+        <p className="text-w3-body">{chain.learn}</p>
+      </RegistryPageHead>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Native currency
-        </h2>
-        <p className="mt-2 text-sm">
-          {chain.nativeCurrency.name} ({chain.nativeCurrency.symbol},{" "}
-          {chain.nativeCurrency.decimals} decimals)
-        </p>
-      </section>
+      <FactList
+        facts={[
+          ["Ecosystem", ecosystemLabel(chain.ecosystem)],
+          [
+            "Native token",
+            `${chain.nativeCurrency.symbol} · ${chain.nativeCurrency.decimals} decimals`,
+          ],
+          ["Network", chain.testnet ? "Testnet" : "Mainnet"],
+          ["Short name", chain.shortName],
+        ]}
+      />
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          RPC URLs
-        </h2>
-        <ul className="mt-2 space-y-2">
-          {chain.rpcUrls.map((url) => (
-            <li
-              key={url}
-              className="flex items-center justify-between gap-3 rounded bg-w3-surface-alt px-3 py-2"
-            >
-              <span className="break-all font-mono text-[12px]">{url}</span>
-              <CopyButton value={url} label={url} />
-            </li>
-          ))}
-        </ul>
-      </section>
+      <RegistrySection title="RPC endpoints">
+        <CopyRows
+          rows={chain.rpcUrls.map((url, i) => ({
+            key: url,
+            label: i === 0 ? "Default" : `Fallback ${i}`,
+            value: url,
+            action: <CopyButton value={url} label={url} />,
+          }))}
+        />
+      </RegistrySection>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Block explorers
-        </h2>
-        <ul className="mt-2 space-y-1 text-sm">
-          {chain.blockExplorers.map((url) => (
-            <li key={url}>
-              <a href={url} className="text-w3-accent underline-offset-2 hover:underline">
-                {url}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {tokensOnChain.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-            Tokens on this chain
-          </h2>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {tokensOnChain.map((t) => (
-              <li key={t.symbol}>
+      {chain.blockExplorers.length > 0 && (
+        <RegistrySection title="Explorers">
+          <CopyRows
+            rows={chain.blockExplorers.map((url) => ({
+              key: url,
+              label: new URL(url).hostname,
+              value: url,
+              action: (
                 <a
-                  href={`/registry/tokens/${t.symbol}`}
-                  className="rounded-full bg-w3-surface-alt px-3 py-1 font-mono text-[11px]"
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="h-10 px-3 text-w3-small font-medium leading-10 text-w3-accent"
                 >
-                  {t.symbol}
+                  Open
                 </a>
-              </li>
-            ))}
-          </ul>
-        </section>
+              ),
+            }))}
+          />
+        </RegistrySection>
       )}
-    </div>
+
+      {tokens.length > 0 && (
+        <RegistrySection title={`Tokens on ${chain.name}`}>
+          <TokenRows tokens={tokens} />
+        </RegistrySection>
+      )}
+    </>
   );
 }

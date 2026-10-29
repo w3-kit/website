@@ -1,3 +1,8 @@
 export type { ComponentMeta, ComponentProp, ComponentCategory } from "./model";
-export { componentRegistry, useComponent } from "./model";
-export { ComponentCard } from "./ui/component-card";
+export {
+  COMPONENT_CATEGORIES,
+  componentRegistry,
+  componentInstallCommand,
+  isComponentCategory,
+  useComponent,
+} from "./model";

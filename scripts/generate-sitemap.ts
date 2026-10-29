@@ -28,25 +28,18 @@ function subUrl(sub: string, p: string): string {
 type Chain = { chainId: number };
 type Token = { symbol: string };
 type Program = { key: string };
-type Post = { slug: string };
 
 async function loadRegistries(): Promise<{
   chains: Chain[];
   tokens: Token[];
   programs: Program[];
-  posts: Post[];
 }> {
   const chainsPath = path.join(WEBSITE_ROOT, "src/entities/chain/model/chains.gen.ts");
   const tokensPath = path.join(WEBSITE_ROOT, "src/entities/token/model/tokens.gen.ts");
   const programsPath = path.join(WEBSITE_ROOT, "src/entities/program/model/programs.gen.ts");
-  const postsPath = path.join(WEBSITE_ROOT, "src/entities/blog-post/model/posts.gen.ts");
 
-  const empty = { chains: [], tokens: [], programs: [], posts: [] };
-  if (
-    !fs.existsSync(chainsPath) ||
-    !fs.existsSync(tokensPath) ||
-    !fs.existsSync(programsPath)
-  ) {
+  const empty = { chains: [], tokens: [], programs: [] };
+  if (!fs.existsSync(chainsPath) || !fs.existsSync(tokensPath) || !fs.existsSync(programsPath)) {
     console.log(
       "  registry gen files missing; sitemap will skip dynamic registry entries (run npm run generate first)",
     );
@@ -58,26 +51,19 @@ async function loadRegistries(): Promise<{
   const programsMod = (await import(pathToFileURL(programsPath).href)) as {
     PROGRAMS: Program[];
   };
-  const posts: Post[] = fs.existsSync(postsPath)
-    ? ((await import(pathToFileURL(postsPath).href)) as { POSTS: Post[] }).POSTS
-    : [];
-
   return {
     chains: chainsMod.CHAINS,
     tokens: tokensMod.TOKENS,
     programs: programsMod.PROGRAMS,
-    posts,
   };
 }
 
 async function main() {
-  const { chains, tokens, programs, posts } = await loadRegistries();
+  const { chains, tokens, programs } = await loadRegistries();
 
   const urls: string[] = [];
 
   urls.push(apexUrl("/"));
-  urls.push(apexUrl("/compare"));
-  urls.push(apexUrl("/blog"));
 
   urls.push(subUrl("registry", "/"));
   urls.push(subUrl("registry", "/chains"));
@@ -86,12 +72,9 @@ async function main() {
   urls.push(subUrl("registry", "/api"));
   urls.push(subUrl("docs", "/"));
   urls.push(subUrl("ui", "/"));
-  urls.push(subUrl("learn", "/"));
-  urls.push(subUrl("design", "/"));
 
   for (const c of chains) urls.push(subUrl("registry", `/chains/${c.chainId}`));
   for (const t of tokens) urls.push(subUrl("registry", `/tokens/${t.symbol}`));
-  for (const post of posts) urls.push(apexUrl(`/blog/${post.slug}`));
   for (const p of programs) urls.push(subUrl("registry", `/programs/${p.key}`));
 
   const xml =

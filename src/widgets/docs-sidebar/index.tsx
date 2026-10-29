@@ -1,84 +1,42 @@
-import { useState } from "react";
-import { ChevronRight } from "lucide-react";
 import { getDocItemHref } from "../../shared/lib/urls";
 import { cn } from "../../shared/lib/utils";
-import { type DocNavItem, type DocNavSection } from "../../entities/guide/model/docs-nav.gen";
-
-function SidebarLink({ item, active }: { item: DocNavItem; active: boolean }) {
-  return (
-    <a
-      href={getDocItemHref(item)}
-      className={cn(
-        "flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] transition-all",
-        active ? "bg-w3-surface-elevated font-medium text-w3-gray-900" : "text-w3-gray-600",
-      )}
-    >
-      <span
-        className={cn(
-          "h-4 w-0.5 shrink-0 rounded-full transition-all",
-          active ? "bg-w3-accent" : "bg-transparent",
-        )}
-      />
-      {item.label}
-    </a>
-  );
-}
-
-function CollapsibleSection({
-  section,
-  activeSlug,
-  defaultOpen,
-}: {
-  section: DocNavSection;
-  activeSlug: string;
-  defaultOpen: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <div className="flex flex-col gap-0.5">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-w3-gray-500 transition-colors hover:bg-w3-surface-translucent"
-      >
-        <ChevronRight
-          size={11}
-          className={cn("shrink-0 text-w3-gray-400 transition-transform", open && "rotate-90")}
-        />
-        {section.title}
-      </button>
-      {open && (
-        <div className="ml-1 flex flex-col gap-0.5">
-          {section.items.map((item) => (
-            <SidebarLink key={item.slug} item={item} active={activeSlug === item.slug} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+import { type DocNavSection } from "../../entities/guide/model/docs-nav.gen";
 
 interface DocsSidebarProps {
   sections: DocNavSection[];
   activeSlug: string;
 }
 
+/** Desktop only: on smaller screens the header's menu carries the same links. */
 export function DocsSidebar({ sections, activeSlug }: DocsSidebarProps) {
   return (
-    <aside className="hidden w-60 shrink-0 overflow-y-auto border-r border-w3-border-subtle md:block">
-      <div className="flex flex-col gap-1 py-6 pr-3">
-        {sections.map((section) => {
-          const hasActive = section.items.some((item) => item.slug === activeSlug);
-          return (
-            <CollapsibleSection
-              key={section.title}
-              section={section}
-              activeSlug={activeSlug}
-              defaultOpen={hasActive}
-            />
-          );
-        })}
+    <nav aria-label="Docs" className="hidden lg:col-span-3 lg:block">
+      <div className="sticky top-[104px] flex max-h-[calc(100svh-136px)] flex-col gap-8 overflow-y-auto pb-8 pr-4">
+        {sections.map((section) => (
+          <div key={section.title}>
+            <h2 className="mb-2 text-w3-small text-w3-ink-soft">{section.title}</h2>
+            <ul>
+              {section.items.map((item) => {
+                const active = item.slug === activeSlug;
+                return (
+                  <li key={item.slug}>
+                    <a
+                      href={getDocItemHref(item)}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "block py-1 text-w3-small transition-colors hover:text-w3-accent",
+                        active ? "font-medium text-w3-accent" : "text-w3-ink",
+                      )}
+                    >
+                      {item.label.split(" — ")[0]}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </div>
-    </aside>
+    </nav>
   );
 }

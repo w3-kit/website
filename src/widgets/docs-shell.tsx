@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { DocsHeader } from "./docs-header";
-import { DocsFooter } from "./docs-footer";
-import { SearchProvider } from "../features/search";
+import { SiteHeader } from "./site-header";
+import { SiteFooter } from "./site-footer";
+import { SearchProvider, useSearch } from "../features/search";
 
 interface DocsShellProps {
   children: ReactNode;
@@ -10,11 +10,16 @@ interface DocsShellProps {
 export function DocsShell({ children }: DocsShellProps) {
   return (
     <SearchProvider>
-      <div className="flex min-h-screen flex-col overflow-x-hidden bg-w3-gray-100">
+      <div className="flex min-h-screen flex-col overflow-x-clip bg-w3-ground">
         <DocsHeader />
         <main className="flex-1">{children}</main>
-        <DocsFooter />
+        <SiteFooter currentSection="docs" />
       </div>
     </SearchProvider>
   );
+}
+
+function DocsHeader() {
+  const { openSearch } = useSearch();
+  return <SiteHeader currentSection="docs" onSearch={openSearch} />;
 }

@@ -30,8 +30,8 @@ export function FilterChains({
   onChange: (next: ChainFilter) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="flex gap-2">
+    <div className="flex flex-wrap items-center gap-6">
+      <div className="flex gap-1">
         {OPTIONS.map((opt) => {
           const active = value.ecosystem === opt.value;
           return (
@@ -39,10 +39,9 @@ export function FilterChains({
               key={opt.value}
               type="button"
               onClick={() => onChange({ ...value, ecosystem: opt.value })}
-              className={`rounded-full px-3 py-1 text-[12px] transition-colors ${
-                active
-                  ? "bg-w3-gray-900 text-w3-gray-100"
-                  : "border border-w3-border-subtle text-w3-gray-700 hover:border-w3-accent"
+              aria-pressed={active}
+              className={`h-11 px-4 text-w3-small font-medium transition-colors ${
+                active ? "bg-w3-ink text-w3-ground" : "bg-w3-tone text-w3-ink hover:bg-w3-tone-2"
               }`}
             >
               {opt.label}
@@ -50,9 +49,10 @@ export function FilterChains({
           );
         })}
       </div>
-      <label className="flex items-center gap-1.5 text-[12px] text-w3-gray-700">
+      <label className="flex cursor-pointer items-center gap-2 text-w3-small text-w3-ink">
         <input
           type="checkbox"
+          className="h-4 w-4 accent-[var(--w3-accent)]"
           checked={value.includeTestnets}
           onChange={(e) => onChange({ ...value, includeTestnets: e.target.checked })}
         />

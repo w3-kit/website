@@ -1,53 +1,36 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { DOCS_CONTENT_SELECTOR } from "../../shared/lib/constants";
+import { useEffect, useState } from "react";
 
+const HEADER_OFFSET = 120;
+
+/** The last heading that has scrolled past the sticky header. */
 export function useActiveHeading(headingIds: string[]): string {
-  const stableIds = useMemo(() => headingIds, [headingIds.join(",")]);
-  const [activeId, setActiveId] = useState<string>(stableIds[0] ?? "");
-  const containerRef = useRef<Element | null>(null);
-  const rafRef = useRef<number>(0);
+  const key = headingIds.join(",");
+  const [activeId, setActiveId] = useState(headingIds[0] ?? "");
 
   useEffect(() => {
-    if (!stableIds.length) return;
+    const ids = key ? key.split(",") : [];
+    if (!ids.length) return;
+    let frame = 0;
 
-    const scrollContainer = document.querySelector(DOCS_CONTENT_SELECTOR);
-    if (!scrollContainer) return;
-    containerRef.current = scrollContainer;
-
-    const handleScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const containerRect = container.getBoundingClientRect();
-      const offset = 120;
-      let current = stableIds[0] ?? "";
-
-      for (const id of stableIds) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const relativeTop = el.getBoundingClientRect().top - containerRect.top;
-        if (relativeTop <= offset) {
-          current = id;
-        }
-      }
-
-      setActiveId((prev) => (prev === current ? prev : current));
+    const update = () => {
+      const passed = ids.filter(
+        (id) =>
+          (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= HEADER_OFFSET,
+      );
+      setActiveId(passed.at(-1) ?? ids[0]);
     };
-
-    // Throttle with requestAnimationFrame
     const onScroll = () => {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(handleScroll);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
     };
 
-    handleScroll();
-    scrollContainer.addEventListener("scroll", onScroll, { passive: true });
-
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      scrollContainer.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
     };
-  }, [stableIds]);
+  }, [key]);
 
   return activeId;
 }

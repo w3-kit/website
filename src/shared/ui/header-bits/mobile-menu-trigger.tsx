@@ -13,7 +13,7 @@ export function MobileMenuTrigger({ open, onToggle, variant = "ghost" }: MobileM
     <Button
       variant={variant}
       size="icon-sm"
-      className="md:hidden"
+      className="lg:hidden"
       onClick={onToggle}
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open}

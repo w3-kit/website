@@ -1,87 +1,81 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Check, Copy } from "lucide-react";
 import { CHAINS } from "../../../entities/chain/model/chains.gen";
 import { TOKENS } from "../../../entities/token/model/tokens.gen";
 import { PROGRAMS } from "../../../entities/program/model/programs.gen";
+import { ChainRows, ProgramRows, TokenRows } from "../../../widgets/registry-rows";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { useCopyToClipboard } from "../../../shared/lib/use-copy-to-clipboard";
 
-const FEATURED_CHAINS = [1, 8453, 101];
-const FEATURED_TOKENS = ["USDC", "USDT", "WETH"];
+const INSTALL = "npm install @w3-kit/registry";
+const PREVIEW_ROWS = 6;
+const mainnets = CHAINS.filter((c) => !c.testnet);
 
 export function RegistryHomePage() {
-  const featuredChains = FEATURED_CHAINS.map((id) => CHAINS.find((c) => c.chainId === id)).filter(
-    (c): c is NonNullable<typeof c> => Boolean(c),
-  );
-  const featuredTokens = FEATURED_TOKENS.map((s) => TOKENS.find((t) => t.symbol === s)).filter(
-    (t): t is NonNullable<typeof t> => Boolean(t),
-  );
+  const [copied, copy] = useCopyToClipboard(INSTALL);
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <h1 className="text-[40px] font-medium leading-tight tracking-[-0.03em]">Registry</h1>
-      <p className="mt-2 max-w-prose text-w3-gray-600">
-        Browse the chains, tokens, and Solana programs that ship with{" "}
-        <code className="font-mono text-[13px]">@w3-kit/registry</code>.
-      </p>
+    <>
+      <RegistryPageHead title="Every address," subtitle="typed and checked.">
+        <p className="text-w3-body">
+          {CHAINS.length} chains, {TOKENS.length} tokens and {PROGRAMS.length} Solana programs, with
+          the IDs, RPCs and contract addresses your app needs. Browse them here or import them.
+        </p>
+        <button
+          type="button"
+          onClick={copy}
+          className="w3-press inline-flex h-12 items-center gap-3 bg-w3-accent px-5 text-w3-on-accent hover:bg-w3-accent-hover"
+        >
+          <code className="text-[15px]">{INSTALL}</code>
+          {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
+          <span className="sr-only">{copied ? "Copied" : "Copy command"}</span>
+        </button>
+      </RegistryPageHead>
 
-      <section className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <a
-          href="/registry/chains"
-          className="rounded-xl border border-w3-border-subtle p-5 transition-colors hover:border-w3-accent"
-        >
-          <div className="text-3xl font-medium">{CHAINS.length} chains</div>
-          <div className="mt-1 text-sm text-w3-gray-600">EVM and Solana</div>
-        </a>
-        <a
-          href="/registry/tokens"
-          className="rounded-xl border border-w3-border-subtle p-5 transition-colors hover:border-w3-accent"
-        >
-          <div className="text-3xl font-medium">{TOKENS.length} tokens</div>
-          <div className="mt-1 text-sm text-w3-gray-600">Stablecoins, blue chips, more</div>
-        </a>
-        <a
-          href="/registry/programs"
-          className="rounded-xl border border-w3-border-subtle p-5 transition-colors hover:border-w3-accent"
-        >
-          <div className="text-3xl font-medium">{PROGRAMS.length} Solana programs</div>
-          <div className="mt-1 text-sm text-w3-gray-600">System, SPL, more</div>
-        </a>
-      </section>
+      <Block title="Chains" count={CHAINS.length} to="/registry/chains">
+        <ChainRows chains={mainnets.slice(0, PREVIEW_ROWS)} />
+      </Block>
+      <Block title="Tokens" count={TOKENS.length} to="/registry/tokens">
+        <TokenRows tokens={TOKENS.slice(0, PREVIEW_ROWS)} />
+      </Block>
+      <Block title="Solana programs" count={PROGRAMS.length} to="/registry/programs">
+        <ProgramRows programs={PROGRAMS.slice(0, PREVIEW_ROWS)} />
+      </Block>
+    </>
+  );
+}
 
-      <section className="mt-12">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Featured chains
+function Block({
+  title,
+  count,
+  to,
+  children,
+}: {
+  title: string;
+  count: number;
+  to: "/registry/chains" | "/registry/tokens" | "/registry/programs";
+  children: React.ReactNode;
+}) {
+  const id = title.toLowerCase().replace(/\s+/g, "-");
+  return (
+    <section aria-labelledby={id} className="pb-20 md:pb-28">
+      <div className="mb-6 flex items-end justify-between gap-6">
+        <h2 id={id} className="text-w3-statement font-medium">
+          {title}
         </h2>
-        <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          {featuredChains.map((c) => (
-            <li key={c.chainId}>
-              <a
-                href={`/registry/chains/${c.chainId}`}
-                className="block rounded-lg border border-w3-border-subtle px-4 py-3 hover:border-w3-accent"
-              >
-                <div className="text-sm font-medium">{c.name}</div>
-                <div className="font-mono text-[11px] text-w3-gray-500">chainId {c.chainId}</div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Featured tokens
-        </h2>
-        <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          {featuredTokens.map((t) => (
-            <li key={t.symbol}>
-              <a
-                href={`/registry/tokens/${t.symbol}`}
-                className="block rounded-lg border border-w3-border-subtle px-4 py-3 hover:border-w3-accent"
-              >
-                <div className="text-sm font-medium">{t.symbol}</div>
-                <div className="text-[12px] text-w3-gray-500">{t.name}</div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+        <Link
+          to={to}
+          className="group inline-flex items-center gap-2 text-w3-small font-medium text-w3-accent"
+        >
+          All {count}
+          <ArrowRight
+            size={16}
+            aria-hidden
+            className="transition-transform group-hover:translate-x-1"
+          />
+        </Link>
+      </div>
+      {children}
+    </section>
   );
 }

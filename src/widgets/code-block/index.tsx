@@ -13,34 +13,36 @@ export function CodeBlock({ code, language = "tsx", filename }: CodeBlockProps) 
   const [copied, handleCopy] = useCopyToClipboard(code.trim());
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-w3-border-subtle bg-w3-gray-200">
+    <div className="relative overflow-hidden bg-w3-tone">
       {filename && (
-        <div className="flex items-center gap-2 border-b border-w3-border-subtle px-4 py-2 font-mono text-xs text-w3-gray-600">
+        <div className="flex items-center gap-2 bg-w3-tone-2 px-5 py-2.5 text-[13px] text-w3-ink-soft">
           <FileCode size={14} />
           <span>{filename}</span>
         </div>
       )}
 
-      <div className="relative overflow-x-auto p-4">
+      <div className="relative overflow-x-auto px-5 py-5 pr-14">
         {html ? (
           <div
-            className="font-mono text-sm [&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:!bg-transparent"
+            className="font-mono text-[14px] leading-[1.7] [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!p-0"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <pre className="font-mono text-sm text-w3-gray-700">
+          <pre className="font-mono text-[14px] leading-[1.7] text-w3-ink">
             <code>{code.trim()}</code>
           </pre>
         )}
       </div>
 
       <button
+        type="button"
         onClick={handleCopy}
-        className={`absolute right-3 top-3 rounded-lg border border-w3-border-subtle bg-w3-surface-elevated p-1.5 opacity-0 transition-all group-hover:opacity-100 ${
-          copied ? "text-w3-accent" : "text-w3-gray-600"
-        }`}
+        aria-label={copied ? "Copied" : "Copy code"}
+        className={`absolute right-3 top-3 p-2 transition-colors hover:text-w3-ink ${
+          copied ? "text-w3-accent" : "text-w3-ink-soft"
+        } ${filename ? "top-12" : ""}`}
       >
-        {copied ? <Check size={14} /> : <Copy size={14} />}
+        {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
       </button>
     </div>
   );
