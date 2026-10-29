@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+/* The mirrored components are gitignored, which Tailwind skips by default. */
+@source "../ui/w3-kit";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -38,49 +40,28 @@
 }
 
 :root {
-  --w3-gray-100: #fafafa;
-  --w3-gray-200: #f5f5f5;
-  --w3-gray-300: #e5e5e5;
-  --w3-gray-400: #d4d4d4;
-  --w3-gray-500: #a3a3a3;
-  --w3-gray-600: #737373;
-  --w3-gray-700: #525252;
-  --w3-gray-800: #404040;
-  --w3-gray-900: #171717;
+  /* Monochrome: one ground, one ink, one tone step. Purple (the logo's) is the only colour. */
+  --w3-ground: #ffffff;
+  --w3-ink: #0a0a0a;
+  --w3-ink-soft: #5c5c5c;
+  --w3-tone: #f0f0f0;
+  --w3-tone-2: #e4e4e4;
   --w3-accent: #5554d9;
-  --w3-accent-subtle: rgba(85, 84, 217, 0.1);
-
-  /* Landing surface tokens */
-  --w3-surface-translucent: rgba(0, 0, 0, 0.02);
-  --w3-surface-elevated: rgba(0, 0, 0, 0.04);
-  --w3-border-subtle: rgba(0, 0, 0, 0.06);
-  --w3-border-standard: rgba(0, 0, 0, 0.1);
-  --w3-hero-gradient: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(85, 84, 217, 0.06) 0%,
-    transparent 60%
-  );
-  --w3-glow-accent: rgba(85, 84, 217, 0.15);
-
-  /* Glass / Liquid glass */
-  --w3-glass-bg: rgba(255, 255, 255, 0.45);
-  --w3-glass-border: rgba(255, 255, 255, 0.6);
-  --w3-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-  --w3-glass-inner-bg: rgba(255, 255, 255, 0.55);
-
-  /* Catalog landing tokens */
-  --w3-surface: #ffffff;
-  --w3-surface-alt: #f6f5f0;
-  --w3-accent-wash: rgba(85, 84, 217, 0.08);
-  --w3-grid-line: rgba(20, 20, 20, 0.04);
+  --w3-accent-hover: #4342c4;
+  --w3-on-accent: #ffffff;
+  /* The footer is always a black field, in both themes. */
+  --w3-footer-ground: #0a0a0a;
+  --w3-footer-ink: #f5f5f5;
+  --w3-footer-soft: #9a9a9a;
+  --w3-footer-accent: #8f8ef0;
 
   font-family:
     "Geist Sans",
     system-ui,
     -apple-system,
     sans-serif;
-  color: var(--w3-gray-900);
-  background-color: var(--w3-gray-100);
+  color: var(--w3-ink);
+  background-color: var(--w3-ground);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -117,41 +98,14 @@
 
 [data-theme="dark"],
 [data-theme="system"].system-dark {
-  --w3-gray-100: #0a0a0a;
-  --w3-gray-200: #111111;
-  --w3-gray-300: #1a1a1a;
-  --w3-gray-400: #222222;
-  --w3-gray-500: #333333;
-  --w3-gray-600: #444444;
-  --w3-gray-700: #666666;
-  --w3-gray-800: #888888;
-  --w3-gray-900: #ededed;
+  --w3-ground: #0a0a0a;
+  --w3-ink: #f5f5f5;
+  --w3-ink-soft: #a3a3a3;
+  --w3-tone: #171717;
+  --w3-tone-2: #262626;
   --w3-accent: #5554d9;
-  --w3-accent-subtle: rgba(85, 84, 217, 0.15);
-
-  /* Landing surface tokens */
-  --w3-surface-translucent: rgba(255, 255, 255, 0.02);
-  --w3-surface-elevated: rgba(255, 255, 255, 0.05);
-  --w3-border-subtle: rgba(255, 255, 255, 0.05);
-  --w3-border-standard: rgba(255, 255, 255, 0.08);
-  --w3-hero-gradient: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(85, 84, 217, 0.15) 0%,
-    transparent 60%
-  );
-  --w3-glow-accent: rgba(85, 84, 217, 0.25);
-
-  /* Glass / Liquid glass */
-  --w3-glass-bg: rgba(255, 255, 255, 0.04);
-  --w3-glass-border: rgba(255, 255, 255, 0.08);
-  --w3-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  --w3-glass-inner-bg: rgba(255, 255, 255, 0.06);
-
-  /* Catalog landing tokens */
-  --w3-surface: #131316;
-  --w3-surface-alt: #1a1a1e;
-  --w3-accent-wash: rgba(85, 84, 217, 0.12);
-  --w3-grid-line: rgba(240, 240, 236, 0.04);
+  --w3-accent-hover: #6766e3;
+  --w3-footer-ground: #141414;
 }
 
 @layer base {
@@ -209,82 +163,28 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   /* w3 design tokens */
-  --color-w3-gray-100: var(--w3-gray-100);
-  --color-w3-gray-200: var(--w3-gray-200);
-  --color-w3-gray-300: var(--w3-gray-300);
-  --color-w3-gray-400: var(--w3-gray-400);
-  --color-w3-gray-500: var(--w3-gray-500);
-  --color-w3-gray-600: var(--w3-gray-600);
-  --color-w3-gray-700: var(--w3-gray-700);
-  --color-w3-gray-800: var(--w3-gray-800);
-  --color-w3-gray-900: var(--w3-gray-900);
   --color-w3-accent: var(--w3-accent);
-  --color-w3-accent-subtle: var(--w3-accent-subtle);
-  --color-w3-surface-translucent: var(--w3-surface-translucent);
-  --color-w3-surface-elevated: var(--w3-surface-elevated);
-  --color-w3-border-subtle: var(--w3-border-subtle);
-  --color-w3-border-standard: var(--w3-border-standard);
-  --color-w3-glow-accent: var(--w3-glow-accent);
-  --color-w3-chain-evm: #627eea;
-  --color-w3-chain-evm-subtle: rgba(98, 126, 234, 0.1);
-  --color-w3-chain-solana: #9945ff;
-  --color-w3-chain-solana-subtle: rgba(153, 69, 255, 0.1);
-  --color-w3-surface: var(--w3-surface);
-  --color-w3-surface-alt: var(--w3-surface-alt);
-  --color-w3-accent-wash: var(--w3-accent-wash);
-  --color-w3-grid-line: var(--w3-grid-line);
-  --font-serif-display: "Geist Sans", system-ui, -apple-system, sans-serif;
-}
-
-@utility glass-bg {
-  background: var(--w3-glass-bg);
-  border: 1px solid var(--w3-glass-border);
-  box-shadow: var(--w3-glass-shadow);
-  backdrop-filter: blur(20px);
-}
-
-@utility font-serif-display {
-  font-family:
-    "Geist Sans",
-    system-ui,
-    -apple-system,
-    sans-serif;
-}
-
-@utility nav-link-underline {
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.25s ease;
-  }
-  &:hover::after {
-    transform: scaleX(1);
-  }
-}
-
-@utility catalog-cell {
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border: 1px solid transparent;
-    transition:
-      border-color 0.18s ease,
-      box-shadow 0.18s ease;
-    z-index: 3;
-  }
-  &:hover::before {
-    border-color: var(--w3-accent);
-    box-shadow: inset 0 0 0 1px var(--w3-accent);
-  }
+  --color-w3-ground: var(--w3-ground);
+  --color-w3-ink: var(--w3-ink);
+  --color-w3-ink-soft: var(--w3-ink-soft);
+  --color-w3-tone: var(--w3-tone);
+  --color-w3-tone-2: var(--w3-tone-2);
+  --color-w3-accent-hover: var(--w3-accent-hover);
+  --color-w3-on-accent: var(--w3-on-accent);
+  /* Type steps: display, statement, body, small. Nothing in between. */
+  --text-w3-display: clamp(44px, 6vw, 96px);
+  --text-w3-display--line-height: 0.96;
+  --text-w3-display--letter-spacing: -0.045em;
+  --text-w3-title: clamp(36px, 5vw, 72px);
+  --text-w3-title--line-height: 0.98;
+  --text-w3-title--letter-spacing: -0.04em;
+  --text-w3-statement: clamp(24px, 2.2vw, 32px);
+  --text-w3-statement--line-height: 1.15;
+  --text-w3-statement--letter-spacing: -0.02em;
+  --text-w3-body: 18px;
+  --text-w3-body--line-height: 1.55;
+  --text-w3-small: 15px;
+  --text-w3-small--line-height: 1.45;
 }
 
 .dark {
@@ -333,15 +233,118 @@
   }
 }
 
-@keyframes w3-typewriter-reveal {
+/* Motion: transform and opacity only. Content is visible without it. */
+@keyframes w3-rise {
   from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
+    opacity: 0;
+    transform: translateY(24px);
   }
 }
+@keyframes w3-shutter {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+@keyframes w3-settle {
+  from {
+    transform: scale(1.06);
+    opacity: 0;
+  }
+}
+.w3-rise {
+  animation: w3-rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.w3-shutter > * {
+  animation: w3-settle 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) 200ms both;
+}
+.w3-shutter {
+  animation: w3-rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms both;
+}
+@keyframes w3-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.w3-drop {
+  animation: w3-drop 200ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.w3-press {
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.w3-press:active {
+  transform: scale(0.97);
+}
+[data-reveal] > * {
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-reveal="hidden"] > * {
+  opacity: 0;
+  transform: translateY(24px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .w3-rise,
+  .w3-drop,
+  .w3-shutter,
+  .w3-shutter > * {
+    animation: none;
+  }
+  [data-reveal="hidden"] > * {
+    opacity: 1;
+    transform: none;
+  }
+}
+[data-reveal] > :nth-child(2) {
+  transition-delay: 80ms;
+}
+[data-reveal] > :nth-child(3) {
+  transition-delay: 160ms;
+}
+[data-reveal] > :nth-child(n + 4) {
+  transition-delay: 240ms;
+}
 
-.w3-typewriter-reveal {
-  animation: w3-typewriter-reveal 700ms ease-out forwards;
+/* The workflow slider: a solid track and a square thumb in the accent. */
+.w3-range {
+  appearance: none;
+  height: 32px;
+  background: transparent;
+  cursor: pointer;
+}
+.w3-range::-webkit-slider-runnable-track {
+  height: 8px;
+  background: #8a8a8a;
+}
+.w3-range::-moz-range-track {
+  height: 8px;
+  background: #8a8a8a;
+}
+.w3-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  margin-top: -12px;
+  background: var(--w3-accent);
+  transition: transform 160ms ease;
+}
+.w3-range::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 0;
+  background: var(--w3-accent);
+}
+.w3-range:active::-webkit-slider-thumb {
+  transform: scale(1.1);
+}
+@media (max-width: 767px) {
+  .w3-range::-webkit-slider-thumb {
+    width: 40px;
+    height: 40px;
+    margin-top: -16px;
+  }
 }

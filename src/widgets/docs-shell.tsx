@@ -1,20 +1,20 @@
 import type { ReactNode } from "react";
-import { DocsHeader } from "./docs-header";
-import { DocsFooter } from "./docs-footer";
-import { SearchProvider } from "../features/search";
+import { SiteShell } from "./site-chrome";
+import { SearchProvider, useSearch } from "../features/search";
 
-interface DocsShellProps {
-  children: ReactNode;
-}
-
-export function DocsShell({ children }: DocsShellProps) {
+export function DocsShell({ children }: { children: ReactNode }) {
   return (
     <SearchProvider>
-      <div className="flex min-h-screen flex-col overflow-x-hidden bg-w3-gray-100">
-        <DocsHeader />
-        <main className="flex-1">{children}</main>
-        <DocsFooter />
-      </div>
+      <DocsFrame>{children}</DocsFrame>
     </SearchProvider>
+  );
+}
+
+function DocsFrame({ children }: { children: ReactNode }) {
+  const { openSearch } = useSearch();
+  return (
+    <SiteShell section="docs" onSearch={openSearch}>
+      {children}
+    </SiteShell>
   );
 }

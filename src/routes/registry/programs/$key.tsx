@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProgramDetailPage } from "../../../pages/program-detail";
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
+import { PROGRAMS } from "../../../entities/program";
 import { buildMeta } from "../../../shared/lib/seo";
 
 export const Route = createFileRoute("/registry/programs/$key")({

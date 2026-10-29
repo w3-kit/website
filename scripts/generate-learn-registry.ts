@@ -66,10 +66,25 @@ const DOC_CONTENT_OUT = path.resolve(
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
+// Words a plain capitalise gets wrong ("Cli", "Nfts", "Defi").
+const WORD_SPELLINGS: Record<string, string> = {
+  api: "API",
+  cli: "CLI",
+  ui: "UI",
+  evm: "EVM",
+  nft: "NFT",
+  nfts: "NFTs",
+  defi: "DeFi",
+  svg: "SVG",
+  ens: "ENS",
+  mcp: "MCP",
+  utils: "Utilities",
+};
+
 function slugToTitle(slug: string): string {
   return slug
     .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .map((w) => WORD_SPELLINGS[w] ?? w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 }
 
@@ -375,17 +390,18 @@ const DOC_SECTION_MAP: Record<string, string> = {
   theming: "Core Concepts",
   "design-tokens": "Core Concepts",
   accessibility: "Core Concepts",
-  "ui-library": "Ecosystem",
-  registry: "Ecosystem",
-  cli: "Ecosystem",
-  contracts: "Ecosystem",
+  "ui-library": "Packages",
+  registry: "Packages",
+  cli: "Packages",
+  contracts: "Packages",
+  mcp: "Packages",
   "components-api": "API Reference",
   "hooks-utilities": "API Reference",
   "cli-commands": "API Reference",
 };
 
 // Preserve display order within each section
-const SECTION_ORDER = ["Getting Started", "Core Concepts", "Ecosystem", "API Reference", "Other"];
+const SECTION_ORDER = ["Getting Started", "Core Concepts", "Packages", "API Reference", "Other"];
 
 function generateDocsNav(docs: DocInfo[], guides: GuideInfo[], recipes: RecipeInfo[]): string {
   const lines: string[] = [
@@ -414,8 +430,12 @@ function generateDocsNav(docs: DocInfo[], guides: GuideInfo[], recipes: RecipeIn
     sectionMap.set(section, list);
   }
 
+  // Reading order follows DOC_SECTION_MAP, not the alphabetical file order.
+  const mapOrder = Object.keys(DOC_SECTION_MAP);
   for (const sectionTitle of SECTION_ORDER) {
-    const sectionDocs = sectionMap.get(sectionTitle);
+    const sectionDocs = sectionMap
+      .get(sectionTitle)
+      ?.sort((a, b) => mapOrder.indexOf(a.slug) - mapOrder.indexOf(b.slug));
     if (!sectionDocs?.length) continue;
     lines.push("  {");
     lines.push(`    title: ${JSON.stringify(sectionTitle)},`);
@@ -445,7 +465,7 @@ function generateDocsNav(docs: DocInfo[], guides: GuideInfo[], recipes: RecipeIn
     lines.push("    items: [");
     for (const g of categoryGuides) {
       lines.push(
-        `      { label: ${JSON.stringify(g.title)}, slug: ${JSON.stringify(g.slug)}, type: "guide" },`,
+        `      { label: ${JSON.stringify(g.title.split(" — ")[0])}, slug: ${JSON.stringify(g.slug)}, type: "guide" },`,
       );
     }
     lines.push("    ],");

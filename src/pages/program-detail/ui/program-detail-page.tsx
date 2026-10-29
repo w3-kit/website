@@ -1,54 +1,39 @@
 import { useParams } from "@tanstack/react-router";
-import { PROGRAMS } from "../../../entities/program/model/programs.gen";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { PROGRAMS } from "../../../entities/program";
+import { chainName } from "../../../entities/chain";
 import { CopyButton } from "../../../features/copy-address";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
+import { CopyRows, RegistrySection } from "../../../widgets/registry-rows";
 
+const REGISTRY_HOME = { href: getSectionUrl("registry"), label: "Back to the registry" };
 export function ProgramDetailPage() {
-  const params = useParams({ strict: false }) as { key?: string };
-  const key = params.key ?? "";
+  const { key = "" } = useParams({ strict: false }) as { key?: string };
   const program = PROGRAMS.find((p) => p.key === key);
-
-  if (!program) {
-    return (
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-medium">Program not found</h1>
-        <p className="mt-2 text-w3-gray-600">No program with key {key}.</p>
-      </div>
-    );
-  }
+  if (!program) return <NotFound kind="program" id={key} back={REGISTRY_HOME} />;
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="font-mono text-[11px] text-w3-gray-500">solana · {program.key}</div>
-      <h1 className="mt-1 text-[36px] font-medium leading-tight tracking-[-0.03em]">
-        {program.name}
-      </h1>
-      <p className="mt-3 max-w-prose text-w3-gray-700">{program.learn}</p>
+    <>
+      <RegistryPageHead title={program.name} subtitle="Solana program">
+        <p className="text-w3-body">{program.learn}</p>
+      </RegistryPageHead>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Deployments
-        </h2>
-        <ul className="mt-3 space-y-2">
-          {program.deployments.map((d) => {
-            const chain = CHAINS.find((c) => c.chainId === d.chainId);
-            return (
-              <li key={d.chainId} className="rounded-lg border border-w3-border-subtle p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
-                  <CopyButton
-                    value={d.programId}
-                    label={`${program.name} programId on ${chain?.name ?? d.chainId}`}
-                  />
-                </div>
-                <div className="mt-1 break-all font-mono text-[11px] text-w3-gray-700">
-                  {d.programId}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
+      <RegistrySection title="Program IDs">
+        <CopyRows
+          rows={program.deployments.map((d) => ({
+            key: String(d.chainId),
+            label: chainName(d.chainId),
+            value: d.programId,
+            action: (
+              <CopyButton
+                value={d.programId}
+                label={`${program.name} on ${chainName(d.chainId)}`}
+              />
+            ),
+          }))}
+        />
+      </RegistrySection>
+    </>
   );
 }

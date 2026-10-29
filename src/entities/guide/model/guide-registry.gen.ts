@@ -2,6 +2,7 @@
 import type { GuideMeta } from "./types";
 
 import solidityVsRustContent from "@learn/guides/cheatsheets/solidity-vs-rust.md?raw";
+import tokenStandardsContent from "@learn/guides/cheatsheets/token-standards.md?raw";
 import accountsModelContent from "@learn/guides/concepts/accounts-model.md?raw";
 import howTransactionsWorkContent from "@learn/guides/concepts/how-transactions-work.md?raw";
 import publicVsPrivateKeysContent from "@learn/guides/concepts/public-vs-private-keys.md?raw";
@@ -21,6 +22,15 @@ export const guideRegistry: GuideMeta[] = [
     slug: "solidity-vs-rust",
     content: solidityVsRustContent,
     author: "Raad05",
+  },
+  {
+    id: "token-standards",
+    title: "Token Standards Cheat Sheet",
+    description: "Learn about token standards cheat sheet",
+    category: "cheatsheets" as GuideMeta["category"],
+    slug: "token-standards",
+    content: tokenStandardsContent,
+    author: "peter941221",
   },
   {
     id: "accounts-model",

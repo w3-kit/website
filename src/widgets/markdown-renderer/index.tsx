@@ -14,10 +14,7 @@ function isBlockCode(props: Record<string, unknown>): boolean {
 
 const components: Components = {
   h1: ({ children, ...props }: React.ComponentPropsWithoutRef<"h1">) => (
-    <h1
-      {...props}
-      className="font-sans text-4xl font-bold tracking-tight text-w3-gray-900 mt-12 mb-4"
-    >
+    <h1 {...props} className="mb-8 scroll-mt-[104px] text-w3-title font-medium text-w3-ink">
       {children}
     </h1>
   ),
@@ -25,59 +22,62 @@ const components: Components = {
   h2: ({ children, ...props }: React.ComponentPropsWithoutRef<"h2">) => (
     <h2
       {...props}
-      className="font-sans text-[28px] font-semibold tracking-tight text-w3-gray-900 mt-10 mb-3 pb-2 border-b border-w3-border-subtle"
+      className="mb-4 mt-16 scroll-mt-[104px] text-w3-statement font-medium text-w3-ink"
     >
       {children}
     </h2>
   ),
 
   h3: ({ children, ...props }: React.ComponentPropsWithoutRef<"h3">) => (
-    <h3 {...props} className="font-sans text-[22px] font-semibold text-w3-gray-900 mt-8 mb-2">
+    <h3
+      {...props}
+      className="mb-3 mt-10 scroll-mt-[104px] text-[22px] font-medium tracking-[-0.01em] text-w3-ink"
+    >
       {children}
     </h3>
   ),
 
   h4: ({ children, ...props }: React.ComponentPropsWithoutRef<"h4">) => (
-    <h4 {...props} className="font-sans text-lg font-semibold text-w3-gray-900 mt-6 mb-2">
+    <h4 {...props} className="mb-2 mt-8 scroll-mt-[104px] text-w3-body font-medium text-w3-ink">
       {children}
     </h4>
   ),
 
   p: ({ children, ...props }: React.ComponentPropsWithoutRef<"p">) => (
-    <p {...props} className="leading-[1.7] text-w3-gray-700 mb-4">
+    <p {...props} className="mb-5 text-w3-body text-w3-ink">
       {children}
     </p>
   ),
 
   a: ({ children, ...props }: React.ComponentPropsWithoutRef<"a">) => (
-    <a {...props} className="text-w3-accent hover:underline">
+    <a
+      {...props}
+      className="text-w3-accent underline decoration-w3-accent/30 underline-offset-4 hover:decoration-w3-accent"
+    >
       {children}
     </a>
   ),
 
   ul: ({ children, ...props }: React.ComponentPropsWithoutRef<"ul">) => (
-    <ul {...props} className="mb-4 pl-6 list-disc">
+    <ul {...props} className="mb-5 list-disc pl-6 marker:text-w3-ink-soft">
       {children}
     </ul>
   ),
 
   ol: ({ children, ...props }: React.ComponentPropsWithoutRef<"ol">) => (
-    <ol {...props} className="mb-4 pl-6 list-decimal">
+    <ol {...props} className="mb-5 list-decimal pl-6 marker:text-w3-ink-soft">
       {children}
     </ol>
   ),
 
   li: ({ children, ...props }: React.ComponentPropsWithoutRef<"li">) => (
-    <li {...props} className="mb-1 text-w3-gray-700 leading-[1.7]">
+    <li {...props} className="mb-1.5 text-w3-body text-w3-ink">
       {children}
     </li>
   ),
 
   blockquote: ({ children, ...props }: React.ComponentPropsWithoutRef<"blockquote">) => (
-    <blockquote
-      {...props}
-      className="border-l-[3px] border-w3-accent bg-w3-accent-subtle p-4 rounded-lg mb-4 text-w3-gray-800"
-    >
+    <blockquote {...props} className="mb-5 bg-w3-tone px-6 pb-1 pt-5 [&_p]:mb-4">
       {children}
     </blockquote>
   ),
@@ -87,27 +87,24 @@ const components: Components = {
       return <code {...props}>{children}</code>;
     }
     return (
-      <code
-        {...props}
-        className="font-mono bg-w3-surface-elevated px-1.5 py-0.5 rounded text-[0.875em] text-w3-gray-800"
-      >
+      <code {...props} className="bg-w3-tone px-1.5 py-0.5 text-[0.85em] text-w3-ink">
         {children}
       </code>
     );
   },
 
   pre: ({ children, ...props }: React.ComponentPropsWithoutRef<"pre">) => (
-    <pre {...props} className="bg-w3-gray-200 rounded-xl px-5 py-4 overflow-x-auto mb-4">
+    <pre
+      {...props}
+      className="mb-6 overflow-x-auto bg-w3-tone px-6 py-5 text-[14px] leading-[1.7] text-w3-ink"
+    >
       {children}
     </pre>
   ),
 
   table: ({ children, ...props }: React.ComponentPropsWithoutRef<"table">) => (
-    <div className="overflow-x-auto mb-4">
-      <table
-        {...props}
-        className="w-full border-collapse border border-w3-border-subtle rounded-lg"
-      >
+    <div className="mb-6 overflow-x-auto">
+      <table {...props} className="w-full border-collapse text-w3-small">
         {children}
       </table>
     </div>
@@ -116,24 +113,22 @@ const components: Components = {
   th: ({ children, ...props }: React.ComponentPropsWithoutRef<"th">) => (
     <th
       {...props}
-      className="text-left px-3 py-2 font-semibold bg-w3-surface-elevated text-w3-gray-900 border-b border-w3-border-subtle"
+      className="border-b border-w3-tone-2 py-3 pr-6 text-left font-medium text-w3-ink-soft"
     >
       {children}
     </th>
   ),
 
   td: ({ children, ...props }: React.ComponentPropsWithoutRef<"td">) => (
-    <td {...props} className="px-3 py-2 border-b border-w3-border-subtle text-w3-gray-700">
+    <td {...props} className="border-b border-w3-tone-2 py-3 pr-6 align-top text-w3-ink">
       {children}
     </td>
   ),
 
-  hr: (props: React.ComponentPropsWithoutRef<"hr">) => (
-    <hr {...props} className="border-w3-border-subtle my-8" />
-  ),
+  hr: (props: React.ComponentPropsWithoutRef<"hr">) => <hr {...props} className="my-16 border-0" />,
 
   img: (props: React.ComponentPropsWithoutRef<"img">) => (
-    <img {...props} alt={props.alt ?? ""} className="max-w-full rounded-lg" />
+    <img {...props} alt={props.alt ?? ""} className="max-w-full" />
   ),
 };
 

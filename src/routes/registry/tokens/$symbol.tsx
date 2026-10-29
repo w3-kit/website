@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TokenDetailPage } from "../../../pages/token-detail";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
+import { TOKENS } from "../../../entities/token";
 import { buildMeta } from "../../../shared/lib/seo";
 
 export const Route = createFileRoute("/registry/tokens/$symbol")({

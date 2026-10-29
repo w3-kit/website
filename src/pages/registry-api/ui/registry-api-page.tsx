@@ -1,61 +1,79 @@
-import { CodeBlock } from "../../../widgets/code-block";
+import { REGISTRY_INSTALL_COMMAND } from "../../../shared/lib/commands";
+import { CopyCommand } from "../../../features/copy-address";
+import { CHAINS, requireChain } from "../../../entities/chain";
 
-const EXAMPLES: { title: string; code: string }[] = [
+const BASE_CHAIN_ID = 8453;
+import { addressOn, requireToken, tokensOnChain } from "../../../entities/token";
+import { CodeBlock } from "../../../widgets/code-block";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { RegistrySection } from "../../../widgets/registry-rows";
+
+const BASE = requireChain(BASE_CHAIN_ID);
+const USDC = requireToken("USDC");
+const usdcOnBase = addressOn(USDC, BASE.chainId);
+const tokensOnBase = tokensOnChain(BASE.chainId);
+
+// Only functions exported by the published package; outputs come from this site's registry data.
+const EXAMPLES = [
   {
     title: "Get a chain",
     code: `import { getChain } from "@w3-kit/registry";
 
-const ethereum = getChain(1);
-console.log(ethereum.name); // "Ethereum"`,
+const base = getChain(${BASE.chainId});
+base?.name;          // "${BASE.name}"
+base?.rpcUrls[0];    // "${BASE.rpcUrls[0]}"`,
   },
   {
-    title: "Get a token address on a chain",
-    code: `import { getTokenAddress } from "@w3-kit/registry";
+    title: "Find a token address on a chain",
+    code: `import { getToken } from "@w3-kit/registry";
 
-const usdcOnBase = getTokenAddress("USDC", 8453);
-// "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"`,
+const usdc = getToken("${USDC.symbol}");
+usdc?.chains.find((d) => d.chainId === ${BASE.chainId})?.address;
+// "${usdcOnBase}"`,
   },
   {
-    title: "Pick an RPC URL",
-    code: `import { getRpc } from "@w3-kit/registry";
+    title: "List the tokens on a chain",
+    code: `import { getTokensByChain } from "@w3-kit/registry";
 
-const rpc = getRpc(8453);
-// "https://mainnet.base.org"`,
+getTokensByChain(${BASE.chainId}).map((t) => t.symbol);
+// ${JSON.stringify(tokensOnBase.map((t) => t.symbol))}`,
+  },
+  {
+    title: "Filter chains by ecosystem",
+    code: `import { getAllChains, getChainsByEcosystem } from "@w3-kit/registry";
+
+getAllChains().length;              // ${CHAINS.length}
+getChainsByEcosystem("solana");     // Solana and Solana Devnet`,
   },
 ];
 
 export function RegistryApiPage() {
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-[32px] font-medium leading-tight tracking-[-0.03em]">API reference</h1>
-      <p className="mt-2 text-w3-gray-600">
-        Common usage of <code className="font-mono text-[13px]">@w3-kit/registry</code>. Install
-        with <code className="font-mono text-[13px]">npm install @w3-kit/registry</code>.
-      </p>
+    <>
+      <RegistryPageHead title="Use it in code" subtitle="@w3-kit/registry">
+        <p className="text-w3-body">
+          The same data as this site, typed, in one package with no runtime dependencies.
+        </p>
+        <CopyCommand command={REGISTRY_INSTALL_COMMAND} />
+      </RegistryPageHead>
 
-      <div className="mt-8 space-y-8">
+      <div className="max-w-[800px]">
         {EXAMPLES.map((ex) => (
-          <section key={ex.title}>
-            <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-              {ex.title}
-            </h2>
-            <div className="mt-3">
-              <CodeBlock code={ex.code} language="ts" />
-            </div>
-          </section>
+          <RegistrySection key={ex.title} title={ex.title}>
+            <CodeBlock code={ex.code} language="ts" />
+          </RegistrySection>
         ))}
+        <p className="mt-16 text-w3-body">
+          Every export is listed in the{" "}
+          <a
+            href="https://github.com/w3-kit/registry"
+            className="text-w3-accent underline decoration-w3-accent/30 underline-offset-4 hover:decoration-w3-accent"
+          >
+            registry repository
+          </a>
+          .
+        </p>
       </div>
-
-      <p className="mt-10 text-sm text-w3-gray-600">
-        Full reference on{" "}
-        <a
-          href="https://github.com/w3-kit/registry"
-          className="text-w3-accent underline-offset-2 hover:underline"
-        >
-          github.com/w3-kit/registry
-        </a>
-        .
-      </p>
-    </div>
+    </>
   );
 }

@@ -1,62 +1,43 @@
 import { useParams } from "@tanstack/react-router";
-import { TOKENS } from "../../../entities/token/model/tokens.gen";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { TOKENS, chainCountLabel } from "../../../entities/token";
+import { chainName } from "../../../entities/chain";
 import { CopyButton } from "../../../features/copy-address";
+import { RegistryPageHead } from "../../../widgets/registry-page-head";
+import { NotFound } from "../../../shared/ui/not-found";
+import { getSectionUrl } from "../../../shared/lib/urls";
+import { CopyRows, FactList, RegistrySection } from "../../../widgets/registry-rows";
 
+const REGISTRY_HOME = { href: getSectionUrl("registry"), label: "Back to the registry" };
 export function TokenDetailPage() {
-  const params = useParams({ strict: false }) as { symbol?: string };
-  const symbol = params.symbol ?? "";
+  const { symbol = "" } = useParams({ strict: false }) as { symbol?: string };
   const token = TOKENS.find((t) => t.symbol.toLowerCase() === symbol.toLowerCase());
-
-  if (!token) {
-    return (
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-medium">Token not found</h1>
-        <p className="mt-2 text-w3-gray-600">No token with symbol {symbol}.</p>
-      </div>
-    );
-  }
+  if (!token) return <NotFound kind="token" id={symbol} back={REGISTRY_HOME} />;
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="flex items-center gap-3">
-        {token.logoUrl && <img src={token.logoUrl} alt="" className="h-10 w-10 rounded-full" />}
-        <h1 className="text-[36px] font-medium leading-tight tracking-[-0.03em]">{token.symbol}</h1>
-      </div>
-      <p className="mt-1 text-w3-gray-600">{token.name}</p>
-      <p className="mt-3 max-w-prose text-w3-gray-700">{token.learn}</p>
+    <>
+      <RegistryPageHead title={token.symbol} subtitle={token.name}>
+        <p className="text-w3-body">{token.learn}</p>
+      </RegistryPageHead>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Decimals
-        </h2>
-        <p className="mt-2 font-mono text-sm">{token.decimals}</p>
-      </section>
+      <FactList
+        facts={[
+          ["Decimals", token.decimals],
+          ["Deployed on", chainCountLabel(token)],
+        ]}
+      />
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium uppercase tracking-[0.06em] text-w3-gray-500">
-          Deployments
-        </h2>
-        <ul className="mt-3 space-y-2">
-          {token.chains.map((d) => {
-            const chain = CHAINS.find((c) => c.chainId === d.chainId);
-            return (
-              <li key={d.chainId} className="rounded-lg border border-w3-border-subtle p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium">{chain?.name ?? `Chain ${d.chainId}`}</div>
-                  <CopyButton
-                    value={d.address}
-                    label={`${token.symbol} on ${chain?.name ?? d.chainId}`}
-                  />
-                </div>
-                <div className="mt-1 break-all font-mono text-[11px] text-w3-gray-700">
-                  {d.address}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
+      <RegistrySection title="Addresses">
+        <CopyRows
+          rows={token.chains.map((d) => ({
+            key: String(d.chainId),
+            label: chainName(d.chainId),
+            value: d.address,
+            action: (
+              <CopyButton value={d.address} label={`${token.symbol} on ${chainName(d.chainId)}`} />
+            ),
+          }))}
+        />
+      </RegistrySection>
+    </>
   );
 }

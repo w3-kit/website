@@ -8,11 +8,11 @@ export function CopyButton({ value, label }: { value: string; label?: string }) 
       type="button"
       aria-label={`Copy ${label ?? value}`}
       onClick={copy}
-      className={`inline-flex items-center gap-1.5 rounded border border-w3-border-subtle bg-w3-surface-elevated px-2 py-1 font-mono text-[11px] transition-colors hover:border-w3-accent ${
-        copied ? "text-w3-accent" : "text-w3-gray-700"
+      className={`inline-flex h-10 shrink-0 items-center gap-2 px-3 text-w3-small transition-colors hover:text-w3-ink ${
+        copied ? "text-w3-accent" : "text-w3-ink-soft"
       }`}
     >
-      {copied ? <Check size={11} /> : <Copy size={11} />}
+      {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
       {copied ? "Copied" : "Copy"}
     </button>
   );

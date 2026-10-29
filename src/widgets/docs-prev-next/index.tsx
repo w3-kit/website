@@ -1,47 +1,36 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { cn } from "../../shared/lib/utils";
 
-interface PrevNextProps {
-  prev?: { label: string; href: string };
-  next?: { label: string; href: string };
+interface Neighbour {
+  label: string;
+  href: string;
 }
 
-export function DocsPrevNext({ prev, next }: PrevNextProps) {
+export function DocsPrevNext({ prev, next }: { prev?: Neighbour; next?: Neighbour }) {
   return (
-    <div className="mt-16 flex items-stretch gap-4 border-t border-w3-border-subtle pt-8">
-      {prev ? (
-        <a
-          href={prev.href}
-          className="glass-bg group flex flex-1 items-center gap-3 rounded-xl p-4 transition-all hover:scale-[1.01]"
-        >
-          <ArrowLeft
-            size={16}
-            className="text-w3-gray-500 transition-transform group-hover:-translate-x-0.5"
-          />
-          <div className="flex flex-col">
-            <span className="text-xs text-w3-gray-500">Previous</span>
-            <span className="text-sm font-medium text-w3-gray-900">{prev.label}</span>
-          </div>
-        </a>
-      ) : (
-        <div className="flex-1" />
+    <nav aria-label="Previous and next" className="mt-24 grid gap-2 sm:grid-cols-2">
+      {prev && <NeighbourLink item={prev} direction="previous" />}
+      {next && <NeighbourLink item={next} direction="next" />}
+    </nav>
+  );
+}
+
+function NeighbourLink({ item, direction }: { item: Neighbour; direction: "previous" | "next" }) {
+  const isNext = direction === "next";
+  return (
+    <a
+      href={item.href}
+      className={cn(
+        "group flex flex-col gap-6 bg-w3-tone p-6 transition-colors hover:bg-w3-tone-2",
+        isNext && "sm:col-start-2 sm:items-end sm:text-right",
       )}
-      {next ? (
-        <a
-          href={next.href}
-          className="glass-bg group flex flex-1 items-center justify-end gap-3 rounded-xl p-4 text-right transition-all hover:scale-[1.01]"
-        >
-          <div className="flex flex-col">
-            <span className="text-xs text-w3-gray-500">Next</span>
-            <span className="text-sm font-medium text-w3-gray-900">{next.label}</span>
-          </div>
-          <ArrowRight
-            size={16}
-            className="text-w3-gray-500 transition-transform group-hover:translate-x-0.5"
-          />
-        </a>
-      ) : (
-        <div className="flex-1" />
-      )}
-    </div>
+    >
+      <span className="text-w3-small text-w3-ink-soft">{isNext ? "Next" : "Previous"}</span>
+      <span className="flex items-center gap-3 text-w3-body font-medium text-w3-ink group-hover:text-w3-accent">
+        {!isNext && <ArrowLeft size={18} aria-hidden />}
+        {item.label}
+        {isNext && <ArrowRight size={18} aria-hidden />}
+      </span>
+    </a>
   );
 }

@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Search, FileText, BookOpen, Code, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { searchDocs } from "../model/search-index";
 import { getSectionUrl } from "../../../shared/lib/urls";
 import { Dialog, DialogContent, DialogTitle } from "../../../shared/ui/dialog";
 
-const typeIcons: Record<string, React.ReactNode> = {
-  doc: <FileText size={14} />,
-  guide: <BookOpen size={14} />,
-  recipe: <Code size={14} />,
-};
-
 const typeLabels: Record<string, string> = {
-  doc: "Docs",
+  doc: "Doc",
   guide: "Guide",
   recipe: "Recipe",
 };
@@ -61,32 +55,40 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="top-[15%] max-w-[560px] translate-y-0 gap-0 overflow-hidden rounded-xl border-w3-border-subtle bg-w3-gray-100 p-0 shadow-[0_25px_50px_rgba(0,0,0,0.15)]"
+        className="top-[12%] max-w-[600px] translate-y-0 gap-0 overflow-hidden rounded-none border-0 bg-w3-ground p-0 shadow-[0_24px_64px_-16px_rgba(0,0,0,0.4)]"
       >
         <DialogTitle className="sr-only">Search documentation</DialogTitle>
 
         {/* Search input */}
-        <div className="flex items-center gap-3 border-b border-w3-border-subtle px-4 py-3">
-          <Search size={18} className="text-w3-gray-400" />
+        <div className="flex h-16 items-center gap-3 bg-w3-tone px-5">
+          <Search size={18} aria-hidden className="text-w3-ink-soft" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search documentation..."
-            className="flex-1 bg-transparent text-sm text-w3-gray-900 outline-none"
+            placeholder="Search the docs"
+            aria-label="Search the docs"
+            className="flex-1 bg-transparent text-w3-body text-w3-ink outline-none placeholder:text-w3-ink-soft"
           />
-          <button onClick={onClose} className="rounded p-1 transition-colors">
-            <X size={16} className="text-w3-gray-500" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close search"
+            className="p-2 text-w3-ink-soft hover:text-w3-ink"
+          >
+            <X size={18} aria-hidden />
           </button>
         </div>
 
         {/* Results */}
-        <div className="max-h-[400px] overflow-y-auto p-2">
+        <div className="max-h-[420px] overflow-y-auto py-2">
           {query && results.length === 0 && (
-            <div className="px-4 py-8 text-center">
-              <p className="text-sm text-w3-gray-500">No results for &ldquo;{query}&rdquo;</p>
+            <div className="px-5 py-6">
+              <p className="text-w3-small text-w3-ink-soft">
+                Nothing matches &ldquo;{query}&rdquo;.
+              </p>
             </div>
           )}
 
@@ -94,42 +96,26 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             <a
               key={item.href}
               href={`${getSectionUrl("docs")}${item.href.replace("/docs", "")}`}
-              className={`flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors ${
-                index === selectedIndex ? "bg-w3-surface-elevated" : ""
-              }`}
+              className={`block px-5 py-3 transition-colors ${index === selectedIndex ? "bg-w3-tone" : ""}`}
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={onClose}
             >
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-w3-accent-subtle text-w3-accent">
-                {typeIcons[item.type]}
+              <span className="flex items-baseline justify-between gap-4">
+                <span className="text-w3-body font-medium text-w3-ink">{item.title}</span>
+                <span className="text-w3-small text-w3-ink-soft">{typeLabels[item.type]}</span>
               </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-w3-gray-900">{item.title}</span>
-                  <span className="rounded bg-w3-surface-elevated px-1.5 py-0.5 text-[10px] font-medium text-w3-gray-500">
-                    {typeLabels[item.type]}
-                  </span>
-                </div>
-                <p className="mt-0.5 truncate text-xs text-w3-gray-500">{item.description}</p>
-              </div>
+              <span className="mt-0.5 block truncate text-w3-small text-w3-ink-soft">
+                {item.description}
+              </span>
             </a>
           ))}
 
           {!query && (
-            <div className="px-4 py-6 text-center">
-              <p className="text-sm text-w3-gray-500">Start typing to search...</p>
-            </div>
+            <p className="px-5 py-6 text-w3-small text-w3-ink-soft">
+              Type to search docs, guides and recipes. Arrow keys move, Enter opens.
+            </p>
           )}
         </div>
-
-        {/* Footer */}
-        {results.length > 0 && (
-          <div className="flex items-center gap-4 border-t border-w3-border-subtle px-4 py-2 font-mono text-[11px] text-w3-gray-500">
-            <span>&uarr;&darr; navigate</span>
-            <span>&crarr; select</span>
-            <span>esc close</span>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );

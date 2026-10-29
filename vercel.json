@@ -1,31 +1,30 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "rewrites": [
+  "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "ui.w3-kit.com" }],
-      "destination": "/ui/:path*"
+      "has": [{ "type": "host", "value": "www.w3-kit.com" }],
+      "destination": "https://w3-kit.com/:path*",
+      "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "docs.w3-kit.com" }],
-      "destination": "/docs/:path*"
+      "has": [{ "type": "host", "value": "(learn|design).w3-kit.com" }],
+      "destination": "https://w3-kit.com/",
+      "permanent": false
     },
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "registry.w3-kit.com" }],
-      "destination": "/registry/:path*"
+      "source": "/:section(ui|docs|registry)/:path*",
+      "has": [{ "type": "host", "value": "w3-kit.com" }],
+      "destination": "https://:section.w3-kit.com/:path*",
+      "permanent": true
     },
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "learn.w3-kit.com" }],
-      "destination": "/learn/:path*"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "design.w3-kit.com" }],
-      "destination": "/design/:path*"
+      "source": "/:section(ui|docs|registry)",
+      "has": [{ "type": "host", "value": "w3-kit.com" }],
+      "destination": "https://:section.w3-kit.com/",
+      "permanent": true
     }
   ]
 }

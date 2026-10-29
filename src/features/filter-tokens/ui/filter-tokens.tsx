@@ -1,4 +1,4 @@
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CHAINS } from "../../../entities/chain";
 import type { Token } from "../../../entities/token";
 
 export type TokenFilter = { chainId: number | null };
@@ -17,7 +17,7 @@ export function FilterTokens({
   onChange: (next: TokenFilter) => void;
 }) {
   return (
-    <label className="flex items-center gap-2 text-[12px] text-w3-gray-700">
+    <label className="flex items-center gap-3 text-w3-small text-w3-ink">
       <span>Filter by chain</span>
       <select
         aria-label="Filter by chain"
@@ -25,7 +25,7 @@ export function FilterTokens({
         onChange={(e) =>
           onChange({ chainId: e.target.value === "" ? null : Number(e.target.value) })
         }
-        className="rounded border border-w3-border-subtle bg-w3-surface-elevated px-2 py-1 text-[12px]"
+        className="h-11 bg-w3-tone px-3 text-w3-small text-w3-ink"
       >
         <option value="">All chains</option>
         {CHAINS.map((c) => (

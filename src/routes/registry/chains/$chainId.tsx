@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChainDetailPage } from "../../../pages/chain-detail";
-import { CHAINS } from "../../../entities/chain/model/chains.gen";
+import { CHAINS } from "../../../entities/chain";
 import { buildMeta } from "../../../shared/lib/seo";
 
 export const Route = createFileRoute("/registry/chains/$chainId")({

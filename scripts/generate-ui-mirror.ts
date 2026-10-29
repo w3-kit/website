@@ -74,6 +74,8 @@ function copyDir(srcRoot: string, slug: string) {
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     if (!entry.isFile()) continue;
     if (!/\.(ts|tsx)$/.test(entry.name)) continue;
+    // Storybook stories need @storybook/react, which the website does not install.
+    if (/\.stories\.tsx?$/.test(entry.name)) continue;
     const content = fs.readFileSync(path.join(src, entry.name), "utf-8");
     const transformed = BANNER + transform(content);
     fs.writeFileSync(path.join(dst, entry.name), transformed);

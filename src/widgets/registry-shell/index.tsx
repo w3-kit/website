@@ -1,8 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { RegistryHeader } from "./registry-header";
-import { RegistrySidebar } from "./registry-sidebar";
-import { RegistryFooter } from "./registry-footer";
+import { SiteShell } from "../site-chrome";
 import { RegistrySearch } from "../registry-search";
 
 export function RegistryShell() {
@@ -20,16 +18,11 @@ export function RegistryShell() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-w3-gray-100 text-w3-gray-900">
-      <RegistryHeader onOpenSearch={() => setSearchOpen(true)} />
-      <div className="flex">
-        <RegistrySidebar />
-        <main className="flex-1 px-6 py-8">
-          <Outlet />
-        </main>
+    <SiteShell section="registry" onSearch={() => setSearchOpen(true)}>
+      <div className="px-4 pb-24 pt-10 md:px-10 md:pb-40 md:pt-16">
+        <Outlet />
       </div>
-      <RegistryFooter />
       <RegistrySearch open={searchOpen} onClose={() => setSearchOpen(false)} />
-    </div>
+    </SiteShell>
   );
 }

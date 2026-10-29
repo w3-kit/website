@@ -1,279 +1,152 @@
 import { test, expect } from "@playwright/test";
 
-// Scroll to element and wait for GSAP reveal animation to complete
-async function scrollAndWait(page: import("@playwright/test").Page, selector: string) {
-  await page.locator(selector).scrollIntoViewIfNeeded();
-  await page.waitForTimeout(1000);
-}
-
-test.describe("Landing Page", () => {
+test.describe("Landing page", () => {
   test.beforeEach(async ({ page }) => {
-    // Disable animations for consistent testing
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "networkidle" });
   });
 
-  test("renders hero section with headline and CTAs", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "The Web3 Developer Toolkit" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Get Started" }).first()).toBeVisible();
-    await expect(page.getByText("npx w3-kit init").first()).toBeVisible();
+  test("first screen says what w3-kit is and offers the install command", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Web3 componentsfor React apps.",
+    );
+    await expect(page.getByRole("button", { name: /npx w3-kit init/ }).first()).toBeVisible();
   });
 
-  test("header shows logo and nav links", async ({ page }) => {
-    const header = page.locator("header");
-    await expect(header.getByText("w3-kit")).toBeVisible();
-    await expect(header.getByRole("link", { name: "UI", exact: true })).toBeVisible();
-    await expect(header.getByRole("link", { name: "Docs", exact: true })).toBeVisible();
-    await expect(header.getByRole("link", { name: "Registry", exact: true })).toBeVisible();
-    await expect(header.getByRole("link", { name: "Learn", exact: true })).toBeVisible();
+  test("the ecosystem switcher marks the current site and links the others", async ({ page }) => {
+    const header = page.getByRole("banner");
+    await expect(header.getByRole("navigation")).toHaveCount(0);
+    await header.getByRole("button", { name: "Ecosystem" }).click();
+    await expect(header.getByRole("link", { name: /^Registry/ })).toBeVisible();
+    await expect(header.locator('[aria-current="page"]')).toContainText("w3-kit");
   });
 
-  test("bento grid renders all 6 cells", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const bento = page.locator("#whats-inside");
-    await expect(bento.getByText("UI COMPONENTS")).toBeVisible();
-    await expect(bento.getByText("Smart Contract Scanner")).toBeVisible();
-    await expect(bento.getByText("Chain & token database")).toBeVisible();
-    await expect(bento.getByText("Three steps. That's it.")).toBeVisible();
-    await expect(bento.getByText("What do you need?")).toBeVisible();
-    await expect(bento.getByText("Learn by building")).toBeVisible();
-    await expect(bento.getByText("Built in the open")).toBeVisible();
+  test("an open header menu closes on Escape and on a click outside", async ({ page }) => {
+    const header = page.getByRole("banner");
+    const ecosystem = header.getByRole("button", { name: "Ecosystem" });
+
+    await ecosystem.click();
+    await page.keyboard.press("Escape");
+    await expect(ecosystem).toHaveAttribute("aria-expanded", "false");
+    await expect(ecosystem).toBeFocused();
+
+    await ecosystem.click();
+    await page.mouse.click(10, 700);
+    await expect(ecosystem).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("smart contract scanner accepts input and scans", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const input = page.getByPlaceholder("Enter contract address");
-    await input.fill("0xdAC17F958D2ee523a2206206994597C13D831ec7");
-    await page.waitForTimeout(300);
-    const scanBtn = page.getByRole("button", { name: "Scan Contract" });
-    await expect(scanBtn).toBeEnabled({ timeout: 3000 });
-    await scanBtn.click();
-    await expect(page.getByText("85").first()).toBeVisible({ timeout: 5000 });
+  test("confirming the waiting swap settles it", async ({ page }) => {
+    const states = page.locator("#states");
+    await states.getByRole("button", { name: "Confirm swap" }).click();
+    await expect(states.getByRole("button", { name: "Again" })).toBeVisible();
+    await expect(states.getByRole("button", { name: "Confirm swap" })).toHaveCount(0);
   });
 
-  test("registry tabs switch between chains and tokens", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const bento = page.locator("#whats-inside");
-    await expect(bento.getByText("Chains (14)")).toBeVisible();
-    await bento.getByText("Tokens (18)").click();
-    await expect(bento.getByText("tokens.USDC.").first()).toBeVisible();
+  test("chain tabs show that chain's tokens and follow the arrow keys", async ({ page }) => {
+    const tabs = page.getByRole("tablist", { name: "Chains" });
+    await tabs.getByRole("tab", { name: /Base/ }).click();
+    await expect(page.getByRole("tabpanel")).toContainText(/All \d+ tokens on Base/);
+    await page.keyboard.press("ArrowDown");
+    await expect(tabs.getByRole("tab", { name: /Arbitrum/ })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
   });
 
-  test("get started stepper advances through steps", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const bento = page.locator("#whats-inside");
-    const nextBtn = bento.getByRole("button", { name: "Next step" });
-    await nextBtn.click();
-    await nextBtn.click();
-    await expect(bento.getByRole("link", { name: "Start building" })).toBeVisible();
+  test("each workflow stage shows its own clause and CLI output", async ({ page }) => {
+    const workflow = page.locator("#workflow");
+    await workflow.getByRole("button", { name: "Chains" }).click();
+    await expect(workflow.getByRole("heading")).toHaveText("Look upany chain.");
+    await expect(workflow.getByText("npx w3-kit registry chain 8453")).toBeVisible();
   });
 
-  test("docs accordion expands and shows links", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const bento = page.locator("#whats-inside");
-    await bento.getByText("How do I get started?").click();
-    await expect(bento.getByText("Getting Started guide")).toBeVisible();
-  });
-
-  test("recipes checklist updates count", async ({ page }) => {
-    await scrollAndWait(page, "#whats-inside");
-    const bento = page.locator("#whats-inside");
-    await expect(bento.getByText("2/5")).toBeVisible();
-  });
-
-  test("ecosystem section shows tool cards", async ({ page }) => {
-    await scrollAndWait(page, "#ecosystem");
-    const ecosystem = page.locator("#ecosystem");
-    await expect(ecosystem.getByText("One toolkit. Five tools.")).toBeVisible();
-  });
-
-  test("ecosystem card click expands detail panel", async ({ page }) => {
-    await scrollAndWait(page, "#ecosystem");
-    const ecosystem = page.locator("#ecosystem");
-    await ecosystem.getByRole("button", { name: /UI/i }).first().click();
-    await expect(ecosystem.getByText("Explore components")).toBeVisible();
-  });
-
-  test("CTA section renders", async ({ page }) => {
-    const heading = page.getByRole("heading", { name: "Ready to build?" });
-    await heading.scrollIntoViewIfNeeded();
-    await expect(heading).toBeVisible();
-  });
-
-  test("footer renders with sections", async ({ page }) => {
-    const footer = page.locator("footer");
-    await footer.scrollIntoViewIfNeeded();
-    await expect(footer.getByText("Product")).toBeVisible();
-    await expect(footer.getByText("Community")).toBeVisible();
+  test("choosing the dark theme applies it and survives a reload", async ({ page }) => {
+    await page
+      .getByRole("group", { name: "Colour theme" })
+      .getByRole("button", { name: "Dark" })
+      .click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   });
 });
 
-test.describe("Recipe Previews section", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-  });
-
-  test("section renders with label and headline", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    await expect(section.getByText("04 — PREVIEW")).toBeVisible();
-    await expect(section.getByRole("heading", { name: /See it before you ship/i })).toBeVisible();
-  });
-
-  test("renders all snippet tabs with first selected", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    const tablist = section.getByRole("tablist");
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toBeVisible();
-    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toBeVisible();
-    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toBeVisible();
-    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toBeVisible();
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-  });
-
-  test("clicking a tab updates selection", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    const tablist = section.getByRole("tablist");
-
-    await tablist.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
-
-    await expect(tablist.getByRole("tab", { name: "Swap tokens via 1inch" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
-      "aria-selected",
-      "false"
-    );
-  });
-
-  test("active tab's code is visible in panel", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    const panel = section.getByRole("tabpanel");
-
-    await expect(panel).toContainText("ConnectWallet");
-
-    await section.getByRole("tab", { name: "Swap tokens via 1inch" }).click();
-    await expect(panel).toContainText("TokenSwap");
-  });
-
-  test("copy button writes active snippet code to clipboard", async ({ page, context }) => {
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-
-    await section.getByRole("button", { name: /copy code/i }).click();
-
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText).toContain("ConnectWallet");
-  });
-
-  test("try-it link points to docs subdomain recipe page", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-
-    const tryLink = section.getByRole("link", { name: /try it in docs/i });
-    await expect(tryLink).toHaveAttribute(
-      "href",
-      "http://docs.localhost:3000/recipe/connect-wallet"
-    );
-
-    await section.getByRole("tab", { name: "Mint an NFT" }).click();
-    await expect(tryLink).toHaveAttribute("href", "http://docs.localhost:3000/recipe/nft-mint");
-  });
-
-  test("respects prefers-reduced-motion (no clip animation)", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-
-    const reveal = section.locator("[data-typewriter]");
-    await expect(reveal).toHaveAttribute("data-typewriter", "static");
-  });
-
-  test("only active tab is in the tab order", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    const tablist = section.getByRole("tablist");
-
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
-      "tabindex",
-      "0"
-    );
-    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
-      "tabindex",
-      "-1"
-    );
-    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
-      "tabindex",
-      "-1"
-    );
-  });
-
-  test("arrow keys navigate between tabs with wrap-around", async ({ page }) => {
-    const section = page.locator("#preview");
-    await section.scrollIntoViewIfNeeded();
-    const tablist = section.getByRole("tablist");
-
-    await tablist.getByRole("tab", { name: "Connect a wallet" }).focus();
-
-    await page.keyboard.press("ArrowDown");
-    await expect(tablist.getByRole("tab", { name: "Show token balances" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-
-    await page.keyboard.press("End");
-    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-
-    await page.keyboard.press("ArrowDown");
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-
-    await page.keyboard.press("ArrowUp");
-    await expect(tablist.getByRole("tab", { name: "Mint an NFT" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-
-    await page.keyboard.press("Home");
-    await expect(tablist.getByRole("tab", { name: "Connect a wallet" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
+test.describe("Design reference", () => {
+  test("is reachable but not linked from the main site", async ({ page }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+    await expect(page.locator('a[href$="/design"]')).toHaveCount(0);
+    await page.goto("/design");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("The w3-kit design");
   });
 });
 
-test.describe("Subdomain Routing", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
+test.describe("Subdomain routing", () => {
+  test("each section serves its own site at a clean path", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/token-swap");
+    await expect(page).toHaveURL("http://ui.localhost:3000/token-swap");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Token Swap");
+
+    await page.goto("http://registry.localhost:3000/chains/8453");
+    await expect(page).toHaveURL("http://registry.localhost:3000/chains/8453");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Base");
+
+    await page.goto("http://docs.localhost:3000/installation");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Installation");
   });
 
-  test("ui subdomain serves under-construction page", async ({ page }) => {
-    await page.goto("http://ui.localhost:3000");
-    await expect(page.getByRole("heading", { name: "UI Library" })).toBeVisible();
-    await expect(page.getByText("Under Construction")).toBeVisible();
+  test("the subdomain root does not redirect to its internal folder", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/");
+    await expect(page).toHaveURL("http://ui.localhost:3000/");
   });
 
-  test("docs subdomain serves under-construction page", async ({ page }) => {
-    await page.goto("http://docs.localhost:3000");
-    await expect(page.getByRole("heading", { name: "Documentation" })).toBeVisible();
-    await expect(page.getByText("Under Construction")).toBeVisible();
+  test("old guide pages on the components site move to docs", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/mcp");
+    await expect(page).toHaveURL("http://docs.localhost:3000/mcp");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("MCP Server");
+  });
+});
+
+test.describe("Components catalog", () => {
+  test("the DeFi header menu opens the catalog filtered to DeFi", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/", { waitUntil: "networkidle" });
+    await page.getByRole("banner").getByRole("button", { name: "DeFi" }).click();
+    await page.getByRole("link", { name: "Open DeFi" }).click();
+    await expect(page).toHaveURL("http://ui.localhost:3000/?category=defi");
+
+    const tab = page
+      .getByRole("navigation", { name: "Categories" })
+      .locator('[aria-current="page"]');
+    const shown = Number((await tab.textContent())?.match(/\d+/)?.[0]);
+    const tiles = page.getByRole("list", { name: "Components" }).locator(":scope > li");
+    await expect(tiles).toHaveCount(shown);
   });
 
-  test("learn subdomain serves under-construction page", async ({ page }) => {
-    await page.goto("http://learn.localhost:3000");
-    await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
-    await expect(page.getByText("Under Construction")).toBeVisible();
+  test("an unknown category shows every component", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/?category=nope");
+    const all = page
+      .getByRole("navigation", { name: "Categories" })
+      .getByRole("link", { name: /^All/ });
+    await expect(all).toHaveAttribute("aria-current", "page");
+  });
+
+  test("an unknown component says so and links back to the catalog", async ({ page }) => {
+    await page.goto("http://ui.localhost:3000/no-such-thing");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "No componentcalled no-such-thing.",
+    );
+    await expect(page.getByRole("link", { name: "All components" })).toBeVisible();
+  });
+});
+
+test.describe("Docs recipes", () => {
+  test("a recipe for both ecosystems switches its code between them", async ({ page }) => {
+    await page.goto("http://docs.localhost:3000/recipe/swap-tokens", { waitUntil: "networkidle" });
+    const tabs = page.getByRole("tablist", { name: "Chain" });
+    await tabs.getByRole("tab", { name: "Solana" }).click();
+    await expect(tabs.getByRole("tab", { name: "Solana" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(page.getByText("swap-tokens/solana.tsx")).toBeVisible();
   });
 });
