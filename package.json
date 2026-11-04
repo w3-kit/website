@@ -26,7 +26,7 @@
     "fuse.js": "^7.4.1",
     "geist": "^1.7.0",
     "lucide-react": "^1.7.0",
-    "nitro": "^3.0.260311-beta",
+    "nitro": "^3.0.260429-beta",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-markdown": "^10.1.0",
@@ -40,7 +40,8 @@
   },
   "overrides": {
     "h3": "2.0.1-rc.20",
-    "h3-v2": "npm:h3@2.0.1-rc.20"
+    "h3-v2": "npm:h3@2.0.1-rc.20",
+    "minimatch": "^11.0.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
@@ -52,6 +53,6 @@
     "prettier": "^3.8.3",
     "tsx": "^4.22.4",
     "typescript": "^5.8.3",
-    "vite": "^7.3.2"
+    "vite": "^7.3.7"
   }
 }
