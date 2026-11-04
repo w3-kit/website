@@ -3,18 +3,6 @@
   "framework": null,
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.w3-kit.com" }],
-      "destination": "https://w3-kit.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "(learn|design).w3-kit.com" }],
-      "destination": "https://w3-kit.com/",
-      "permanent": false
-    },
-    {
       "source": "/:section(ui|docs|registry)/:path*",
       "has": [{ "type": "host", "value": "w3-kit.com" }],
       "destination": "https://:section.w3-kit.com/:path*",
