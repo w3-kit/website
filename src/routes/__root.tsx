@@ -1,4 +1,5 @@
 import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import type { ReactNode } from "react";
 import "../shared/styles/tokens.css";
@@ -51,6 +52,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body>
         {children}
+        <Analytics />
         <SpeedInsights />
         <Scripts />
       </body>
