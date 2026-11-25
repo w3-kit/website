@@ -81,6 +81,12 @@ function Hero() {
           file is yours to change.
         </p>
         <CopyCommand command={command} />
+        <Link
+          to="/ui/endless"
+          className="inline-flex h-11 items-center gap-2 text-w3-small font-medium text-w3-ink transition-colors hover:text-w3-accent"
+        >
+          Or generate endless components <ArrowRight size={16} aria-hidden />
+        </Link>
       </div>
     </section>
   );

@@ -2,6 +2,8 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  // tests/unit holds *.test.ts files for the Node test runner (npm test).
+  testMatch: "**/*.spec.ts",
   timeout: 30000,
   use: {
     baseURL: "http://localhost:3000",

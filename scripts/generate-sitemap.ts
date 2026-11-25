@@ -72,6 +72,7 @@ async function main() {
   urls.push(subUrl("registry", "/api"));
   urls.push(subUrl("docs", "/"));
   urls.push(subUrl("ui", "/"));
+  urls.push(subUrl("ui", "/endless"));
 
   for (const c of chains) urls.push(subUrl("registry", `/chains/${c.chainId}`));
   for (const t of tokens) urls.push(subUrl("registry", `/tokens/${t.symbol}`));

@@ -215,7 +215,7 @@ export const SITE_NAV: Record<Section, SiteNav> = {
   ui: {
     name: "Components",
     home: ui,
-    items: categoryMenus,
+    items: [...categoryMenus, { label: "Endless", href: `${ui}/endless` }],
     footer: COMPONENT_CATEGORIES.map(({ value, label }) => ({
       title: label,
       links: componentLinks(value),
