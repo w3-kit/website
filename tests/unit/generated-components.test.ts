@@ -214,6 +214,13 @@ test("a sample slider value sits on its step, so the preview and the prompt agre
   }
 });
 
+test("quick amounts only appear where there is an amount field to fill", () => {
+  for (const component of COMPONENTS) {
+    const names = partNames(component);
+    if (names.includes("quickAmounts")) assert.ok(names.includes("amount"), names.join(" > "));
+  }
+});
+
 test("a footer below a list counts the list", () => {
   for (const component of COMPONENTS) {
     const list = component.parts.find((part) => "rows" in part && part.name.startsWith("list"));

@@ -117,7 +117,8 @@ export const PARTS: Record<PartName, PartRule> = {
     rows: 2,
     weight: 2,
     families: ["wallet"],
-    next: ["amount", "quickAmounts", ...DETAILS, "notice", "button"],
+    // Quick amounts fill an amount field, so they only follow one.
+    next: ["amount", ...DETAILS, "notice", "button"],
   },
   amount: {
     rows: 2,
