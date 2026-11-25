@@ -19,10 +19,12 @@ import { cn } from "../../../shared/lib/utils";
 import {
   amountProblem,
   filterRows,
-  parseAmount,
+  findPart,
+  flipped,
   quoteFor,
   shareOf,
-  type TryState,
+  tradeOf,
+  type Trade,
 } from "../model/try-rules";
 
 /**
@@ -30,16 +32,23 @@ import {
  * Parts without controls draw exactly as in the grid. Nothing is sent anywhere.
  */
 export function TryCard({ component }: { component: GeneratedComponent }) {
-  const [state, setState] = useState(() => initialState(component.parts));
-  const context = useMemo(
-    () => ({
-      component,
-      state,
-      trade: tradeOf(component.parts),
-      update: (change: Partial<TryState>) => setState((current) => ({ ...current, ...change })),
-    }),
-    [component, state],
-  );
+  const [query, setQuery] = useState("");
+  const [amount, setAmount] = useState(() => findPart(component.parts, "amount")?.value ?? "");
+  const [isFlipped, setFlipped] = useState(false);
+  const sample = useMemo(() => tradeOf(component.parts), [component]);
+  const trade = sample && isFlipped ? flipped(sample) : sample;
+  const amountId = useId();
+  const context: TryContextValue = {
+    component,
+    amountId,
+    query,
+    setQuery,
+    amount,
+    setAmount,
+    trade,
+    problem: trade && amountProblem(amount, trade.pay.balance),
+    flip: () => setFlipped(!isFlipped),
+  };
   return (
     <TryContext value={context}>
       <CardFrame component={component}>
@@ -56,20 +65,23 @@ function TryPart({ part }: { part: Part }) {
   return View ? <View part={part} /> : <PartView part={part} />;
 }
 
-// ── State shared by the parts of one component ──────────────────────────────
-
-interface Trade {
-  pay: string;
-  receive: string;
-  /** Received per paid token, from the sample pair. */
-  rate: number;
-}
+// ── State that more than one part reads ─────────────────────────────────────
 
 interface TryContextValue {
   component: GeneratedComponent;
-  state: TryState;
-  trade: Trade;
-  update: (change: Partial<TryState>) => void;
+  /** The amount input, so the button can send focus to it when the amount needs fixing. */
+  amountId: string;
+  /** The search field filters the list below it. */
+  query: string;
+  setQuery: (query: string) => void;
+  /** Quick amounts fill it, the quote follows it, the button checks it. */
+  amount: string;
+  setAmount: (amount: string) => void;
+  /** As the user sees it now: the flip button swaps its sides. */
+  trade: Trade | undefined;
+  /** Why the amount cannot be sent, as how to fix it. */
+  problem: string | undefined;
+  flip: () => void;
 }
 
 const TryContext = createContext<TryContextValue | null>(null);
@@ -80,28 +92,6 @@ function useTry(): TryContextValue {
   return context;
 }
 
-function find<K extends PartName>(parts: readonly Part[], name: K): PartOf<K> | undefined {
-  return parts.find((part): part is PartOf<K> => part.name === name);
-}
-
-function initialState(parts: readonly Part[]): TryState {
-  return {
-    tab: find(parts, "tabs")?.options[0] ?? "",
-    query: "",
-    amount: find(parts, "amount")?.value ?? "",
-    flipped: false,
-    slider: find(parts, "slider")?.value ?? 0,
-    recipient: find(parts, "recipient")?.address ?? "",
-  };
-}
-
-function tradeOf(parts: readonly Part[]): Trade {
-  const amount = find(parts, "amount");
-  const result = find(parts, "result");
-  const rate = amount && result ? parseAmount(result.value) / parseAmount(amount.value) : 1;
-  return { pay: amount?.symbol ?? "", receive: result?.symbol ?? "", rate };
-}
-
 // ── Parts with working controls ─────────────────────────────────────────────
 
 const FIELD_INPUT =
@@ -109,14 +99,14 @@ const FIELD_INPUT =
 /** The ring token measures below 3:1 in light mode, so focus is drawn in the text colour. */
 const FOCUS_WITHIN = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-foreground";
 const FOCUS = "outline-foreground focus-visible:outline-2 focus-visible:outline-offset-2";
-const PRESS = "transition-transform motion-safe:enabled:active:scale-[0.96]";
+const PRESS = "transition-transform motion-safe:active:scale-[0.96]";
 const BUSY_MS = 1200;
 
+/** Tabs stand in for views the agent builds; here they only show the keyboard behaviour. */
 function TryTabs({ part }: { part: PartOf<"tabs"> }) {
-  const { state, update } = useTry();
   return (
     <PartRow name="tabs">
-      <Tabs.Root value={state.tab} onValueChange={(tab) => update({ tab: String(tab) })}>
+      <Tabs.Root defaultValue={part.options[0]}>
         <Tabs.List aria-label="View" className="flex gap-1">
           {part.options.map((option) => (
             <Tabs.Tab
@@ -138,7 +128,7 @@ function TryTabs({ part }: { part: PartOf<"tabs"> }) {
 }
 
 function TrySearch({ part }: { part: PartOf<"search"> }) {
-  const { state, update } = useTry();
+  const { query, setQuery } = useTry();
   return (
     <PartRow name="search">
       <label
@@ -152,8 +142,8 @@ function TrySearch({ part }: { part: PartOf<"search"> }) {
           type="search"
           aria-label="Search"
           placeholder={part.placeholder}
-          value={state.query}
-          onChange={(event) => update({ query: event.target.value })}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
           className={cn(FIELD_INPUT, "text-base text-foreground sm:text-sm")}
         />
       </label>
@@ -162,43 +152,48 @@ function TrySearch({ part }: { part: PartOf<"search"> }) {
 }
 
 function TryList({ part }: { part: PartOf<"list2" | "list3" | "list4"> }) {
-  const { component, state } = useTry();
-  const rows = filterRows(part.rows, state.query);
+  const { component, query } = useTry();
+  const rows = filterRows(part.rows, query);
+  const empty = `No ${FAMILIES[component.family].items} match “${query}”. Try a shorter search.`;
   return (
     <PartRow
       name={part.name}
       className="grid items-stretch gap-0"
       style={{ gridTemplateRows: `repeat(${part.rows.length}, minmax(0, 1fr))` }}
     >
-      {rows.length ? (
-        rows.map((row) => <ListItem key={row.title} row={row} />)
-      ) : (
-        <p role="status" className="row-span-full self-center text-center text-muted-foreground">
-          No {FAMILIES[component.family].items} match “{state.query}”. Try a shorter search.
-        </p>
-      )}
+      {rows.map((row) => (
+        <ListItem key={row.title} row={row} />
+      ))}
+      {/* Always on the page, so screen readers announce it when its text changes. */}
+      <p
+        role="status"
+        className={
+          rows.length ? "sr-only" : "row-span-full self-center text-center text-muted-foreground"
+        }
+      >
+        {rows.length ? "" : empty}
+      </p>
     </PartRow>
   );
 }
 
 function TryAmount({ part }: { part: PartOf<"amount"> }) {
-  const { state, trade, update } = useTry();
-  const id = useId();
-  const problem = amountProblem(state.amount, part.balance);
+  const { amountId: id, amount, setAmount, trade, problem } = useTry();
+  const balance = trade?.pay.balance ?? part.balance;
   return (
     <AmountField
       name="amount"
       label={<label htmlFor={id}>Amount</label>}
-      hint={<span id={`${id}-hint`}>{problem ?? `Balance ${part.balance}`}</span>}
-      symbol={state.flipped ? trade.receive : trade.pay}
+      hint={<span id={`${id}-hint`}>{problem ?? `Balance ${balance}`}</span>}
+      symbol={trade?.pay.symbol ?? part.symbol}
       className={FOCUS_WITHIN}
       value={
         <input
           id={id}
           inputMode="decimal"
           autoComplete="off"
-          value={state.amount}
-          onChange={(event) => update({ amount: event.target.value })}
+          value={amount}
+          onChange={(event) => setAmount(event.target.value)}
           aria-invalid={problem !== undefined}
           aria-describedby={`${id}-hint`}
           className={cn(FIELD_INPUT, "text-xl font-medium")}
@@ -209,13 +204,13 @@ function TryAmount({ part }: { part: PartOf<"amount"> }) {
 }
 
 function TryFlip() {
-  const { state, update } = useTry();
+  const { flip } = useTry();
   return (
     <PartRow name="flip" className="justify-center">
       <button
         type="button"
         aria-label="Swap the two tokens"
-        onClick={() => update({ flipped: !state.flipped })}
+        onClick={flip}
         className={cn(
           "grid size-8 place-items-center rounded-full border border-border",
           FOCUS,
@@ -228,31 +223,28 @@ function TryFlip() {
   );
 }
 
-function TryResult() {
-  const { state, trade } = useTry();
-  const rate = state.flipped ? 1 / trade.rate : trade.rate;
+function TryResult({ part }: { part: PartOf<"result"> }) {
+  const { amount, trade } = useTry();
   return (
     <AmountField
       name="result"
       label="You receive"
       hint="Estimated"
-      value={<output>{quoteFor(state.amount, rate)}</output>}
-      symbol={state.flipped ? trade.pay : trade.receive}
+      value={<output>{trade ? quoteFor(amount, trade.rate) : part.value}</output>}
+      symbol={trade?.receive.symbol ?? part.symbol}
     />
   );
 }
 
 function TryQuickAmounts() {
-  const { component, update } = useTry();
-  const balance = component.parts.find((part) => part.name === "amount")?.balance;
+  const { trade, setAmount } = useTry();
   return (
     <PartRow name="quickAmounts">
       {QUICK_AMOUNTS.map(({ label, percent }) => (
         <button
           key={label}
           type="button"
-          disabled={!balance}
-          onClick={() => balance && update({ amount: shareOf(balance, percent) })}
+          onClick={() => trade && setAmount(shareOf(trade.pay.balance, percent))}
           className={cn(
             "flex-1 rounded-lg border border-border py-1.5 text-center text-xs font-medium tabular-nums",
             FOCUS,
@@ -267,23 +259,20 @@ function TryQuickAmounts() {
 }
 
 function TrySlider({ part }: { part: PartOf<"slider"> }) {
-  const { state, update } = useTry();
   return (
-    <PartRow name="slider" className="flex-col items-stretch justify-center gap-2.5">
+    <PartRow name="slider" className="flex-col items-stretch justify-center">
       <Slider.Root
-        value={state.slider}
+        defaultValue={part.value}
         min={0}
         max={part.max}
-        step={part.max > 10 ? 1 : 0.1}
-        onValueChange={(value) => update({ slider: Number(value) })}
+        step={part.step}
         className="flex flex-col gap-2.5"
       >
         <div className="flex justify-between gap-2">
           <Slider.Label className="truncate text-muted-foreground">{part.label}</Slider.Label>
-          <span className="shrink-0 font-medium tabular-nums">
-            {state.slider}
-            {part.unit}
-          </span>
+          <Slider.Value className="shrink-0 font-medium tabular-nums">
+            {(_formatted, [value]) => `${value}${part.unit}`}
+          </Slider.Value>
         </div>
         <Slider.Control className="flex h-4 items-center">
           <Slider.Track className="relative h-1.5 w-full rounded-full bg-muted">
@@ -299,8 +288,7 @@ function TrySlider({ part }: { part: PartOf<"slider"> }) {
   );
 }
 
-function TryRecipient() {
-  const { state, update } = useTry();
+function TryRecipient({ part }: { part: PartOf<"recipient"> }) {
   const id = useId();
   return (
     <PartRow name="recipient" className="flex-col items-stretch justify-center gap-1.5">
@@ -312,8 +300,7 @@ function TryRecipient() {
         autoComplete="off"
         spellCheck={false}
         placeholder="vitalik.eth or 0x…"
-        value={state.recipient}
-        onChange={(event) => update({ recipient: event.target.value })}
+        defaultValue={part.address}
         className={cn(
           "rounded-xl border border-border bg-transparent px-3 py-2 text-base tabular-nums",
           FOCUS,
@@ -324,10 +311,15 @@ function TryRecipient() {
 }
 
 function TryButton({ part }: { part: PartOf<"button"> }) {
-  const { component, state } = useTry();
+  const { amountId, problem } = useTry();
   const [busy, setBusy] = useState(false);
-  const balance = component.parts.find((p) => p.name === "amount")?.balance;
-  const blocked = balance !== undefined && amountProblem(state.amount, balance) !== undefined;
+  const ready = !busy && problem === undefined;
+
+  function submit() {
+    // Stay enabled while the amount is wrong, and take the user to the field that says why.
+    if (problem !== undefined) document.getElementById(amountId)?.focus();
+    else if (!busy) setBusy(true);
+  }
 
   useEffect(() => {
     if (!busy) return;
@@ -340,11 +332,12 @@ function TryButton({ part }: { part: PartOf<"button"> }) {
       <button
         type="button"
         aria-disabled={busy}
-        onClick={() => !busy && !blocked && setBusy(true)}
+        onClick={submit}
         className={cn(
           "inline-flex flex-1 items-center justify-center gap-2 truncate rounded-xl bg-primary px-3 py-2.5 font-medium text-primary-foreground",
           FOCUS,
-          PRESS,
+          // Only a press that starts something animates.
+          ready && PRESS,
         )}
       >
         {busy && <LoaderCircle size={16} aria-hidden className="motion-safe:animate-spin" />}

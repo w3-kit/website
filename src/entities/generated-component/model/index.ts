@@ -1,4 +1,4 @@
-export { FAMILIES, type Family, type FamilyId, type ListRow } from "./families";
+export { FAMILIES, TWO_DECIMALS, type Family, type FamilyId, type ListRow } from "./families";
 export { CLOSERS, OPENER, PARTS, PART_NAMES, type Part, type PartName, type PartOf } from "./parts";
 export {
   CHUNK_ROWS,

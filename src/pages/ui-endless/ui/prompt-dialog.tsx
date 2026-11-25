@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import { Check, Copy, X } from "lucide-react";
 import {
   NARROW_CARD_WIDTH,
@@ -64,14 +64,14 @@ function PromptContent({ component }: { component: GeneratedComponent }) {
         </DialogClose>
       </div>
       {/* One scroll for both on a phone; side by side, each scrolls on its own. */}
-      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto overscroll-contain px-6 md:flex-row md:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto overscroll-contain px-6 lg:flex-row lg:overflow-hidden">
         <TryPanel component={component} />
         {/* Focusable, so the keyboard can scroll it. */}
         <pre
           tabIndex={0}
           role="region"
           aria-label={`Prompt for ${component.name}`}
-          className="bg-w3-tone p-4 text-[13px] leading-relaxed whitespace-pre-wrap -outline-offset-2 outline-w3-accent focus-visible:outline-2 md:min-h-0 md:flex-1 md:overflow-auto md:overscroll-contain"
+          className="bg-w3-tone p-4 text-[13px] leading-relaxed whitespace-pre-wrap -outline-offset-2 outline-w3-accent focus-visible:outline-2 lg:min-h-0 lg:flex-1 lg:overflow-auto lg:overscroll-contain"
         >
           {prompt}
         </pre>
@@ -98,14 +98,15 @@ const TRY_ROW_PX = 52;
 const TRY_WIDTH_PX = { narrow: 360, wide: 520 };
 
 function TryPanel({ component }: { component: GeneratedComponent }) {
+  const titleId = useId();
   const width = component.w > NARROW_CARD_WIDTH ? TRY_WIDTH_PX.wide : TRY_WIDTH_PX.narrow;
   return (
     <section
-      aria-labelledby="try-title"
-      className="flex shrink-0 flex-col gap-4 bg-w3-tone p-6 md:overflow-y-auto md:overscroll-contain"
+      aria-labelledby={titleId}
+      className="flex shrink-0 flex-col gap-4 bg-w3-tone p-6 lg:overflow-y-auto lg:overscroll-contain"
     >
       <div>
-        <h3 id="try-title" className="text-w3-body font-medium">
+        <h3 id={titleId} className="text-w3-body font-medium">
           Try it
         </h3>
         <p className="text-w3-small text-w3-ink-soft">The controls work. Nothing is sent.</p>

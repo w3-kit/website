@@ -305,9 +305,9 @@ const DESCRIBERS: { [K in PartName]: (part: PartOf<K>, brief: Brief) => void } =
     brief.lines.push('Quick amounts: four outlined buttons "25%", "50%", "75%", "Max".');
     brief.props.set("onPercent", "(percent: 25 | 50 | 75 | 100) => void");
   },
-  slider({ label, prop, value, max, unit }, brief) {
+  slider({ label, prop, value, max, step, unit }, brief) {
     brief.lines.push(
-      `Slider: label "${label}", current value "${value}${unit}", range 0 to ${max}${unit}.`,
+      `Slider: label "${label}", current value "${value}${unit}", range 0 to ${max}${unit} in steps of ${step}.`,
     );
     brief.props.set(prop, "number").set(`on${capitalised(prop)}Change`, "(value: number) => void");
     brief.sample[prop] = value;

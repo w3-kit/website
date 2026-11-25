@@ -1,23 +1,68 @@
-import type { ListRow } from "../../../entities/generated-component";
+import {
+  TWO_DECIMALS,
+  type ListRow,
+  type Part,
+  type PartName,
+  type PartOf,
+} from "../../../entities/generated-component";
 
-/** What a user can change while trying a generated component. Nothing leaves the page. */
-export interface TryState {
-  tab: string;
-  query: string;
-  amount: string;
-  /** The two tokens of a swap trade places when the flip button is pressed. */
-  flipped: boolean;
-  slider: number;
-  recipient: string;
+/** One side of a trade: the token, and the balance the amount is checked against. */
+export interface TradeSide {
+  symbol: string;
+  balance: string;
 }
 
-const TWO_DECIMALS = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
+/** The sample trade of a component. Without an amount part there is nothing to trade. */
+export interface Trade {
+  pay: TradeSide;
+  receive: TradeSide;
+  /** Received per paid token. */
+  rate: number;
+}
+
 const DECIMAL = /^\d*\.?\d*$/;
+/** Used when the sample pair gives no usable rate, such as an amount of 0.00. */
+const FALLBACK_RATE = 1;
 
 /** "1,234.50" to 1234.5. Sample values carry thousands separators. */
 export const parseAmount = (text: string) => Number(text.replaceAll(",", ""));
 
 const formatAmount = (value: number) => value.toLocaleString("en", TWO_DECIMALS);
+
+export function findPart<K extends PartName>(
+  parts: readonly Part[],
+  name: K,
+): PartOf<K> | undefined {
+  return parts.find((part): part is PartOf<K> => part.name === name);
+}
+
+/**
+ * The trade a component samples. The rate comes from the sample pair, so the preview stays
+ * consistent without a price feed. The receive side's balance is worth the same as the pay side's,
+ * so a flipped trade is checked against a believable balance.
+ */
+export function tradeOf(parts: readonly Part[]): Trade | undefined {
+  const amount = findPart(parts, "amount");
+  if (!amount) return undefined;
+  const result = findPart(parts, "result");
+  const sampled = result ? parseAmount(result.value) / parseAmount(amount.value) : FALLBACK_RATE;
+  const rate = Number.isFinite(sampled) && sampled > 0 ? sampled : FALLBACK_RATE;
+  return {
+    pay: { symbol: amount.symbol, balance: amount.balance },
+    receive: {
+      symbol: result?.symbol ?? amount.symbol,
+      balance: formatAmount(parseAmount(amount.balance) * rate),
+    },
+    rate,
+  };
+}
+
+/** The trade as the user sees it after pressing the flip button an odd number of times. */
+export const flipped = ({ pay, receive, rate }: Trade): Trade => ({
+  pay: receive,
+  receive: pay,
+  rate: 1 / rate,
+});
 
 /** Rows whose title or subtitle contain the query, ignoring case. An empty query keeps every row. */
 export function filterRows(rows: readonly ListRow[], query: string): ListRow[] {
@@ -39,10 +84,7 @@ export function amountProblem(amount: string, balance: string): string | undefin
 export const shareOf = (balance: string, percent: number) =>
   formatAmount((parseAmount(balance) * percent) / 100);
 
-/**
- * What the other side of a trade receives at the sample rate. The rate comes from the sample pair,
- * so the preview stays consistent without a price feed.
- */
+/** What the other side of a trade receives for the typed amount. A bad amount quotes zero. */
 export function quoteFor(amount: string, rate: number): string {
   const value = parseAmount(amount);
   return Number.isFinite(value) ? formatAmount(value * rate) : formatAmount(0);

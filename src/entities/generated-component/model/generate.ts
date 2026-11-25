@@ -330,7 +330,10 @@ const MAKERS: { [K in PartName]: (copy: SampleCopy) => PartData[K] } = {
   slider: ({ rng, family }) => {
     const { label, prop, max, unit } = familyCopy(family, "slider");
     const percent = Math.round(10 + rng() * 80);
-    return { label, prop, max, unit, percent, value: +((max * percent) / 100).toFixed(1) };
+    // Whole steps on long ranges (days), tenths on short ones (percent).
+    const step = max > 10 ? 1 : 0.1;
+    const value = +(Math.round((max * percent) / 100 / step) * step).toFixed(1);
+    return { label, prop, max, step, unit, percent, value };
   },
   statGrid: (copy) => ({ stats: details(copy, 3).rows }),
   progress: ({ rng, family }) => ({

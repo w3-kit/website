@@ -203,6 +203,17 @@ test("a sample amount never exceeds the sample balance", () => {
   }
 });
 
+test("a sample slider value sits on its step, so the preview and the prompt agree", () => {
+  for (const component of COMPONENTS) {
+    for (const part of component.parts) {
+      if (part.name !== "slider") continue;
+      const steps = part.value / part.step;
+      assert.ok(Math.abs(steps - Math.round(steps)) < 1e-9, `${component.id}: ${part.value}`);
+      assert.ok(part.value >= 0 && part.value <= part.max, `${component.id}: ${part.value}`);
+    }
+  }
+});
+
 test("a footer below a list counts the list", () => {
   for (const component of COMPONENTS) {
     const list = component.parts.find((part) => "rows" in part && part.name.startsWith("list"));

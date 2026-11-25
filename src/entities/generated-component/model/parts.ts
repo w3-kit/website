@@ -26,6 +26,7 @@ export interface PartData {
     prop: string;
     value: number;
     max: number;
+    step: number;
     unit: string;
     percent: number;
   };

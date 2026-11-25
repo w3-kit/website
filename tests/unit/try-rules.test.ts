@@ -1,13 +1,15 @@
 /** How a generated component behaves while it is tried in the prompt dialog. Run with: npm test */
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ListRow } from "../../src/entities/generated-component/model";
+import type { ListRow, Part } from "../../src/entities/generated-component/model";
 import {
   amountProblem,
   filterRows,
+  flipped,
   parseAmount,
   quoteFor,
   shareOf,
+  tradeOf,
 } from "../../src/features/try-component/model/try-rules";
 
 const row = (title: string, subtitle: string): ListRow => ({
@@ -59,4 +61,45 @@ test("the quote follows the amount at the sample rate, and a bad amount quotes z
   assert.equal(quoteFor("2", 1500), "3,000.00");
   assert.equal(quoteFor("", 1500), "0.00");
   assert.equal(quoteFor("abc", 1500), "0.00");
+});
+
+const amount = (value: string, balance = "10.00"): Part => ({
+  name: "amount",
+  value,
+  symbol: "ETH",
+  balance,
+  tokens: ["ETH", "USDC"],
+});
+const result = (value: string): Part => ({ name: "result", value, symbol: "USDC" });
+
+test("a component without an amount has no trade", () => {
+  assert.equal(tradeOf([]), undefined);
+  assert.equal(tradeOf([result("10.00")]), undefined);
+});
+
+test("the trade rate comes from the sample pair, and the receive balance is worth the same", () => {
+  const trade = tradeOf([amount("2.00"), result("3,000.00")])!;
+  assert.equal(trade.rate, 1500);
+  assert.deepEqual(trade.pay, { symbol: "ETH", balance: "10.00" });
+  assert.deepEqual(trade.receive, { symbol: "USDC", balance: "15,000.00" });
+});
+
+test("a sample amount of zero falls back to an even rate, never infinity", () => {
+  const trade = tradeOf([amount("0.00"), result("3,000.00")])!;
+  assert.equal(trade.rate, 1);
+  assert.equal(quoteFor("2", trade.rate), "2.00");
+});
+
+test("an amount with no result trades the token for itself", () => {
+  const trade = tradeOf([amount("2.00")])!;
+  assert.equal(trade.rate, 1);
+  assert.deepEqual(trade.receive, trade.pay);
+});
+
+test("flipping swaps the sides and inverts the rate, and flipping back restores it", () => {
+  const trade = tradeOf([amount("2.00"), result("3,000.00")])!;
+  const once = flipped(trade);
+  assert.deepEqual(once.pay, trade.receive);
+  assert.equal(quoteFor("1,500", once.rate), "1.00");
+  assert.deepEqual(flipped(once), trade);
 });
