@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const ENDLESS = "http://ui.localhost:3000/endless";
 const TOKENS = [
@@ -27,7 +27,7 @@ const foreignColours = (page: Page) =>
       allowed.add(getComputedStyle(probe).color);
     }
     probe.remove();
-    const cards = document.querySelectorAll('ul[aria-label="Generated components"] [inert]');
+    const cards = document.querySelectorAll("[data-generated-card]");
     const seen = new Set<string>();
     for (const card of cards) {
       for (const element of [card, ...card.querySelectorAll("*")]) {
@@ -39,6 +39,20 @@ const foreignColours = (page: Page) =>
     }
     return { cards: cards.length, foreign: [...seen] };
   }, TOKENS);
+
+/** Opens components in turn until one has the control `has` finds, and leaves its dialog open. */
+async function openComponentWith(page: Page, has: (dialog: Locator) => Locator) {
+  const buttons = tiles(page).getByRole("button");
+  await expect(buttons.first()).toBeVisible();
+  for (let i = 0; i < (await buttons.count()); i++) {
+    await buttons.nth(i).click();
+    const dialog = page.getByRole("dialog");
+    if (await has(dialog).count()) return dialog;
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+  }
+  throw new Error("no loaded component has that control");
+}
 
 /** More components load while the page settles, so only the first few are compared. */
 const COMPARED = 4;
@@ -70,15 +84,25 @@ test.describe("Endless components", () => {
     await expect.poll(() => tiles(page).getByRole("button").count()).toBeGreaterThan(before);
   });
 
-  test("in either site theme, every component draws only that theme's tokens", async ({ page }) => {
+  test("in either site theme, every component and the one to try draw only that theme's tokens", async ({
+    page,
+  }) => {
     await page.goto(`${ENDLESS}?seed=42`);
     await expect(tiles(page).getByRole("button").first()).toBeVisible();
 
     for (const theme of ["Light", "Dark"]) {
       await page.getByRole("button", { name: theme, exact: true }).click();
-      const { cards, foreign } = await foreignColours(page);
-      expect(cards).toBeGreaterThan(0);
-      expect(foreign, `${theme}: colours outside the tokens`).toEqual([]);
+      const grid = await foreignColours(page);
+      expect(grid.cards).toBeGreaterThan(0);
+      expect(grid.foreign, `${theme}: colours outside the tokens`).toEqual([]);
+
+      // The component to try in the dialog follows the same theme.
+      await tiles(page).getByRole("button").first().click();
+      const withDialog = await foreignColours(page);
+      expect(withDialog.cards).toBe(grid.cards + 1);
+      expect(withDialog.foreign, `${theme} dialog: colours outside the tokens`).toEqual([]);
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toBeHidden();
     }
   });
 
@@ -119,5 +143,41 @@ test.describe("Endless components", () => {
     const dark = await page.getByRole("button", { name: "Dark", exact: true }).boundingBox();
     expect(dark!.x + dark!.width).toBeLessThanOrEqual(320);
     await expect(page.getByRole("heading", { level: 1 })).toBeInViewport({ ratio: 1 });
+  });
+
+  test("an amount over the balance says how to fix it, and a valid amount clears it", async ({
+    page,
+  }) => {
+    await page.goto(`${ENDLESS}?seed=7`);
+    const dialog = await openComponentWith(page, (d) => d.getByRole("textbox", { name: "Amount" }));
+    const amount = dialog.getByRole("textbox", { name: "Amount" });
+
+    await amount.fill("999999");
+    await expect(amount).toHaveAttribute("aria-invalid", "true");
+    await expect(amount).toHaveAccessibleDescription(/^Enter [\d,.]+ or less$/);
+
+    await amount.fill("1");
+    await expect(amount).toHaveAttribute("aria-invalid", "false");
+    await expect(amount).toHaveAccessibleDescription(/^Balance /);
+  });
+
+  test("searching a list filters its rows and says when nothing matches", async ({ page }) => {
+    await page.goto(`${ENDLESS}?seed=7`);
+    const dialog = await openComponentWith(page, (d) => d.getByRole("searchbox"));
+    await dialog.getByRole("searchbox").fill("no such thing");
+    await expect(dialog.getByRole("status").filter({ hasText: "match" })).toContainText(
+      "Try a shorter search",
+    );
+  });
+
+  test("tabs in a tried component move with the arrow keys", async ({ page }) => {
+    await page.goto(`${ENDLESS}?seed=7`);
+    const dialog = await openComponentWith(page, (d) => d.getByRole("tab"));
+    const tabs = dialog.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.nth(1)).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   });
 });

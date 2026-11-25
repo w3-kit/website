@@ -44,8 +44,8 @@ function Hero() {
       className="grid gap-10 px-4 pb-12 pt-10 md:grid-cols-12 md:gap-x-6 md:px-10 md:pb-16 md:pt-16"
     >
       <h1 id="endless-title" className="w3-rise text-w3-display font-medium md:col-span-8">
-        <span className="block">Endless components,</span>
-        <span className="block">none drawn by hand.</span>
+        <span className="block">Endless</span>
+        <span className="block">components.</span>
       </h1>
       <div
         className="w3-rise flex flex-col items-start gap-6 md:col-span-4 md:self-end"
@@ -62,7 +62,7 @@ function Hero() {
         </p>
         <Link
           to="/ui"
-          className="inline-flex h-11 items-center gap-2 text-w3-small font-medium text-w3-ink transition-colors hover:text-w3-accent"
+          className="inline-flex h-11 items-center gap-2 text-w3-small font-medium text-w3-ink underline-offset-4 hover:underline outline-w3-accent focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Browse the library <ArrowRight size={16} aria-hidden />
         </Link>
@@ -79,7 +79,7 @@ const DARK_CONTRAST = SITE_CONTRAST.filter((pair) => pair.mode === "dark");
 function DesignRules() {
   return (
     <details className="group min-w-0 text-w3-small md:col-span-8">
-      <summary className="inline-flex h-11 cursor-pointer list-none items-center gap-2 font-medium">
+      <summary className="inline-flex h-11 cursor-pointer list-none items-center gap-2 font-medium outline-w3-accent focus-visible:outline-2 focus-visible:outline-offset-2">
         Design rules these components follow
         <ChevronDown
           size={16}
@@ -109,10 +109,9 @@ function DesignRules() {
         <table className="w-full border-collapse text-start tabular-nums">
           <thead>
             <tr className="text-w3-ink-soft">
-              <th className="py-2 ps-3 pe-4 text-start font-medium">Pair</th>
+              <th className="py-2 ps-3 pe-4 text-start font-medium">Pair and target</th>
               <th className="py-2 pe-4 text-start font-medium">Light</th>
               <th className="py-2 pe-4 text-start font-medium">Dark</th>
-              <th className="py-2 text-start font-medium">Target</th>
             </tr>
           </thead>
           <tbody>
@@ -120,10 +119,10 @@ function DesignRules() {
               <tr key={light.name} className="odd:bg-w3-tone">
                 <th scope="row" className="py-2 ps-3 pe-4 text-start font-normal">
                   {light.name}
+                  <span className="block text-w3-ink-soft">Target {light.target}:1</span>
                 </th>
                 <Measured pair={light} />
                 <Measured pair={DARK_CONTRAST[i]} />
-                <td className="py-2">{light.target}:1</td>
               </tr>
             ))}
           </tbody>
@@ -135,9 +134,9 @@ function DesignRules() {
 
 function Measured({ pair }: { pair: ContrastPair }) {
   return (
-    <td className="py-2 pe-4 whitespace-nowrap">
+    <td className="py-2 pe-3">
       {pair.ratio.toFixed(2)}:1
-      {isBelowTarget(pair) && <span className="font-medium"> below target</span>}
+      {isBelowTarget(pair) && <span className="block font-medium">Below target</span>}
     </td>
   );
 }

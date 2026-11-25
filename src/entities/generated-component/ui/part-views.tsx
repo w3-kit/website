@@ -40,7 +40,12 @@ const FAMILY_ICONS: Record<FamilyId, LucideIcon> = {
 };
 const NUMBER = "tabular-nums";
 const PILL = "shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs";
-const QUICK_AMOUNTS = ["25%", "50%", "75%", "Max"];
+export const QUICK_AMOUNTS = [
+  { label: "25%", percent: 25 },
+  { label: "50%", percent: 50 },
+  { label: "75%", percent: 75 },
+  { label: "Max", percent: 100 },
+] as const;
 const CHART = { width: 100, height: 40, top: 4, bottom: 38 };
 
 interface PartRowProps {
@@ -51,7 +56,7 @@ interface PartRowProps {
 }
 
 /** A part takes as many rows of the card as the part table gives it, with the card's side padding. */
-function PartRow({ name, className, style, children }: PartRowProps) {
+export function PartRow({ name, className, style, children }: PartRowProps) {
   return (
     <div
       className={cn(
@@ -102,23 +107,32 @@ function Stripes({ angle, className }: { angle: number; className?: string }) {
 
 interface AmountFieldProps {
   name: PartName;
-  label: string;
-  hint: string;
-  value: string;
+  label: ReactNode;
+  hint: ReactNode;
+  /** Text in the preview; an input where the component can be tried. */
+  value: ReactNode;
   symbol: string;
+  className?: string;
 }
 
 /** Labels stay text-foreground: muted-foreground on muted is below 4.5:1 in light mode. */
-function AmountField({ name, label, hint, value, symbol }: AmountFieldProps) {
+export function AmountField({ name, label, hint, value, symbol, className }: AmountFieldProps) {
   return (
     <PartRow name={name} className="py-1">
-      <div className="flex h-full w-full min-w-0 flex-col justify-center gap-1 rounded-xl bg-muted px-3">
+      <div
+        className={cn(
+          "flex h-full w-full min-w-0 flex-col justify-center gap-1 rounded-xl bg-muted px-3",
+          className,
+        )}
+      >
         <div className="flex items-center justify-between gap-2 text-xs">
           <span className="truncate">{label}</span>
           <span className={cn("truncate", NUMBER)}>{hint}</span>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className={cn("truncate text-xl font-medium", NUMBER)}>{value}</span>
+          <span className={cn("flex min-w-0 flex-1 truncate text-xl font-medium", NUMBER)}>
+            {value}
+          </span>
           <TokenChip symbol={symbol} />
         </div>
       </div>
@@ -136,7 +150,7 @@ function ListView({ part }: { part: PartOf<"list2" | "list3" | "list4"> }) {
   );
 }
 
-function ListItem({ row }: { row: ListRow }) {
+export function ListItem({ row }: { row: ListRow }) {
   return (
     <div className="flex min-h-0 flex-1 items-center gap-3">
       <Avatar text={row.avatar} />
@@ -161,8 +175,8 @@ function DetailsView({ part }: { part: PartOf<"details1" | "details2" | "details
     <PartRow name={part.name} className="flex-col items-stretch gap-0">
       {part.rows.map(({ label, value }) => (
         <div key={label} className="flex min-h-0 flex-1 items-center justify-between gap-3">
-          <span className="shrink-0 text-muted-foreground">{label}</span>
-          <span className={cn("truncate font-medium", NUMBER)}>{value}</span>
+          <span className="min-w-0 truncate text-muted-foreground">{label}</span>
+          <span className={cn("shrink-0 font-medium", NUMBER)}>{value}</span>
         </div>
       ))}
     </PartRow>
@@ -311,15 +325,15 @@ const VIEWS: { [K in PartName]: ComponentType<{ part: PartOf<K> }> } = {
   ),
   quickAmounts: () => (
     <PartRow name="quickAmounts">
-      {QUICK_AMOUNTS.map((amount) => (
+      {QUICK_AMOUNTS.map(({ label }) => (
         <span
-          key={amount}
+          key={label}
           className={cn(
             "flex-1 rounded-lg border border-border py-1.5 text-center text-xs font-medium",
             NUMBER,
           )}
         >
-          {amount}
+          {label}
         </span>
       ))}
     </PartRow>
@@ -346,14 +360,18 @@ const VIEWS: { [K in PartName]: ComponentType<{ part: PartOf<K> }> } = {
     </PartRow>
   ),
   statGrid: ({ part }) => (
-    <PartRow name="statGrid" className="grid grid-cols-3 items-stretch gap-2 py-1.5">
+    // Below a 20rem card the third cell would leave every value cut short, so it drops out.
+    <PartRow
+      name="statGrid"
+      className="grid grid-cols-2 items-stretch gap-2 py-1.5 @xs:grid-cols-3"
+    >
       {part.stats.map(({ label, value }) => (
         <div
           key={label}
-          className="flex min-w-0 flex-col justify-center gap-0.5 rounded-xl bg-muted px-3"
+          className="flex min-w-0 flex-col justify-center gap-0.5 rounded-xl bg-muted px-3 last:@max-xs:hidden"
         >
-          <span className="truncate text-xs uppercase">{label}</span>
-          <span className={cn("truncate font-semibold", NUMBER)}>{value}</span>
+          <span className="truncate text-xs">{label}</span>
+          <span className={cn("line-clamp-2 font-semibold break-words", NUMBER)}>{value}</span>
         </div>
       ))}
     </PartRow>

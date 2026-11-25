@@ -11,7 +11,7 @@ export interface PartData {
   tabs: { options: readonly string[] };
   search: { placeholder: string };
   chart: { price: string; change: string; prices: number[] };
-  artwork: { collection: string; tokenId: string; angle: number; stripe: number };
+  artwork: { collection: string; tokenId: string; angle: number };
   gallery: { items: { name: string; price: string; angle: number }[] };
   list2: { rows: ListRow[] };
   list3: { rows: ListRow[] };

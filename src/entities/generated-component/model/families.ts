@@ -52,7 +52,7 @@ const TOKEN_NAMES: Record<string, string> = {
 export const NETWORKS = ["Ethereum", "Arbitrum", "Base", "Optimism", "Polygon"];
 const COLLECTIONS = ["Nouns", "Lil Nouns", "Pudgy Penguins", "Azuki"];
 
-const TWO_DECIMALS = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
+export const TWO_DECIMALS = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
 export const money = (rng: Rng, max: number) => (rng() * max).toLocaleString("en", TWO_DECIMALS);
 export const whole = (rng: Rng, max: number) => Math.floor(1 + rng() * max).toLocaleString("en");
 const initials = (text: string) => text.slice(0, 2).toUpperCase();
@@ -92,6 +92,7 @@ export const FAMILIES = {
       ["Network fee", (r) => `$${money(r, 9)}`],
       ["Minimum received", (r, t) => `${money(r, 900)} ${t[1]}`],
       ["Route", (_r, t) => `${t[0]} to ${t[1]}`],
+      ["Arrives", (r) => pick(r, ["in about 30 seconds", "in about 2 minutes"])],
     ],
     row: (r, t, i) => {
       const symbol = tokenAt(t, i);

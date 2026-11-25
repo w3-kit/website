@@ -140,7 +140,7 @@ function ComponentTile({ component, onSelect }: ComponentTileProps) {
       </div>
       <div className="flex items-center justify-between gap-4 px-6 pb-5">
         <span className="min-w-0">
-          <span className="block truncate text-w3-body font-medium text-w3-ink transition-colors group-hover:text-w3-accent">
+          <span className="block truncate text-w3-body font-medium text-w3-ink">
             {component.name}
           </span>
           <span className="block text-w3-small text-w3-ink-soft tabular-nums">
@@ -150,7 +150,7 @@ function ComponentTile({ component, onSelect }: ComponentTileProps) {
         <ArrowRight
           size={18}
           aria-hidden
-          className="shrink-0 text-w3-ink transition-transform group-hover:text-w3-accent motion-safe:group-hover:translate-x-1"
+          className="shrink-0 text-w3-ink transition-transform motion-safe:group-hover:translate-x-1"
         />
       </div>
       {/* The outline sits inside the tile: content-visibility clips what is drawn outside it. */}
@@ -177,7 +177,7 @@ function Toolbar({ seed, count, onShuffle }: ToolbarProps) {
       <button
         type="button"
         onClick={onShuffle}
-        className="w3-press inline-flex h-10 shrink-0 items-center gap-2 bg-w3-tone px-3 text-w3-small font-medium text-w3-ink hover:bg-w3-tone-2 sm:px-4"
+        className="w3-press inline-flex h-10 shrink-0 items-center gap-2 bg-w3-tone px-3 text-w3-small font-medium text-w3-ink hover:bg-w3-tone-2 sm:px-4 outline-w3-accent focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <Shuffle size={16} aria-hidden />
         <span className="sr-only sm:not-sr-only">Shuffle</span>

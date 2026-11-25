@@ -35,7 +35,7 @@ export const AGENT_RULES = [
   "Accessibility",
   "- Native elements: <button> for actions, <a href> for navigation. Never a clickable div or span.",
   "- Every input has a visible <label>, except a search field, which has an aria-label and a magnifier icon. A placeholder is never the label. An error sets aria-invalid and aria-describedby pointing at inline text.",
-  "- Every control shows a :focus-visible ring. Never outline-none without a replacement ring.",
+  "- Every control shows a :focus-visible ring (outline-2 outline-foreground). Never outline-none without a replacement ring.",
   "- Targets are at least 24 by 24px; aim for 40 by 40px. Hit areas never overlap.",
   "- Meaning is never carried by colour alone. Pair it with text or an icon.",
   "- Movement and scale run only under motion-safe (prefers-reduced-motion: no-preference).",
@@ -152,7 +152,7 @@ function themeSection(tokens: ThemeTokens): string[] {
     ...MODES.map((mode) => `  ${MODE_SELECTORS[mode]} { ${declarations(tokens[mode])} }`),
     ...(gaps.length
       ? [
-          `- Measured contrast gaps in these tokens: ${gaps.join("; ")}. Keep the tokens as they are. Where a text pair is below target, use text-foreground instead.`,
+          `- Measured contrast gaps in these tokens: ${gaps.join("; ")}. Keep the tokens as they are. Where a pair is below target, use foreground instead: text-foreground for text, outline-foreground for focus rings.`,
         ]
       : []),
   ];
@@ -313,7 +313,9 @@ const DESCRIBERS: { [K in PartName]: (part: PartOf<K>, brief: Brief) => void } =
     brief.sample[prop] = value;
   },
   statGrid({ stats }, brief) {
-    brief.lines.push(`Stat grid: three equal cells, ${stats.map(quoted).join(", ")}.`);
+    brief.lines.push(
+      `Stat grid: three equal cells, ${stats.map(quoted).join(", ")}. Below 320px of card width, show the first two only.`,
+    );
     brief.props.set("stats", "{ label: string; value: string }[]");
     brief.sample.stats = stats;
   },

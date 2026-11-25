@@ -10,6 +10,7 @@ import {
   CHUNK_ROWS,
   CLOSERS,
   FAMILIES,
+  NARROW_CARD_WIDTH,
   OPENER,
   PARTS,
   PART_NAMES,
@@ -27,7 +28,8 @@ import {
 } from "../../src/entities/generated-component/model";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const VIEWS_DIR = path.join(ROOT, "src/entities/generated-component/ui");
+/** Every folder that draws a generated component: the grid preview and the one to try. */
+const VIEW_DIRS = ["src/entities/generated-component/ui", "src/features/try-component/ui"];
 const SITE_TOKENS = parseThemeTokens(
   readFileSync(path.join(ROOT, "src/shared/styles/tokens.css"), "utf8"),
 );
@@ -177,6 +179,30 @@ test("a notice always sits directly above the primary button", () => {
   }
 });
 
+test("no stat label appears twice in a component, so no label shows two values", () => {
+  for (const component of COMPONENTS) {
+    const labels = component.parts.flatMap((part) =>
+      "stats" in part
+        ? part.stats
+        : "rows" in part && part.name.startsWith("details")
+          ? part.rows
+          : [],
+    );
+    const names = labels.map((stat) => ("label" in stat ? stat.label : ""));
+    assert.equal(new Set(names).size, names.length, `${component.id}: ${names.join(", ")}`);
+  }
+});
+
+test("a sample amount never exceeds the sample balance", () => {
+  for (const component of COMPONENTS) {
+    for (const part of component.parts) {
+      if (part.name !== "amount") continue;
+      const number = (text: string) => Number(text.replaceAll(",", ""));
+      assert.ok(number(part.value) <= number(part.balance), `${component.id}: ${part.value}`);
+    }
+  }
+});
+
 test("a footer below a list counts the list", () => {
   for (const component of COMPONENTS) {
     const list = component.parts.find((part) => "rows" in part && part.name.startsWith("list"));
@@ -306,7 +332,7 @@ test("the prompt asks for one component that follows the site theme in both mode
     assert.doesNotMatch(prompt, /ui-sdk|hsl\(|@custom-variant/i);
     assert.match(
       prompt,
-      component.w > 2 ? /designed for 440 to 560px/ : /designed for 300 to 400px/,
+      component.w > NARROW_CARD_WIDTH ? /designed for 440 to 560px/ : /designed for 300 to 400px/,
     );
   }
 });
@@ -390,8 +416,10 @@ const UTILITY = new RegExp(
   `(?<![\\w-])(?:[\\w-]+:)*-?(${Object.keys(COLOUR_UTILITIES).join("|")})-([\\w.\\[\\]()/-]+)`,
   "g",
 );
-const VIEW_SOURCES = readdirSync(VIEWS_DIR).map(
-  (file) => [file, readFileSync(path.join(VIEWS_DIR, file), "utf8")] as const,
+const VIEW_SOURCES = VIEW_DIRS.flatMap((dir) =>
+  readdirSync(path.join(ROOT, dir)).map(
+    (file) => [file, readFileSync(path.join(ROOT, dir, file), "utf8")] as const,
+  ),
 );
 
 function themeViolations(source: string): string[] {

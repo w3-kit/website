@@ -139,9 +139,7 @@ function ComponentTile({ component }: { component: ComponentMeta }) {
       </div>
       <div className="flex items-center justify-between gap-4 px-6 pb-5">
         <span>
-          <span className="block text-w3-body font-medium text-w3-ink transition-colors group-hover:text-w3-accent">
-            {component.name}
-          </span>
+          <span className="block text-w3-body font-medium text-w3-ink">{component.name}</span>
           <span className="block text-w3-small text-w3-ink-soft">
             {categoryLabel(component.category)}
           </span>
@@ -149,7 +147,7 @@ function ComponentTile({ component }: { component: ComponentMeta }) {
         <ArrowRight
           size={18}
           aria-hidden
-          className="text-w3-ink transition-transform group-hover:translate-x-1 group-hover:text-w3-accent"
+          className="text-w3-ink transition-transform motion-safe:group-hover:translate-x-1"
         />
       </div>
     </Link>

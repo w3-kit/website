@@ -20,8 +20,10 @@ const SURFACES = {
     other: "text-[var(--w3-footer-soft)] hover:text-[var(--w3-footer-ink)]",
   },
   page: {
-    current: "bg-w3-ink text-w3-ground",
-    other: "bg-w3-tone text-w3-ink hover:bg-w3-tone-2",
+    current:
+      "bg-w3-ink text-w3-ground outline-w3-accent focus-visible:outline-2 focus-visible:outline-offset-2",
+    other:
+      "bg-w3-tone text-w3-ink hover:bg-w3-tone-2 outline-w3-accent focus-visible:outline-2 focus-visible:outline-offset-2",
   },
 };
 

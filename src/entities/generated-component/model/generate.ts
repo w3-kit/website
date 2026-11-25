@@ -22,6 +22,7 @@ import {
   NETWORKS,
   TOKENS,
   money,
+  TWO_DECIMALS,
   shortAddress,
   whole,
   type Family,
@@ -301,7 +302,6 @@ const MAKERS: { [K in PartName]: (copy: SampleCopy) => PartData[K] } = {
     collection: title,
     tokenId: `#${whole(rng, 9999)}`,
     angle: Math.floor(rng() * 360),
-    stripe: 14 + Math.floor(rng() * 30),
   }),
   gallery: ({ rng }) => ({
     items: Array.from({ length: GALLERY_SIZE }, () => ({
@@ -314,12 +314,16 @@ const MAKERS: { [K in PartName]: (copy: SampleCopy) => PartData[K] } = {
   list3: (copy) => list(copy, 3),
   list4: (copy) => list(copy, 4),
   recipient: ({ rng }) => ({ address: shortAddress(rng) }),
-  amount: ({ rng, tokens }) => ({
-    value: money(rng, 20),
-    symbol: tokens[0],
-    balance: money(rng, 60),
-    tokens: tokens.slice(0, 4),
-  }),
+  amount: ({ rng, tokens }) => {
+    // The sample amount stays within the balance, so a tried component opens without an error.
+    const balance = 1 + rng() * 60;
+    return {
+      value: money(rng, balance),
+      symbol: tokens[0],
+      balance: balance.toLocaleString("en", TWO_DECIMALS),
+      tokens: tokens.slice(0, 4),
+    };
+  },
   flip: () => ({}),
   result: ({ rng, tokens }) => ({ value: money(rng, 9000), symbol: tokens[1] }),
   quickAmounts: () => ({}),
